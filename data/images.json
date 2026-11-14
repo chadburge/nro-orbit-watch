@@ -562,5 +562,70 @@
 "h": 360,
 "kind": "patch",
 "nrol": "NROL-179"
+},
+{
+"key": "launch-nrol-3",
+"file": "launch-nrol-3.jpg",
+"title": "Nrol-39.jpg",
+"author": "National Reconaissance Office, US Government",
+"license": "Public domain",
+"desc": "Mission \"patch\" of NROL-39: an octopus grabbing the earth's globe, labeled \"Nothing is beyond our reach\".",
+"w": 1000,
+"h": 1000,
+"kind": "launch",
+"nrol": "NROL-3",
+"rocket": "Titan IV"
+},
+{
+"key": "launch-nrol-4",
+"file": "launch-nrol-4.jpg",
+"title": "NROL-45 Delta IV launch (2408805).jpg",
+"author": "U.S. Air Force photo by Jose Davila",
+"license": "Public domain",
+"desc": "Team Vandenberg successfully launches a United Launch Alliance Delta IV rocket carrying a National Reconnaissance Office payload from Space Launch Complex-6 here Wednesday, Feb. 10, at 3:40 a.m. PDT. This mission was launched aboard a Delta IV Medium (5,2) configuration Evolved Expendable Launch Veh",
+"w": 666,
+"h": 1000,
+"kind": "launch",
+"nrol": "NROL-4",
+"rocket": "Titan IV/Centaur"
+},
+{
+"key": "launch-nrol-5",
+"file": "launch-nrol-5.jpg",
+"title": "NROL-52 AtlasV by United Launch Alliance (37483095452).jpg",
+"author": "Michael Seeley",
+"license": "CC BY 2.0",
+"desc": "I think I can safely speak for the Space Coast when I say that we're tired of the weather, but I shudder to think about the stresses the weather is placing on this #AtlasV rocket, and on the United Launch Alliance team responsible for it (and the #NROL52 payload).\nThe rocket, shown here (with admitt",
+"w": 1400,
+"h": 933,
+"kind": "launch",
+"nrol": "NROL-5",
+"rocket": "Atlas IIA"
+},
+{
+"key": "launch-nrol-7",
+"file": "launch-nrol-7.jpg",
+"title": "NROL-76 launch by SpaceX - Attempt 1 (33518544974).jpg",
+"author": "Michael Seeley from Melbourne, FL, United States",
+"license": "CC BY 2.0",
+"desc": "Pictures from the April 30, 2017 first attempt by #SpaceX to launch a #Falcon9 rocket carrying the #NROL76 satellite. This picture is from 7:19am, 5 minutes after the hold was called. The launch would later be scrubbed because of sensor issue. The next attempt is scheduled for May 1, 2017.",
+"w": 1400,
+"h": 955,
+"kind": "launch",
+"nrol": "NROL-7",
+"rocket": "Titan IV/Centaur"
+},
+{
+"key": "launch-nrol-17",
+"file": "launch-nrol-17.jpg",
+"title": "Vandenberg Launches NROL-174 Mission (8978144).jpg",
+"author": "U.S. Space Force photo by Airman 1st Class Olga Houtsma",
+"license": "Public domain",
+"desc": "A Northrop Grumman Minotaur IV rocket launches the National Reconnaissance Office's NROL-174 mission from Space Launch Complex 8 at Vandenberg Space Force Base Calif., at 12:33 p.m. PDT, April 16, 2025. This marks the fifth National Reconnaissance Office launch of 2025 and the first launch facilitat",
+"w": 665,
+"h": 1000,
+"kind": "launch",
+"nrol": "NROL-17",
+"rocket": "Delta II 7925-9.5"
 }
 ]

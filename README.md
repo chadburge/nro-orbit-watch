@@ -32,7 +32,9 @@ remembered in the browser (Alt+click Hide restores them). Esc or the Exit button
 Keyboard: Space pause, H live, 1/2 globe/map, F full screen, L lobby, N or arrow keys next/previous segment, T table, R reset, Esc close.
 
 Company posts: LinkedIn and the other networks block automated reading, so paste posts into `data/social_raw.json`
-(id, source, date, title, text, link) and run `python build/fetch_social.py`. It screens every post (profanity,
+(id, source, date, title, text, link, and optionally image: a file name you have put in `site/img/`) and run
+`python build/fetch_social.py`. Company slides and posts play over a Roster-5-styled backdrop instead of the globe; a post
+with an image uses a blurred copy of it as the backdrop. It screens every post (profanity,
 politics, money and personnel matters, contact details, length) and only approved items reach the show.
 
 ## Refresh the data
