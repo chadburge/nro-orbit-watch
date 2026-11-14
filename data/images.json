@@ -238,5 +238,89 @@
 "desc": "A Falcon 9 rocket carrying the Starlink 17-14 mission launches from Space Launch Complex 4 East at Vandenberg Space Force Base, Calif., April, 2026. The Starlink 17-14 mission marked the 27th launch and test mission from the Vandenberg Spaceport and Test Range in 2026. Each launch at Vandenberg is d",
 "w": 1400,
 "h": 933
+},
+{
+"key": "patch-nrol-1",
+"file": "patch-nrol-1.jpg",
+"title": "NROL-1 Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-1 mission patch with the mission nickname \"Nemesis\" at the bottom border.",
+"w": 332,
+"h": 341,
+"kind": "patch",
+"nrol": "NROL-1"
+},
+{
+"key": "patch-nrol-4",
+"file": "patch-nrol-4.jpg",
+"title": "NROL-4 Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-4 mission patch featuring the Latin phrase \"Nunquam Ante Numquam Iterum\" (Never Before, Never Again) along the bottom border, three snakes menacingly wrapped around the Earth, three blue stars (one left, two right) along the top border, and eight white stars (f",
+"w": 406,
+"h": 401,
+"kind": "patch",
+"nrol": "NROL-4"
+},
+{
+"key": "patch-nrol-5",
+"file": "patch-nrol-5.jpg",
+"title": "NROL-5 Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-5 mission patch featuring a ten-pointed pattern with stars between the points, a roman numeral \"X\" in the center, and the mission codename \"Capricorn\" around the border.",
+"w": 900,
+"h": 900,
+"kind": "patch",
+"nrol": "NROL-5"
+},
+{
+"key": "patch-nrol-6",
+"file": "patch-nrol-6.jpg",
+"title": "NROL-6 Dragon Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-6 mission patch featuring a dragon in space with stars, the Earth, and the American flag.",
+"w": 900,
+"h": 900,
+"kind": "patch",
+"nrol": "NROL-6"
+},
+{
+"key": "patch-nrol-8",
+"file": "patch-nrol-8.jpg",
+"title": "NROL-8 Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-8 mission patch with the words \"NRO\" and \"Space Technology Experiment\" around the border with stars and a cluster of spheres orbiting Earth on a blue background in the center.",
+"w": 750,
+"h": 750,
+"kind": "patch",
+"nrol": "NROL-8"
+},
+{
+"key": "patch-nrol-9",
+"file": "patch-nrol-9.jpg",
+"title": "NROL-9 Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-9 mission patch with the text \"TITAN 4\" at top, featuring two symbols from Led Zeppelin's untitled album on top (in place of the letter \"A\") and bottom, with the silhouette of characters from Mystery Science Theater 3000 in the center of the patch looking up at",
+"w": 900,
+"h": 900,
+"kind": "patch",
+"nrol": "NROL-9"
+},
+{
+"key": "patch-nrol-10",
+"file": "patch-nrol-10.jpg",
+"title": "NROL-10 Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-10 mission patch depicting a cute teddy bear and the mission nickname \"Great Bear\" in colorful text. According to an NRO press release[1] for the launch:\"The mission was dedicated to Mr. Dan Potter, a longtime NRO employee who was a volunteer in the Partners in",
+"w": 260,
+"h": 312,
+"kind": "patch",
+"nrol": "NROL-10"
 }
 ]

@@ -24,11 +24,19 @@ def clean(s):
 rows = []
 for block in re.split(r'\n\|-[^\n]*\n', sec)[1:]:
     cells = re.split(r'\n\|', "\n" + block.strip('\n'))[1:]
+    raw = cells[:]
     cells = [clean(c) for c in cells]
     if len(cells) < 10 or not cells[0].startswith('NROL'):
         continue
+    patch = None
+    for c in raw:
+        m = re.search(r'\[\[File:([^\]|]+)', c)
+        if m and 'atch' in m.group(1):
+            patch = m.group(1).strip()
     keys = ['nrol', 'nick', 'usa', 'date', 'site', 'rocket', 'orbit', 'project', 'function', 'status', 'patch', 'remarks']
-    rows.append(dict(zip(keys, cells + [''] * (12 - len(cells)))))
+    row = dict(zip(keys, cells + [''] * (12 - len(cells))))
+    row['patchFile'] = patch
+    rows.append(row)
 print(len(rows))
 for r in rows[:2] + rows[-3:]:
     print(r)

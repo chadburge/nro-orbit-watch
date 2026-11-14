@@ -11,7 +11,8 @@
 "function": "Communications",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-1 Mission Patch.png"
 },
 {
 "nrol": "NROL-2",
@@ -25,7 +26,8 @@
 "function": "Optical imaging",
 "status": "Deorbited",
 "patch": "",
-"remarks": "First officially acknowledged launch of an NRO payload. Reentered on 1 May 2014."
+"remarks": "First officially acknowledged launch of an NRO payload. Reentered on 1 May 2014.",
+"patchFile": null
 },
 {
 "nrol": "NROL-3",
@@ -39,7 +41,8 @@
 "function": "Synthetic-aperture radar",
 "status": "Deorbited",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-4",
@@ -53,7 +56,8 @@
 "function": "ELINT",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-4 Mission Patch.png"
 },
 {
 "nrol": "NROL-5",
@@ -67,7 +71,8 @@
 "function": "Communications",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": "First acknowledged NRO launch on an Atlas rocket."
+"remarks": "First acknowledged NRO launch on an Atlas rocket.",
+"patchFile": "NROL-5 Mission Patch.png"
 },
 {
 "nrol": "NROL-6",
@@ -81,7 +86,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-6 Dragon Mission Patch.png"
 },
 {
 "nrol": "NROL-7",
@@ -95,7 +101,8 @@
 "function": "ELINT",
 "status": "Destroyed",
 "patch": "\"Cheers! Saving the Best for Last!!\"",
-"remarks": "Rocket self-destructed 40 seconds into launch due to guidance problem."
+"remarks": "Rocket self-destructed 40 seconds into launch due to guidance problem.",
+"patchFile": null
 },
 {
 "nrol": "NROL-8",
@@ -109,7 +116,8 @@
 "function": "Technology",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": "First NRO launch on a Taurus. ATEX experiment jettisoned on 16 January 1999 and catalogued as USA-141."
+"remarks": "First NRO launch on a Taurus. ATEX experiment jettisoned on 16 January 1999 and catalogued as USA-141.",
+"patchFile": "NROL-8 Mission Patch.png"
 },
 {
 "nrol": "NROL-9",
@@ -123,7 +131,8 @@
 "function": "Optical imaging",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-9 Mission Patch.png"
 },
 {
 "nrol": "NROL-10",
@@ -137,7 +146,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-10 Mission Patch.png"
 },
 {
 "nrol": "NROL-11",
@@ -151,7 +161,8 @@
 "function": "SAR",
 "status": "Deorbited",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-11 Mission Patch.png"
 },
 {
 "nrol": "NROL-12",
@@ -165,7 +176,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-12 Mission Patch.png"
 },
 {
 "nrol": "NROL-13",
@@ -179,7 +191,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": "Two satellites."
+"remarks": "Two satellites.",
+"patchFile": "NROL-13 Mission Patch.png"
 },
 {
 "nrol": "NROL-14",
@@ -193,7 +206,8 @@
 "function": "Optical reconnaissance",
 "status": "Deorbited",
 "patch": "",
-"remarks": "Reentered in November 2014."
+"remarks": "Reentered in November 2014.",
+"patchFile": "NROL-14 Mission Patch.png"
 },
 {
 "nrol": "NROL-15",
@@ -207,7 +221,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-15 Mission Patch.png"
 },
 {
 "nrol": "NROL-16",
@@ -221,7 +236,8 @@
 "function": "SAR",
 "status": "Deorbited",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-16 Mission Patch.png"
 },
 {
 "nrol": "NROL-17",
@@ -235,7 +251,8 @@
 "function": "Technology demonstration",
 "status": "Retired",
 "patch": "",
-"remarks": "Testbed for experimental laser and UHF communications payloads.First acknowledged NRO launch on a Delta and a Thor-derived rocket. Boosted to graveyard orbit after end of mission."
+"remarks": "Testbed for experimental laser and UHF communications payloads.First acknowledged NRO launch on a Delta and a Thor-derived rocket. Boosted to graveyard orbit after end of mission.",
+"patchFile": "NROL-17 Mission Patch.png"
 },
 {
 "nrol": "NROL-18",
@@ -249,7 +266,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": "Two satellites."
+"remarks": "Two satellites.",
+"patchFile": "NROL-18 Mission Patch.png"
 },
 {
 "nrol": "NROL-19",
@@ -263,7 +281,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-19 Mission Patch.png"
 },
 {
 "nrol": "NROL-20",
@@ -277,7 +296,8 @@
 "function": "Optical imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Final NRO launch on a Titan rocket."
+"remarks": "Final NRO launch on a Titan rocket.",
+"patchFile": "NROL-20 Mission Patch.png"
 },
 {
 "nrol": "NROL-21",
@@ -291,7 +311,8 @@
 "function": "Unknown",
 "status": "Destroyed",
 "patch": "",
-"remarks": "Final NRO launch on a Delta II and from a Thor-derived rocket. Failed on orbit immediately after launch. Destroyed by ASAT on 21 February 2008."
+"remarks": "Final NRO launch on a Delta II and from a Thor-derived rocket. Failed on orbit immediately after launch. Destroyed by ASAT on 21 February 2008.",
+"patchFile": "NROL-21 Mission Patch.png"
 },
 {
 "nrol": "NROL-22",
@@ -305,7 +326,8 @@
 "function": "ELINT",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": "First NRO launch on a Delta IV."
+"remarks": "First NRO launch on a Delta IV.",
+"patchFile": "NROL-22 Mission Patch.png"
 },
 {
 "nrol": "NROL-23",
@@ -319,7 +341,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": "Two satellites."
+"remarks": "Two satellites.",
+"patchFile": "NROL-23 Mission Patch.png"
 },
 {
 "nrol": "NROL-24",
@@ -333,7 +356,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-24 Mission Patch.png"
 },
 {
 "nrol": "NROL-25",
@@ -347,7 +371,8 @@
 "function": "Radar imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-25 Mission Patch.png"
 },
 {
 "nrol": "NROL-26",
@@ -361,7 +386,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "First NRO launch on a Delta IV Heavy."
+"remarks": "First NRO launch on a Delta IV Heavy.",
+"patchFile": "NROL-26 Mission Patch.png"
 },
 {
 "nrol": "NROL-27",
@@ -375,7 +401,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-27 Mission Patch.png"
 },
 {
 "nrol": "NROL-28",
@@ -389,7 +416,8 @@
 "function": "ELINT",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-28 Mission Patch.png"
 },
 {
 "nrol": "NROL-29",
@@ -403,7 +431,8 @@
 "function": "",
 "status": "Canceled",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-30",
@@ -417,7 +446,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Two satellites. First NRO launch on an Atlas V. Premature 2nd stage cutoff during launch. Lifetime reduced by need to correct orbit."
+"remarks": "Two satellites. First NRO launch on an Atlas V. Premature 2nd stage cutoff during launch. Lifetime reduced by need to correct orbit.",
+"patchFile": "NROL-30 Mission Patch.png"
 },
 {
 "nrol": "NROL-32",
@@ -431,7 +461,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-32 Patch.png"
 },
 {
 "nrol": "NROL-33",
@@ -445,7 +476,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-33 mission patch.png"
 },
 {
 "nrol": "NROL-34",
@@ -459,7 +491,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Two satellites."
+"remarks": "Two satellites.",
+"patchFile": "NROL-34 Mission Patch.png"
 },
 {
 "nrol": "NROL-35",
@@ -473,7 +506,8 @@
 "function": "ELINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-35 Mission Patch.png"
 },
 {
 "nrol": "NROL-36",
@@ -487,7 +521,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Two satellites sharing a designation."
+"remarks": "Two satellites sharing a designation.",
+"patchFile": "NROL-36 Mission Patch.png"
 },
 {
 "nrol": "NROL-37",
@@ -501,7 +536,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Likely the seventh so called Mentor/Orion satellite for the National Security Agency."
+"remarks": "Likely the seventh so called Mentor/Orion satellite for the National Security Agency.",
+"patchFile": "NROL-37 Mission Patch.png"
 },
 {
 "nrol": "NROL-38",
@@ -515,7 +551,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-38 Mission Patch.png"
 },
 {
 "nrol": "NROL-39",
@@ -529,7 +566,8 @@
 "function": "Radar imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-41",
@@ -543,7 +581,8 @@
 "function": "Radar imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-41 Mission Patch.png"
 },
 {
 "nrol": "NROL-42",
@@ -557,7 +596,8 @@
 "function": "ELINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-42 Mission Patch.png"
 },
 {
 "nrol": "NROL-44",
@@ -571,7 +611,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-44 Mission Patch.png"
 },
 {
 "nrol": "NROL-45",
@@ -585,7 +626,8 @@
 "function": "Radar imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-45 Mission Patch Alternate Version.png"
 },
 {
 "nrol": "NROL-47",
@@ -599,7 +641,8 @@
 "function": "Radar imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-47Patch.png"
 },
 {
 "nrol": "NROL-48",
@@ -613,7 +656,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 8 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 8 Starshield satellites.",
+"patchFile": null
 },
 {
 "nrol": "NROL-49",
@@ -627,7 +671,8 @@
 "function": "Optical imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-49 Mission Patch.png"
 },
 {
 "nrol": "NROL-52",
@@ -641,7 +686,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-52 Mission Patch.png"
 },
 {
 "nrol": "NROL-55",
@@ -655,7 +701,8 @@
 "function": "Naval reconnisance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Two classified satellites (NROL-55) and 13 CubeSats."
+"remarks": "Two classified satellites (NROL-55) and 13 CubeSats.",
+"patchFile": null
 },
 {
 "nrol": "NROL-56",
@@ -669,7 +716,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-57",
@@ -683,7 +731,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 11 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 11 Starshield satellites.",
+"patchFile": "NROL-57 patch.png"
 },
 {
 "nrol": "NROL-61",
@@ -697,7 +746,8 @@
 "function": "Communications",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-61 Mission Patch.png"
 },
 {
 "nrol": "NROL-64",
@@ -711,7 +761,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-65",
@@ -725,7 +776,8 @@
 "function": "Optical imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-65 Mission Patch.png"
 },
 {
 "nrol": "NROL-66",
@@ -739,7 +791,8 @@
 "function": "Technology",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-66 Patch.png"
 },
 {
 "nrol": "NROL-67",
@@ -753,7 +806,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-67 Mission Patch.png"
 },
 {
 "nrol": "NROL-68",
@@ -767,7 +821,8 @@
 "function": "SIGINT",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-68 Mission Patch.png"
 },
 {
 "nrol": "NROL-69",
@@ -781,7 +836,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Fourth generation NOSS satellite."
+"remarks": "Fourth generation NOSS satellite.",
+"patchFile": null
 },
 {
 "nrol": "NROL-70",
@@ -795,7 +851,8 @@
 "function": "SIGINT",
 "status": "Entered service, status unknown",
 "patch": "",
-"remarks": "Final NRO launch from a Delta IV, a Delta IV Heavy, and on a Delta rocket."
+"remarks": "Final NRO launch from a Delta IV, a Delta IV Heavy, and on a Delta rocket.",
+"patchFile": null
 },
 {
 "nrol": "NROL-71",
@@ -809,7 +866,8 @@
 "function": "Optical imaging",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-73",
@@ -823,7 +881,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-76",
@@ -837,7 +896,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "First NRO launch on SpaceX's Falcon 9 and first NRO launch from Kennedy Space Center. Originally intended to launch from SLC-40, but was moved to LC-39A following the AMOS-6 preclusion."
+"remarks": "First NRO launch on SpaceX's Falcon 9 and first NRO launch from Kennedy Space Center. Originally intended to launch from SLC-40, but was moved to LC-39A following the AMOS-6 preclusion.",
+"patchFile": "NROL-76 Mission Patch.png"
 },
 {
 "nrol": "NROL-77",
@@ -851,7 +911,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-77 patch.png"
 },
 {
 "nrol": "NROL-79",
@@ -865,7 +926,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Two classified satellites sharing a designation."
+"remarks": "Two classified satellites sharing a designation.",
+"patchFile": "NROL-79 Mission Patch.png"
 },
 {
 "nrol": "NROL-82",
@@ -879,7 +941,8 @@
 "function": "Electro-optical surveillance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-82 Mission Patch.png"
 },
 {
 "nrol": "NROL-83",
@@ -893,7 +956,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-85",
@@ -907,7 +971,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Fourth generation NOSS satellite."
+"remarks": "Fourth generation NOSS satellite.",
+"patchFile": "NROL-85 Patch.png"
 },
 {
 "nrol": "NROL-86",
@@ -921,7 +986,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-87",
@@ -935,7 +1001,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-87 Patch.png"
 },
 {
 "nrol": "NROL-88",
@@ -949,7 +1016,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-91",
@@ -963,7 +1031,8 @@
 "function": "Electro-optical surveillance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-91 Patch.png"
 },
 {
 "nrol": "NROL-95",
@@ -977,7 +1046,8 @@
 "function": "Naval reconnaissance",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-96",
@@ -991,7 +1061,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-97",
@@ -1005,7 +1076,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "First NRO launch on a Falcon Heavy."
+"remarks": "First NRO launch on a Falcon Heavy.",
+"patchFile": null
 },
 {
 "nrol": "NROL-100",
@@ -1019,7 +1091,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-101",
@@ -1033,7 +1106,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-101 Mission Patch.png"
 },
 {
 "nrol": "NROL-105",
@@ -1047,7 +1121,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 9 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 9 Starshield satellites.",
+"patchFile": "NROL-105 patch.png"
 },
 {
 "nrol": "NROL-107",
@@ -1061,7 +1136,8 @@
 "function": "Situational awareness",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Three satellites. Final NRO launch from an Atlas V and on an Atlas rocket."
+"remarks": "Three satellites. Final NRO launch from an Atlas V and on an Atlas rocket.",
+"patchFile": "NROL-107 Mission Patch.png"
 },
 {
 "nrol": "NROL-108",
@@ -1075,7 +1151,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Two satellites, possibly SpaceX Starshield prototypes."
+"remarks": "Two satellites, possibly SpaceX Starshield prototypes.",
+"patchFile": "NROL-108 Patch.png"
 },
 {
 "nrol": "NROL-109",
@@ -1089,7 +1166,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-111",
@@ -1103,7 +1181,8 @@
 "function": "Technology",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Three satellites."
+"remarks": "Three satellites.",
+"patchFile": "NROL-111 Mission Patch.png"
 },
 {
 "nrol": "NROL-113",
@@ -1117,7 +1196,8 @@
 "function": "Starshield",
 "status": "",
 "patch": "Entered service, presumed active",
-"remarks": ""
+"remarks": "",
+"patchFile": "NROL-113 Mission Patch.png"
 },
 {
 "nrol": "NROL-118",
@@ -1131,7 +1211,8 @@
 "function": "Situational awareness",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-123 (RASR-5)",
@@ -1145,7 +1226,8 @@
 "function": "Technology",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "RASR-5. Four satellites. First NRO launch on an Electron within the United States.."
+"remarks": "RASR-5. Four satellites. First NRO launch on an Electron within the United States..",
+"patchFile": null
 },
 {
 "nrol": "NROL-126",
@@ -1159,7 +1241,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 2 Starshield satellites with 20 Starlink Group N-01 satellites.."
+"remarks": "NRO's Proliferated Architecture Mission of 2 Starshield satellites with 20 Starlink Group N-01 satellites..",
+"patchFile": "NROL-126 patch.png"
 },
 {
 "nrol": "NROL-129",
@@ -1173,7 +1256,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "Four payloads. First NRO launch on a Minotaur rocket and first conducted from Virginia's Space Coast."
+"remarks": "Four payloads. First NRO launch on a Minotaur rocket and first conducted from Virginia's Space Coast.",
+"patchFile": "NROL-129 Mission Patch with Female Warrior.png"
 },
 {
 "nrol": "NROL-136",
@@ -1187,7 +1271,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of Starshield satellites.",
+"patchFile": null
 },
 {
 "nrol": "NROL-145",
@@ -1201,7 +1286,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites. First NRO Proliferated Architecture Mission launch in partnership with USSF under the NSSL Phase 3 Lane 1 contract."
+"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites. First NRO Proliferated Architecture Mission launch in partnership with USSF under the NSSL Phase 3 Lane 1 contract.",
+"patchFile": "NROL-145 patch.png"
 },
 {
 "nrol": "NROL-146",
@@ -1215,7 +1301,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 21 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 21 Starshield satellites.",
+"patchFile": "NROL-146 patch.png"
 },
 {
 "nrol": "NROL-149",
@@ -1229,7 +1316,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites.",
+"patchFile": "NROL-149 patch.png"
 },
 {
 "nrol": "NROL-151 (RASR-1)",
@@ -1243,7 +1331,8 @@
 "function": "Technology",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "First NRO launch from Rocket Lab's Electron and first NRO launch from outside the United States, conducted from Mahia in New Zealand. First launch procured under NRO's Rapid Acquisition of a Small Rocket (RASR) program."
+"remarks": "First NRO launch from Rocket Lab's Electron and first NRO launch from outside the United States, conducted from Mahia in New Zealand. First launch procured under NRO's Rapid Acquisition of a Small Rocket (RASR) program.",
+"patchFile": "NROL-151 Mission Patch.svg"
 },
 {
 "nrol": "NROL-153",
@@ -1257,7 +1346,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites.",
+"patchFile": "NROL-153 patch.png"
 },
 {
 "nrol": "NROL-157",
@@ -1271,7 +1361,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-162 (RASR-3)",
@@ -1285,7 +1376,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "RASR-3. Back-to-back launch under NRO's Rapid Acquisition of a Small Rocket (RASR) program."
+"remarks": "RASR-3. Back-to-back launch under NRO's Rapid Acquisition of a Small Rocket (RASR) program.",
+"patchFile": "NROL-162 Patch.png"
 },
 {
 "nrol": "NROL-167",
@@ -1299,7 +1391,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 17 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 17 Starshield satellites.",
+"patchFile": "NROL-167 patch.png"
 },
 {
 "nrol": "NROL-172",
@@ -1313,7 +1406,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites.",
+"patchFile": null
 },
 {
 "nrol": "NROL-174",
@@ -1327,7 +1421,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": ""
+"remarks": "",
+"patchFile": null
 },
 {
 "nrol": "NROL-179",
@@ -1341,7 +1436,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 9 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 9 Starshield satellites.",
+"patchFile": "NROL-179 patch.png"
 },
 {
 "nrol": "NROL-186",
@@ -1355,7 +1451,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 21 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 21 Starshield satellites.",
+"patchFile": "NROL-186 patch.png"
 },
 {
 "nrol": "NROL-192",
@@ -1369,7 +1466,8 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of 22 Starshield satellites.",
+"patchFile": null
 },
 {
 "nrol": "NROL-195",
@@ -1383,7 +1481,8 @@
 "function": "",
 "status": "Awaiting launch",
 "patch": "",
-"remarks": "NRO's Proliferated Architecture Mission of Starshield satellites."
+"remarks": "NRO's Proliferated Architecture Mission of Starshield satellites.",
+"patchFile": null
 },
 {
 "nrol": "NROL-199 (RASR-4)",
@@ -1397,6 +1496,7 @@
 "function": "",
 "status": "Entered service, presumed active",
 "patch": "",
-"remarks": "RASR-4. Back-to-back launch under NRO's Rapid Acquisition of a Small Rocket (RASR) program."
+"remarks": "RASR-4. Back-to-back launch under NRO's Rapid Acquisition of a Small Rocket (RASR) program.",
+"patchFile": "NROL-199 Patch.png"
 }
 ]
