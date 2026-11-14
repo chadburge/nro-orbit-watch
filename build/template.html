@@ -273,8 +273,8 @@ td a { text-decoration: none; margin-right: 6px; font-size: 11.5px; }
                 <button data-v="cones" aria-pressed="false">Cones</button>
               </div>
             </div>
-            <div class="row"><label for="coneOp">Cone opacity</label><input type="range" id="coneOp" min="0.1" max="3" step="0.1" value="1" style="flex:1;accent-color:var(--accent)" aria-label="Cone opacity"></div>
-            <div class="hint">Footprints show what each satellite can see. Cones connect every circle to its satellite and fade automatically as more satellites are shown; the slider scales that. In Circles mode only the hovered or selected satellite gets a cone.</div>
+            <div class="row"><label for="coneOp">Footprint opacity</label><input type="range" id="coneOp" min="0.1" max="3" step="0.1" value="1" style="flex:1;accent-color:var(--accent)" aria-label="Cone opacity"></div>
+            <div class="hint">Footprints show what each satellite can see. Circles and cones fade automatically as more satellites are shown; the slider scales that. In Circles mode only the hovered or selected satellite gets a cone.</div>
             <label class="chk"><input type="checkbox" id="sites" checked> Launch site pins</label>
             <label class="chk"><input type="checkbox" id="terminator" checked> Day and night shading</label>
             <div class="row"><label>Orbit paths</label>
@@ -646,7 +646,7 @@ function applyStyle() {
   for (const k of ['solid', 'hollow']) { if (!sprites[k][st]) sprites[k][st] = spriteTex(k, st); }
   satMat.map = sprites.solid[st]; repMat.map = sprites.hollow[st]; satMat.needsUpdate = repMat.needsUpdate = true;
   const size = (st === 'cartoon' ? 16 : st === 'flat' ? 13 : 9) * S.marker; satMat.size = repMat.size = size * (dpr > 1.5 ? 1.25 : 1);
-  fpLines.material.opacity = st === 'cartoon' ? 0.8 : 0.5; pathLines.material.opacity = st === 'cartoon' ? 0.9 : 0.55;
+  pathLines.material.opacity = st === 'cartoon' ? 0.9 : 0.55;
   $('#styleSel').value = st;
 }
 
@@ -676,7 +676,7 @@ function updatePositions() {
           for (let q = 0; q < 2; q++) { edCol[ed + q * 3] = hc[0]; edCol[ed + q * 3 + 1] = hc[1]; edCol[ed + q * 3 + 2] = hc[2]; } ed += 6; } }
     } else if (fp) o.fp = footprint(g, 72);
   }
-  const nCones = cn / (48 * 9); const ca = Math.min(0.5, Math.max(0.006, 0.14 * Math.sqrt(6 / Math.max(nCones, 1)) * S.coneOp)); coneMesh.material.opacity = ca; edgeLines.material.opacity = Math.min(0.6, Math.max(0.03, ca * 2.5));
+  const nCones = cn / (48 * 9); const ca = Math.min(0.5, Math.max(0.006, 0.14 * Math.sqrt(6 / Math.max(nCones, 1)) * S.coneOp)); coneMesh.material.opacity = ca; edgeLines.material.opacity = Math.min(0.6, Math.max(0.03, ca * 2.5)); fpLines.material.opacity = Math.min(0.85, Math.max(0.08, (S.style === 'cartoon' ? 0.8 : 0.55) * Math.sqrt(24 / Math.max(f / 288, 1)) * S.coneOp));
   coneGeo.setDrawRange(0, cn / 3); coneGeo.attributes.position.needsUpdate = true; coneGeo.attributes.color.needsUpdate = true; coneMesh.visible = cn > 0;
   edgeGeo.setDrawRange(0, ed / 3); edgeGeo.attributes.position.needsUpdate = true; edgeGeo.attributes.color.needsUpdate = true; edgeLines.visible = ed > 0;
   satGeo.setDrawRange(0, n); satGeo.attributes.position.needsUpdate = true; satGeo.attributes.color.needsUpdate = true;
@@ -756,7 +756,7 @@ function drawMap() {
   // paths
   if (S.paths !== 'none' || S.orbitSel) { for (const o of shown) { if (!o.path) continue; if (S.paths === 'none' && o !== S.selected) continue; mctx.strokeStyle = colorOf(o); mctx.globalAlpha = 0.6; mctx.lineWidth = o === S.selected ? 2 : 1; polyline(o.path, G); } mctx.globalAlpha = 1; }
   // footprints
-  if (S.fpMode !== 'off') { const cones = S.fpMode === 'cones'; const k = Math.min(1, Math.sqrt(12 / Math.max(shown.length, 1))) * (cones ? S.coneOp : 1); for (const o of shown) { if (!o.fp) continue; const hot = o === S.selected || o === S.hovered; mctx.strokeStyle = hot ? '#ffd58a' : colorOf(o); mctx.fillStyle = colorOf(o); mctx.globalAlpha = hot ? 0.22 : Math.min(0.3, (cones ? 0.12 : 0.08) * k); polygon(o.fp, G, true); mctx.globalAlpha = hot ? 0.95 : Math.min(0.7, Math.max(0.12, 0.5 * k)); mctx.lineWidth = hot ? 2.5 : 1; polygon(o.fp, G, false);
+  if (S.fpMode !== 'off') { const cones = S.fpMode === 'cones'; const k = Math.min(1, Math.sqrt(12 / Math.max(shown.length, 1))) * S.coneOp; for (const o of shown) { if (!o.fp) continue; const hot = o === S.selected || o === S.hovered; mctx.strokeStyle = hot ? '#ffd58a' : colorOf(o); mctx.fillStyle = colorOf(o); mctx.globalAlpha = hot ? 0.22 : Math.min(0.3, (cones ? 0.12 : 0.08) * k); polygon(o.fp, G, true); mctx.globalAlpha = hot ? 0.95 : Math.min(0.7, Math.max(0.12, 0.5 * k)); mctx.lineWidth = hot ? 2.5 : 1; polygon(o.fp, G, false);
       if ((cones || hot) && o.pos) { const c0 = proj2(o.pos.lat, o.pos.lon, G); mctx.globalAlpha = hot ? 0.9 : 0.45; mctx.lineWidth = 1; mctx.beginPath(); for (let i = 0; i < o.fp.length; i += Math.floor(o.fp.length / 6)) { const q = o.fp[i]; if (Math.abs(q[1] - o.pos.lon) > 180) continue; const p = proj2(q[0], q[1], G); mctx.moveTo(c0[0], c0[1]); mctx.lineTo(p[0], p[1]); } mctx.stroke(); } }
     mctx.globalAlpha = 1; }
   // sites
