@@ -205,7 +205,7 @@ body.lobby.showcursor #lobbyExit { opacity: 1; pointer-events: auto; }
 #show { position: absolute; inset: 0; pointer-events: none; z-index: 5; font-family: var(--body); --u: min(1vw, 1.78vh); }
 #show[hidden] { display: none; }
 .show-eyebrow { font: 600 calc(0.95 * var(--u)) var(--display); letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
-.show-card { position: absolute; right: calc(2.2 * var(--u)); top: calc(9.4 * var(--u)); width: calc(29 * var(--u)); max-height: calc(100% - 15.4 * var(--u)); overflow: hidden; background: linear-gradient(180deg, rgba(10,16,30,0.93), rgba(6,10,18,0.9)); border: 1px solid rgba(242,178,74,0.3); border-radius: calc(0.7 * var(--u)); padding: calc(1.3 * var(--u)) calc(1.5 * var(--u)) calc(1.5 * var(--u)); box-shadow: 0 calc(1.2 * var(--u)) calc(3.5 * var(--u)) rgba(0,0,0,0.65); opacity: 0; transform: translateX(2vw); transition: opacity 0.7s ease, transform 0.7s ease; }
+.show-card { position: absolute; left: 0; top: calc(9.4 * var(--u)); width: calc(29 * var(--u)); max-height: calc(100% - 15.4 * var(--u)); overflow: hidden; background: linear-gradient(180deg, rgba(10,16,30,0.93), rgba(6,10,18,0.9)); border: 1px solid rgba(242,178,74,0.3); border-radius: calc(0.7 * var(--u)); padding: calc(1.3 * var(--u)) calc(1.5 * var(--u)) calc(1.5 * var(--u)); box-shadow: 0 calc(1.2 * var(--u)) calc(3.5 * var(--u)) rgba(0,0,0,0.65); opacity: 0; transform: translateX(2vw); transition: opacity 0.7s ease, transform 0.7s ease; }
 .show-card.in { opacity: 1; transform: none; }
 .show-card h2 { margin: calc(0.3 * var(--u)) 0 calc(0.7 * var(--u)); font: 700 calc(2.1 * var(--u))/1.05 var(--display); color: #fff3d6; text-wrap: balance; }
 .show-card img, .show-slide img { width: 100%; max-height: calc(14 * var(--u)); object-fit: cover; border-radius: calc(0.4 * var(--u)); display: block; margin: calc(0.5 * var(--u)) 0 calc(0.4 * var(--u)); border: 1px solid rgba(255,255,255,0.1); }
@@ -214,7 +214,7 @@ body.lobby.showcursor #lobbyExit { opacity: 1; pointer-events: auto; }
 .show-card dl { display: grid; grid-template-columns: auto 1fr; gap: calc(0.3 * var(--u)) calc(1 * var(--u)); margin: calc(0.8 * var(--u)) 0 0; font-size: calc(0.95 * var(--u)); }
 .show-card dt { color: #8d9ab3; } .show-card dd { margin: 0; font-family: var(--mono); color: #f3f6fb; }
 .show-credit { font-size: calc(0.68 * var(--u)); color: #7f8ca6; margin-top: calc(0.3 * var(--u)); line-height: 1.3; }
-.show-slide { position: absolute; left: 0; top: calc(9.4 * var(--u)); bottom: calc(2.8 * var(--u)); width: calc(38 * var(--u)); padding: calc(1 * var(--u)) calc(2 * var(--u)) calc(1.6 * var(--u)) calc(2.6 * var(--u)); background: linear-gradient(90deg, rgba(3,6,13,0.95) 0%, rgba(3,6,13,0.85) 72%, rgba(3,6,13,0) 100%); display: flex; flex-direction: column; gap: calc(0.4 * var(--u)); opacity: 0; transform: translateX(-2vw); transition: opacity 0.8s ease, transform 0.8s ease; overflow: hidden; }
+.show-slide { position: absolute; left: 0; top: calc(9.4 * var(--u)); bottom: calc(2.8 * var(--u)); width: calc(38 * var(--u)); box-sizing: border-box; padding: calc(1 * var(--u)) calc(2 * var(--u)) calc(1.6 * var(--u)) calc(2.6 * var(--u)); background: linear-gradient(90deg, rgba(3,6,13,0.95) 0%, rgba(3,6,13,0.85) 72%, rgba(3,6,13,0) 100%); display: flex; flex-direction: column; gap: calc(0.4 * var(--u)); opacity: 0; transform: translateX(-2vw); transition: opacity 0.8s ease, transform 0.8s ease; overflow: hidden; }
 .show-slide.in { opacity: 1; transform: none; }
 .show-slide h1 { margin: calc(0.2 * var(--u)) 0 calc(0.3 * var(--u)); font: 700 calc(2.7 * var(--u))/1 var(--display); color: #fff3d6; text-wrap: balance; }
 .show-slide .years { font-family: var(--mono); color: var(--accent); font-size: calc(0.95 * var(--u)); }
@@ -1124,17 +1124,26 @@ function lobbyTick(now, dt) {
   if (now - lobby.started > lobby.dur) nextSegment();
   if (now - lobby.cursorT > 3000) document.body.classList.remove('showcursor');
 }
+const lobbyLayout = { gx: 0, gy: 0, gr: 0, left: 0, cardLeft: 0 };
+function layoutLobby() {
+  const v = Math.min(W / 100, H / 56), m = 2.2 * v; tmpV.set(0, 0, 0).project(camera); const gx = (tmpV.x + 1) / 2 * W, gy = (1 - tmpV.y) / 2 * H;
+  const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0); tmpV.copy(right).project(camera); const gr = Math.abs((tmpV.x + 1) / 2 * W - gx);
+  const slideW = 38 * v, cardW = 29 * v;
+  const left = Math.max(m, Math.min(gx - gr - 1.5 * v - slideW, W * 0.3)); const cardLeft = Math.min(W - cardW - m, Math.max(gx + gr + 1.6 * v, W * 0.52));
+  Object.assign(lobbyLayout, { gx, gy, gr, left, cardLeft });
+  SHOWEL.slide.style.left = left + 'px'; SHOWEL.card.style.left = cardLeft + 'px';
+}
 function drawLobby(now) {
-  if (!S.lobby) return; const el = now - lobby.started; const fadeIn = Math.min(1, el / 900), fadeOut = Math.min(1, (lobby.dur - el) / 900); const a = Math.max(0, Math.min(fadeIn, fadeOut));
+  if (!S.lobby) return; layoutLobby(); const el = now - lobby.started; const fadeIn = Math.min(1, el / 900), fadeOut = Math.min(1, (lobby.dur - el) / 900); const a = Math.max(0, Math.min(fadeIn, fadeOut));
   const vg = octx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.45, W / 2, H / 2, Math.max(W, H) * 0.75); vg.addColorStop(0, 'rgba(3,6,13,0)'); vg.addColorStop(1, 'rgba(3,6,13,0.75)'); octx.fillStyle = vg; octx.fillRect(0, 0, W, H);
-  octx.textAlign = 'left'; octx.textBaseline = 'alphabetic'; const v = Math.min(W / 100, H / 56), m = 2.2 * v;
-  octx.fillStyle = '#e8edf7'; octx.font = `700 ${Math.round(2.4 * v)}px "Barlow Condensed", sans-serif`; octx.fillText('NRO ORBIT WATCH', m, m + 2.0 * v);
-  octx.fillStyle = '#f2b24a'; octx.fillRect(m, m + 2.9 * v, 3.2 * v, 0.22 * v);
-  octx.fillStyle = '#b4bfd4'; octx.font = `500 ${Math.round(1.05 * v)}px "IBM Plex Mono", monospace`; octx.fillText(new Date(T).toISOString().replace('T', ' ').slice(0, 19) + ' UTC' + (isLive() ? '' : '  ·  archive view'), m, m + 4.4 * v);
-  if (hqLogo.complete && hqLogo.naturalWidth) octx.drawImage(hqLogo, m, m + 5.2 * v, 1.5 * v, 1.5 * v);
-  octx.fillStyle = '#4fd1c5'; octx.font = `600 ${Math.round(1.15 * v)}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SOFTWARE · LAFAYETTE, COLORADO', m + 1.9 * v, m + 5.95 * v);
+  octx.textAlign = 'left'; octx.textBaseline = 'alphabetic'; const v = Math.min(W / 100, H / 56), m = 2.2 * v, ax = lobbyLayout.left;
+  octx.fillStyle = '#e8edf7'; octx.font = `700 ${Math.round(2.4 * v)}px "Barlow Condensed", sans-serif`; octx.fillText('NRO ORBIT WATCH', ax, m + 2.0 * v);
+  octx.fillStyle = '#f2b24a'; octx.fillRect(ax, m + 2.9 * v, 3.2 * v, 0.22 * v);
+  octx.fillStyle = '#b4bfd4'; octx.font = `500 ${Math.round(1.05 * v)}px "IBM Plex Mono", monospace`; octx.fillText(new Date(T).toISOString().replace('T', ' ').slice(0, 19) + ' UTC' + (isLive() ? '' : '  ·  archive view'), ax, m + 4.4 * v);
+  if (hqLogo.complete && hqLogo.naturalWidth) octx.drawImage(hqLogo, ax, m + 5.2 * v, 1.5 * v, 1.5 * v);
+  octx.fillStyle = '#4fd1c5'; octx.font = `600 ${Math.round(1.15 * v)}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SOFTWARE · LAFAYETTE, COLORADO', ax + 1.9 * v, m + 5.95 * v);
 
-  if (lobby.caption && !S.cine) { const right = SHOWEL.slide.classList.contains('in'); octx.globalAlpha = a; octx.textAlign = right ? 'right' : 'left'; const hy = H - m - 4.4 * v, x = right ? W - m - 1.2 * v : m + 1.2 * v; octx.fillStyle = '#f2b24a'; octx.fillRect(right ? W - m - 0.3 * v : m, hy - 2.3 * v, 0.3 * v, 4.1 * v);
+  if (lobby.caption && !S.cine) { const right = SHOWEL.slide.classList.contains('in'); octx.globalAlpha = a; octx.textAlign = right ? 'right' : 'left'; const cx2 = Math.min(W - m, lobbyLayout.cardLeft + 29 * v); const hy = H - m - 4.4 * v, x = right ? cx2 - 1.2 * v : ax + 1.2 * v; octx.fillStyle = '#f2b24a'; octx.fillRect(right ? cx2 - 0.3 * v : ax, hy - 2.3 * v, 0.3 * v, 4.1 * v);
     octx.fillStyle = '#fff3d6'; octx.font = `700 ${Math.round(2.5 * v)}px "Barlow Condensed", sans-serif`; octx.fillText(lobby.caption.h, x, hy);
     octx.fillStyle = '#d6deeb'; octx.font = `400 ${Math.round(1.15 * v)}px "IBM Plex Sans", sans-serif`; octx.fillText(lobby.caption.s(), x, hy + 1.7 * v); octx.globalAlpha = 1; }
   const dark = 1 - a; if (dark > 0 && !S.cine) { octx.fillStyle = `rgba(3,6,13,${dark * 0.85})`; octx.fillRect(0, 0, W, H); }
@@ -1366,7 +1375,7 @@ $('#aboutBody').innerHTML = `
 <h3>Hover coverage</h3>
 <p>Point at any spot on the ground and the satellites that cannot see it all but vanish, while the ones that have it above their horizon brighten, get a ring, and are joined to the spot by a line of sight, with a count in the tooltip. Turn it off in Display if you prefer a steady picture.</p>
 <h3>Lobby mode</h3>
-<p>The Lobby button opens a full-screen, hands-off show for a wall monitor: live overviews, satellite spotlights, program histories with declassified imagery, fact cards, launch-site tours, what is overhead at Roster-5 HQ, recent and upcoming launches worldwide with NRO missions highlighted, decade retrospectives, fleet statistics and the occasional 1959-to-today timelapse. Segments are picked at random with a long no-repeat memory, and a ticker carries the launch feed. Open the page with <code>#lobby</code> on the end of the address to start straight into it. Move the mouse for the exit button, or press Esc.</p>
+<p>The Lobby button opens a full-screen, hands-off show for a wall monitor or a desktop screensaver, laid out around the globe so it works on any aspect ratio: live overviews, satellite spotlights, program histories with declassified imagery, fact cards, launch-site tours, what is overhead at Roster-5 HQ, recent and upcoming launches worldwide with NRO missions highlighted, decade retrospectives, fleet statistics and the occasional 1959-to-today timelapse. Segments are picked at random with a long no-repeat memory, and a ticker carries the launch feed. Open the page with <code>#lobby</code> on the end of the address to start straight into it. Move the mouse for the exit button, or press Esc.</p>
 <h3>Keyboard</h3>
 <p>Space pauses time, H jumps back to live, 1 and 2 switch globe and map, F toggles full screen, L toggles lobby mode (N skips to the next segment while it runs), T opens the table, R resets the view, Esc closes anything open.</p>
 <h3>Reading the view</h3>
