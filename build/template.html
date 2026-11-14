@@ -280,6 +280,8 @@ body.cine footer .stats { display: none; }
             <div class="row"><label for="coneOp">Footprint opacity</label><input type="range" id="coneOp" min="0.1" max="3" step="0.1" value="1" style="flex:1;accent-color:var(--accent)" aria-label="Cone opacity"></div>
             <div class="hint">Footprints show what each satellite can see. Circles and cones fade automatically as more satellites are shown; the slider scales that. In Circles mode only the hovered or selected satellite gets a cone.</div>
             <label class="chk"><input type="checkbox" id="hoverCov" checked> Hover coverage: point at the ground to dim satellites that cannot see that spot</label>
+            <label class="chk"><input type="checkbox" id="borders" checked> Country borders</label>
+            <label class="chk"><input type="checkbox" id="cities" checked> Major cities</label>
             <label class="chk"><input type="checkbox" id="sites" checked> Launch site pins</label>
             <label class="chk"><input type="checkbox" id="terminator" checked> Day and night shading</label>
             <div class="row"><label>Orbit paths</label>
@@ -399,7 +401,7 @@ body.cine footer .stats { display: none; }
 <script>
 (function () {
 'use strict';
-const D = window.NRO_DATA, OBJ = D.objects, LAND = D.land;
+const D = window.NRO_DATA, OBJ = D.objects, LAND = D.land, BORDERS = D.borders || [], CITIES = D.cities || [];
 const SITES = { 'Vandenberg': [34.74, -120.57], 'Cape Canaveral': [28.49, -80.58], 'Kennedy Space Center': [28.61, -80.62], 'Wallops (MARS)': [37.83, -75.49], 'Mahia (Rocket Lab)': [-39.26, 177.86], 'Tanegashima': [30.40, 130.97], 'Kourou': [5.24, -52.77], 'Palmachim': [31.88, 34.68], 'Plesetsk': [62.93, 40.57], 'Baikonur': [45.92, 63.34], 'Jiuquan': [40.96, 100.29], 'Xichang': [28.25, 102.03], 'Taiyuan': [38.85, 111.61], 'Satish Dhawan': [13.72, 80.23], 'Sea Launch (Pacific)': [0.0, -154.0], 'Yasny': [51.21, 59.85] };
 const RE = 6371, REQ = 6378.137, MU = 398600.4418, J2 = 1.08263e-3, DEG = Math.PI / 180;
 const TMIN = Date.UTC(1959, 0, 1), TMAX = Date.UTC(2027, 11, 31);
@@ -448,9 +450,9 @@ function vals(o, k) { const g = FACETS[k].get; const v = g ? g(o) : o[k]; return
 /* ---------- state ---------- */
 let S = { view: '3d', style: 'realistic', colorBy: 'function', spacing: 'compressed', paths: 'none', labels: 'selected', fpMode: 'off', sites: true, terminator: true,
   layers: Object.fromEntries(LAYERS.map(l => [l[0], l[2]])), hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set()])), search: '',
-  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1, trailH: 3, cine: false, hoverCov: true, ground: null };
-try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator', 'trailH', 'hoverCov']) if (k in s) S[k] = s[k]; } catch (e) {}
-function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov })); } catch (e) {} }
+  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1, trailH: 3, cine: false, hoverCov: true, ground: null, borders: true, cities: true };
+try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator', 'trailH', 'hoverCov', 'borders', 'cities']) if (k in s) S[k] = s[k]; } catch (e) {}
+function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov, borders, cities } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov, borders, cities })); } catch (e) {} }
 
 /* ---------- time ---------- */
 let T = Date.now(), rate = 1, paused = false, lastReal = performance.now();
@@ -562,6 +564,11 @@ const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.035, 64, 48), new THREE.S
 const coastGeo = new THREE.BufferGeometry();
 { const arr = []; for (const ring of LAND) { for (let i = 0; i + 3 < ring.length; i += 2) { const a = xyz(ring[i + 1], ring[i], 1.002), b = xyz(ring[i + 3], ring[i + 2], 1.002); arr.push(a.x, a.y, a.z, b.x, b.y, b.z); } } coastGeo.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); }
 const coast = new THREE.LineSegments(coastGeo, new THREE.LineBasicMaterial({ color: 0x4fd1c5, transparent: true, opacity: 0.75 })); scene.add(coast);
+const borderGeo = new THREE.BufferGeometry();
+{ const arr = []; for (const arc of BORDERS) { for (let i = 0; i + 3 < arc.length; i += 2) { const a = xyz(arc[i + 1], arc[i], 1.0025), b = xyz(arc[i + 3], arc[i + 2], 1.0025); arr.push(a.x, a.y, a.z, b.x, b.y, b.z); } } borderGeo.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); }
+const borderLines = new THREE.LineSegments(borderGeo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.28 })); scene.add(borderLines);
+const cityGeo = new THREE.BufferGeometry(); { const a = []; for (const c of CITIES) { const p = xyz(c[1], c[2], 1.003); a.push(p.x, p.y, p.z); } cityGeo.setAttribute('position', new THREE.Float32BufferAttribute(a, 3)); }
+const cityPts = new THREE.Points(cityGeo, new THREE.PointsMaterial({ size: 4, sizeAttenuation: false, color: 0xffffff, transparent: true, opacity: 0.85, depthWrite: false })); scene.add(cityPts);
 const gratGeo = new THREE.BufferGeometry();
 { const arr = []; for (let lat = -60; lat <= 60; lat += 30) for (let lon = -180; lon < 180; lon += 5) { const a = xyz(lat, lon, 1.001), b = xyz(lat, lon + 5, 1.001); arr.push(a.x, a.y, a.z, b.x, b.y, b.z); } for (let lon = -180; lon < 180; lon += 30) for (let lat = -90; lat < 90; lat += 5) { const a = xyz(lat, lon, 1.001), b = xyz(lat + 5, lon, 1.001); arr.push(a.x, a.y, a.z, b.x, b.y, b.z); } gratGeo.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); }
 const grat = new THREE.LineSegments(gratGeo, new THREE.LineBasicMaterial({ color: 0x22304a, transparent: true, opacity: 0.6 })); scene.add(grat);
@@ -657,6 +664,8 @@ function applyStyle() {
   pathLines.material.blending = S.cine ? THREE.AdditiveBlending : THREE.NormalBlending; pathLines.material.needsUpdate = true;
   const size = (S.cine ? 15 : st === 'cartoon' ? 16 : st === 'flat' ? 13 : 9) * S.marker; satMat.size = repMat.size = size * (dpr > 1.5 ? 1.25 : 1);
   pathLines.material.opacity = S.cine ? 0.22 : st === 'cartoon' ? 0.9 : 0.55;
+  borderLines.material.color.set(st === 'cartoon' ? 0x17304a : st === 'flat' ? 0x8fb8d8 : 0xffe9b0); borderLines.material.opacity = st === 'cartoon' ? 0.9 : st === 'flat' ? 0.45 : 0.3; cityPts.material.color.set(st === 'cartoon' ? 0x17304a : 0xffffff);
+  borderLines.visible = S.borders; cityPts.visible = S.cities;
   $('#styleSel').value = st;
 }
 
@@ -777,6 +786,9 @@ function drawMap() {
   else if (st === 'realistic') { mctx.fillStyle = '#5a7d44'; mctx.fill('evenodd'); mctx.strokeStyle = 'rgba(10,30,40,0.5)'; mctx.lineWidth = 0.8; mctx.stroke(); }
   else if (st === 'cartoon') { mctx.fillStyle = '#8fd36b'; mctx.fill('evenodd'); mctx.lineJoin = 'round'; mctx.strokeStyle = '#17304a'; mctx.lineWidth = 2.5; mctx.stroke(); }
   else { mctx.strokeStyle = 'rgba(79,209,197,0.8)'; mctx.lineWidth = 1; mctx.stroke(); }
+  if (S.borders) { mctx.strokeStyle = st === 'cartoon' ? 'rgba(23,48,74,0.9)' : st === 'flat' ? 'rgba(143,184,216,0.5)' : 'rgba(255,233,176,0.45)'; mctx.lineWidth = st === 'cartoon' ? 1.2 : 0.8; mctx.beginPath();
+    for (const arc of BORDERS) { let p = proj2(arc[1], arc[0], G); mctx.moveTo(p[0], p[1]); for (let i = 2; i < arc.length; i += 2) { p = proj2(arc[i + 1], arc[i], G); mctx.lineTo(p[0], p[1]); } } mctx.stroke(); }
+  if (S.cities) { const close = map2d.zoom > 1.6; mctx.font = (close ? '11px' : '10px') + ' "IBM Plex Sans", sans-serif'; CITIES.forEach((c, i) => { if (!close && i % 2 !== 0) return; const p = proj2(c[1], c[2], G); mctx.fillStyle = st === 'cartoon' ? '#17304a' : '#fff6dc'; mctx.beginPath(); mctx.arc(p[0], p[1], 2, 0, 7); mctx.fill(); mctx.fillStyle = st === 'cartoon' ? '#102030' : 'rgba(255,246,220,0.85)'; mctx.fillText(c[0], p[0] + 4, p[1] - 3); }); }
   // graticule
   mctx.strokeStyle = st === 'cartoon' ? 'rgba(23,48,74,0.25)' : 'rgba(144,160,189,0.14)'; mctx.lineWidth = 1; mctx.beginPath();
   for (let lon = -180; lon <= 180; lon += 30) { const a = proj2(90, lon, G), b = proj2(-90, lon, G); mctx.moveTo(a[0], a[1]); mctx.lineTo(b[0], b[1]); }
@@ -790,7 +802,7 @@ function drawMap() {
   if (S.paths !== 'none' || S.orbitSel) { for (const o of shown) { if (!o.path) continue; if (S.paths === 'none' && o !== S.selected) continue; mctx.strokeStyle = colorOf(o); mctx.globalAlpha = 0.6; mctx.lineWidth = o === S.selected ? 2 : 1; polyline(o.path, G); } mctx.globalAlpha = 1; }
   // footprints
   if (S.fpMode !== 'off') { const cones = S.fpMode === 'cones'; const k = Math.min(1, Math.sqrt(12 / Math.max(shown.length, 1))) * S.coneOp; for (const o of shown) { if (!o.fp || (o.dim && !S.cine)) continue; const hot = o === S.selected || o === S.hovered; mctx.strokeStyle = hot ? '#ffd58a' : colorOf(o); mctx.fillStyle = colorOf(o); mctx.globalAlpha = hot ? 0.22 : Math.min(0.3, (cones ? 0.12 : 0.08) * k); polygon(o.fp, G, true); mctx.globalAlpha = hot ? 0.95 : Math.min(0.7, Math.max(0.12, 0.5 * k)); mctx.lineWidth = hot ? 2.5 : 1; polygon(o.fp, G, false);
-      if ((cones || hot) && o.pos) { const c0 = proj2(o.pos.lat, o.pos.lon, G); mctx.globalAlpha = hot ? 0.9 : 0.45; mctx.lineWidth = 1; mctx.beginPath(); for (let i = 0; i < o.fp.length; i += Math.floor(o.fp.length / 6)) { const q = o.fp[i]; if (Math.abs(q[1] - o.pos.lon) > 180) continue; const p = proj2(q[0], q[1], G); mctx.moveTo(c0[0], c0[1]); mctx.lineTo(p[0], p[1]); } mctx.stroke(); } }
+      if ((cones || hot) && o.pos) { const c0 = proj2(o.pos.lat, o.pos.lon, G); mctx.globalAlpha = hot ? 0.9 : Math.min(0.45, Math.max(0.05, 0.45 * k)); mctx.lineWidth = 1; mctx.beginPath(); for (let i = 0; i < o.fp.length; i += Math.floor(o.fp.length / 6)) { const q = o.fp[i]; if (Math.abs(q[1] - o.pos.lon) > 180) continue; const p = proj2(q[0], q[1], G); mctx.moveTo(c0[0], c0[1]); mctx.lineTo(p[0], p[1]); } mctx.stroke(); } }
     mctx.globalAlpha = 1; }
   // sites
   if (S.sites) { for (const k in SITES) { const p = proj2(SITES[k][0], SITES[k][1], G); mctx.fillStyle = '#f2b24a'; mctx.beginPath(); mctx.moveTo(p[0], p[1] - 6); mctx.lineTo(p[0] + 4, p[1]); mctx.lineTo(p[0], p[1] + 6); mctx.lineTo(p[0] - 4, p[1]); mctx.closePath(); mctx.fill(); if (map2d.zoom > 1.8) { mctx.fillStyle = '#f2b24a'; mctx.font = '11px ' + 'IBM Plex Mono, monospace'; mctx.fillText(k, p[0] + 7, p[1] + 4); } } }
@@ -826,6 +838,8 @@ function drawOverlay() {
   const labelFor = (o, strong) => { if (!o.vis) return; const c = colorOf(o); octx.fillStyle = 'rgba(6,10,18,0.75)'; const txt = o.name; const w = octx.measureText(txt).width + 8; octx.fillRect(o.sx + 9, o.sy - 9, w, 18); octx.fillStyle = strong ? '#ffd58a' : c; octx.fillText(txt, o.sx + 13, o.sy); };
   if (mode === 'all') { const dense = shown.length > 140 ? Math.ceil(shown.length / 140) : 1; shown.forEach((o, i) => { if (i % dense === 0 || o === S.selected) labelFor(o, o === S.selected); }); }
   else { if (S.hovered && shown.includes(S.hovered) && mode === 'hover') labelFor(S.hovered, false); if (S.selected && shown.includes(S.selected)) labelFor(S.selected, true); }
+  if (S.view === '3d' && S.cities && !S.cine) { const close = cam.dist < 2.6; octx.font = (close ? '11px' : '10px') + ' "IBM Plex Sans", sans-serif'; const cp = camera.position;
+    CITIES.forEach((c, i) => { if (!close && i % 3 !== 0) return; const v = xyz(c[1], c[2], 1.003); if (v.x * (cp.x - v.x) + v.y * (cp.y - v.y) + v.z * (cp.z - v.z) < 0) return; tmpV.copy(v).project(camera); const sx = (tmpV.x + 1) / 2 * W + 5, sy = (1 - tmpV.y) / 2 * H - 6; octx.fillStyle = 'rgba(6,10,18,0.55)'; const w = octx.measureText(c[0]).width + 4; octx.fillRect(sx - 2, sy - 7, w, 13); octx.fillStyle = S.style === 'cartoon' ? '#ffffff' : 'rgba(255,245,220,0.85)'; octx.fillText(c[0], sx, sy); }); }
   // site labels in 3D when zoomed in
   if (S.view === '3d' && S.sites && cam.dist < 2.2) { octx.font = '11px "IBM Plex Mono", monospace'; siteKeys.forEach((k, i) => { const p = xyz(SITES[k][0], SITES[k][1], 1.004); tmpV.copy(p).project(camera); const dx = camera.position.x - p.x, dy = camera.position.y - p.y, dz = camera.position.z - p.z; if (p.x * dx + p.y * dy + p.z * dz > 0) { octx.fillStyle = '#f2b24a'; octx.fillText(k, (tmpV.x + 1) / 2 * W + 7, (1 - tmpV.y) / 2 * H); } }); }
   if (S.ground && S.view === '3d') { const q = padScreen(S.ground.lat, S.ground.lon); if (q) { octx.strokeStyle = '#ffd58a'; octx.lineWidth = 1.5; octx.beginPath(); octx.arc(q[0], q[1], 7, 0, 7); octx.moveTo(q[0] - 12, q[1]); octx.lineTo(q[0] + 12, q[1]); octx.moveTo(q[0], q[1] - 12); octx.lineTo(q[0], q[1] + 12); octx.stroke(); } }
@@ -913,6 +927,8 @@ function placeTip(x, y) { const tip = $('#tip'); tip.style.left = Math.min(W - 2
 ov.addEventListener('pointerup', e => { ov.classList.remove('dragging'); if (drag && !moved) { const r = ov.getBoundingClientRect(); const o = pick(e.clientX - r.left, e.clientY - r.top); if (o) select(o); else { const site = pickSite(e.clientX - r.left, e.clientY - r.top); if (site) { S.hidden.siteName = new Set(facetValues.siteName.keys.filter(k => k !== site)); buildFilters(); applyFilters(); toast('Showing only launches from ' + site + '. Use Filters to reset.'); } else select(null); } } drag = null; });
 ov.addEventListener('pointercancel', () => { drag = null; pinch = null; ov.classList.remove('dragging'); });
 ov.addEventListener('pointerleave', () => { setGround(null); S.hovered = null; $('#tip').hidden = true; });
+$('#borders').checked = S.borders; $('#borders').onchange = e => { S.borders = e.target.checked; borderLines.visible = S.borders; persist(); };
+$('#cities').checked = S.cities; $('#cities').onchange = e => { S.cities = e.target.checked; cityPts.visible = S.cities; persist(); };
 $('#hoverCov').checked = S.hoverCov; $('#hoverCov').onchange = e => { S.hoverCov = e.target.checked; if (!S.hoverCov) setGround(null); persist(); };
 ov.addEventListener('wheel', e => { e.preventDefault(); const f = Math.exp(e.deltaY * 0.0012); if (S.view === '3d') cam.dist = 1 + (cam.dist - 1) * f; else { const r = ov.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, G = mapGeom(); const lon = (x - G.ox) / G.s - 180, lat = 90 - (y - G.oy) / G.s; map2d.zoom = Math.min(10, Math.max(1, map2d.zoom / f)); const G2 = mapGeom(); map2d.cx += (lon - ((x - G2.ox) / G2.s - 180)); map2d.cy += (lat - (90 - (y - G2.oy) / G2.s)); clampMap(); } }, { passive: false });
 ov.addEventListener('touchstart', e => { if (e.touches.length === 2) { pinch = { d: Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY) }; } }, { passive: true });
@@ -1071,6 +1087,8 @@ $('#aboutBody').innerHTML = `
 <p>Elements: ${D.meta.tleSource}. Identities and launch dates: ${D.meta.catalog}. Mission list: ${D.meta.launches}, Gunter's Space Page. Coastlines: Natural Earth via world-atlas. Built ${D.meta.built}. Rendered with three.js and satellite.js.</p>
 <h3>Cinematic timelapse</h3>
 <p>The Timelapse button switches to a presentation view: gold glowing satellites with their orbit rings, a year counter, a growing graph of how many are in orbit, and an ascent path from each launch pad that lifts off vertically and pitches over downrange to the satellite it put up (the direction follows where the satellite is on its orbit at that moment, since the real insertion point is not public). Filters still apply, so you can run the film for one program or one launch site. Esc or Exit returns to the normal view at the same date.</p>
+<h3>Reference layers</h3>
+<p>Country borders and about ninety major cities can be switched on in Display for orientation. More city labels appear as you zoom in.</p>
 <h3>Hover coverage</h3>
 <p>Point at any spot on the ground and the satellites that cannot see it fade out, leaving the ones that have it above their horizon at full brightness, with a count in the tooltip. Turn it off in Display if you prefer a steady picture.</p>
 <h3>Reading the view</h3>

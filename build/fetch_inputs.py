@@ -21,4 +21,6 @@ open(os.path.join(DATA, 'nro_wikitext.json'), 'wb').write(wiki)
 
 if not os.path.exists(os.path.join(DATA, 'land110.json')):
     open(os.path.join(DATA, 'land110.json'), 'wb').write(get('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json'))
+if not os.path.exists(os.path.join(DATA, 'countries110.json')):
+    open(os.path.join(DATA, 'countries110.json'), 'wb').write(get('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json'))
 print('done')

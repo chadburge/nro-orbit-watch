@@ -401,7 +401,9 @@ land = json.load(open(d + '/land.json'))
 epochs = [o['epoch'] for o in objects if o.get('epoch')]
 meta = {'built': datetime.date.today().isoformat(), 'tleCount': len(epochs), 'tleNewest': max(epochs), 'tleOldest': min(epochs),
         'tleSource': 'Mike McCants classfd.tle (amateur observations)', 'catalog': 'CelesTrak SATCAT', 'launches': 'Wikipedia: List of NRO launches; Gunter\'s Space Page'}
-json.dump({'objects': objects, 'land': land, 'meta': meta}, open(d + '/data.json', 'w'), separators=(',', ':'))
+borders = json.load(open(d + '/borders.json')) if os.path.exists(d + '/borders.json') else []
+cities = json.load(open(d + '/cities.json', encoding='utf-8')) if os.path.exists(d + '/cities.json') else []
+json.dump({'objects': objects, 'land': land, 'borders': borders, 'cities': cities, 'meta': meta}, open(d + '/data.json', 'w'), separators=(',', ':'))
 
 c = collections.Counter
 print('objects', len(objects), 'with tle', len(epochs))
