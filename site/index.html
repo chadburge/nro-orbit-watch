@@ -698,20 +698,24 @@ function footprint(g, n) {
 }
 
 /* ---------- paths (budgeted) ---------- */
-let pathsDirty = true, pathQueue = [], pathT = 0, pathCount = 0;
-function schedulePaths() { pathQueue = (S.paths === 'none' && !S.orbitSel) ? [] : (S.paths === 'none' ? [S.selected].filter(o => o && shown.includes(o)) : shown.slice()); pathCount = 0; pathT = T; pathsDirty = false; pathGeo.setDrawRange(0, 0); for (const o of OBJ) o.path = null; }
+let pathsDirty = true, pathQueue = [], pathT = 0, pathCount = 0, lastPathBuild = 0;
+const stagePos = new Float32Array(MAXN * PATH_PTS * 2 * 3), stageCol = new Float32Array(MAXN * PATH_PTS * 2 * 3); let stagePath = new Map();
+function schedulePaths() { pathQueue = (S.paths === 'none' && !S.orbitSel) ? [] : (S.paths === 'none' ? [S.selected].filter(o => o && shown.includes(o)) : shown.slice()); pathCount = 0; pathT = T; pathsDirty = false; lastPathBuild = performance.now(); stagePath = new Map(); if (!pathQueue.length) { pathGeo.setDrawRange(0, 0); for (const o of OBJ) o.path = null; } }
 function workPaths(budgetMs) {
-  const start = performance.now(); const pos = pathGeo.attributes.position.array, col = pathGeo.attributes.color.array;
+  const start = performance.now(); const pos = stagePos, col = stageCol;
   while (pathQueue.length && performance.now() - start < budgetMs) {
     const o = pathQueue.shift(); const period = 2 * Math.PI / o.kep.n * 1000; const mode = (S.paths === 'none' ? 'full' : S.paths);
     const span = mode === 'full' ? period : Math.min(period * 0.3, 5400000), steps = mode === 'full' ? PATH_PTS : 48, t0 = mode === 'full' ? pathT - period / 2 : pathT - span;
     const pts = []; for (let i = 0; i <= steps; i++) { const g = posAt(o, t0 + span * i / steps); pts.push([g.lat, g.lon, g.alt]); }
-    o.path = pts; const c = o.rgb || hexToRgb(colorOf(o));
+    stagePath.set(o, pts); const c = o.rgb || hexToRgb(colorOf(o));
     if (pathCount < MAXN) { let k = pathCount * PATH_PTS * 6; for (let i = 0; i < steps && i < PATH_PTS; i++) { const a = xyz(pts[i][0], pts[i][1], radiusFor(pts[i][2])), b = xyz(pts[i + 1][0], pts[i + 1][1], radiusFor(pts[i + 1][2])); pos[k] = a.x; pos[k + 1] = a.y; pos[k + 2] = a.z; pos[k + 3] = b.x; pos[k + 4] = b.y; pos[k + 5] = b.z; for (let q = 0; q < 2; q++) { col[k + q * 3] = c[0]; col[k + q * 3 + 1] = c[1]; col[k + q * 3 + 2] = c[2]; } k += 6; }
       for (let i = steps; i < PATH_PTS; i++) { let k2 = pathCount * PATH_PTS * 6 + i * 6; for (let q = 0; q < 6; q++) pos[k2 + q] = 0; }
       pathCount++; }
   }
-  pathGeo.setDrawRange(0, pathCount * PATH_PTS * 2); pathGeo.attributes.position.needsUpdate = true; pathGeo.attributes.color.needsUpdate = true;
+  if (!pathQueue.length) { // build complete: swap the finished set in at once so nothing blinks
+    pathGeo.attributes.position.array.set(stagePos.subarray(0, pathCount * PATH_PTS * 6)); pathGeo.attributes.color.array.set(stageCol.subarray(0, pathCount * PATH_PTS * 6));
+    pathGeo.setDrawRange(0, pathCount * PATH_PTS * 2); pathGeo.attributes.position.needsUpdate = true; pathGeo.attributes.color.needsUpdate = true;
+    for (const o of OBJ) o.path = stagePath.get(o) || null; }
 }
 
 /* ---------- camera ---------- */
@@ -990,7 +994,7 @@ function loop(now) {
   const timeJump = rate >= 86400;
   if (now - lastPos > (timeJump ? 120 : 250) || frame === 0) { lastPos = now; refilter(); checkLaunches(); updatePositions(); if (S.selected) updateLive(); }
   if (now - lastClock > 200) { lastClock = now; updateClock(); if (frame % 10 === 0) buildLegendCountsOnly(); }
-  if (pathsDirty || (pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && Math.abs(T - pathT) > (rate >= 86400 ? 30 * 86400000 : 240000))) schedulePaths();
+  if (pathsDirty || (pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && now - lastPathBuild > 2500 && Math.abs(T - pathT) > (S.paths === 'trail' ? 20000 : 300000))) schedulePaths();
   if (pathQueue.length) workPaths(7);
   if (S.follow && S.selected && S.selected.pos) centerOn(S.selected);
   if (S.spin && !drag && S.view === '3d') cam.theta += dt * 0.12;
