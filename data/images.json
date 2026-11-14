@@ -454,5 +454,17 @@
 "h": 900,
 "kind": "patch",
 "nrol": "NROL-68"
+},
+{
+"key": "patch-nrol-79",
+"file": "patch-nrol-79.jpg",
+"title": "NROL-79 Mission Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "The mission patch for the NRO 79 satellites has a woman warrior with an owl-eye “modification” and a Medusa shield to carry out “Victory With Intelligence” in Latin on the shield.",
+"w": 733,
+"h": 732,
+"kind": "patch",
+"nrol": "NROL-79"
 }
 ]
