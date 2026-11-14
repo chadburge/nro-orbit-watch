@@ -118,6 +118,21 @@ def tle_fields(t):
 objects = []
 used_tle = set()
 
+# GPS constellation (CelesTrak gps-ops, public elements) for the navigation explainer; its own layer, off by default
+if os.path.exists(d + '/gps.tle'):
+    gl = [l for l in open(d + '/gps.tle', encoding='latin1').read().replace('\r', '').split('\n') if l.strip()]
+    for i in range(0, len(gl) - 2, 3):
+        name, l1, l2 = gl[i].strip(), gl[i + 1], gl[i + 2]
+        des = l1[9:17].strip(); cospar = f"{1900 + int(des[:2]) if int(des[:2]) > 56 else 2000 + int(des[:2])}-{des[2:]}"
+        s = sat_by_id.get(cospar); prn = re.search(r'PRN (\d+)', name)
+        o = {'name': f"GPS {name.split('(')[0].replace('GPS', '').strip()}" + (f" (PRN {prn.group(1)})" if prn else ''), 'program': 'GPS', 'function': 'Navigation', 'kind': 'payload', 'layer': 'gps',
+             'owner': 'U.S. Space Force', 'nation': 'United States', 'date': s['LAUNCH_DATE'] if s else cospar[:4] + '-01-01', 'status': 'Active', 'cospar': cospar, 'orbit': 'MEO',
+             'notes': 'GPS navigation satellite; public elements from CelesTrak.', 'links': {'wiki': 'https://en.wikipedia.org/wiki/Global_Positioning_System'}, 'rocket': '', 'site': ''}
+        o.update(tle_fields((name, l1, l2)))
+        if s: o['norad'] = int(s['NORAD_CAT_ID']); o['links']['n2yo'] = f"https://www.n2yo.com/satellite/?s={s['NORAD_CAT_ID']}"
+        objects.append(o)
+    print('gps', sum(1 for o in objects if o['layer'] == 'gps'))
+
 def add(o):
     o.setdefault('kind', 'payload')
     o.setdefault('layer', 'nro')
@@ -364,6 +379,7 @@ def model_for(o):
     if f == 'Communications relay': return 'relay'
     if f == 'Proliferated architecture': return 'starshield'
     if f == 'Space surveillance': return 'ssa'
+    if f == 'Navigation': return 'relay'
     if f == 'Missile warning': return 'sigint-geo'
     if f == 'Unknown': return 'unknown'
     return 'tech'
@@ -411,7 +427,7 @@ cities = json.load(open(d + '/cities.json', encoding='utf-8')) if os.path.exists
 def opt(name):
     f = d + '/' + name
     return json.load(open(f, encoding='utf-8')) if os.path.exists(f) else None
-json.dump({'objects': objects, 'land': land, 'borders': borders, 'cities': cities, 'meta': meta, 'content': opt('content.json'), 'images': opt('images.json') or [], 'social': opt('social.json') or [], 'launches': opt('launches.json') or {'previous': [], 'upcoming': [], 'asof': ''}}, open(d + '/data.json', 'w'), separators=(',', ':'))
+json.dump({'objects': objects, 'land': land, 'borders': borders, 'cities': cities, 'meta': meta, 'content': opt('content.json'), 'images': opt('images.json') or [], 'social': opt('social.json') or [], 'weather': opt('weather.json') or {}, 'news': opt('news.json') or {'items': [], 'major': []}, 'geoid': opt('geoid.json'), 'launches': opt('launches.json') or {'previous': [], 'upcoming': [], 'asof': ''}}, open(d + '/data.json', 'w'), separators=(',', ':'))
 
 c = collections.Counter
 print('objects', len(objects), 'with tle', len(epochs))

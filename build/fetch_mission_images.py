@@ -115,6 +115,15 @@ CLASS = {
     'ev-sts36': ('STS-36 launch Atlantis 1990', ['sts-36', 'sts 36'], {'kind': 'event', 'fact': 'The satellite that went missing'}),
     'ev-usa193': ('USS Lake Erie SM-3 launch USA-193 February 2008', ['lake erie', 'sm-3', 'usa-193', 'usa 193'], {'kind': 'event', 'fact': 'USA 193: shot down on purpose'}),
     'nro-hq': ('National Reconnaissance Office headquarters Chantilly Virginia building', ['nro', 'reconnaissance office'], {'kind': 'place', 'fact': 'Eleven agencies, one office'}),
+    # topic illustrations for the headlines slide and a night-sky photo for the passes slide
+    'news-aviation': ('air traffic control tower airport apron aircraft', ['tower', 'airport', 'air traffic', 'control'], {'kind': 'news'}),
+    'news-hurricane': ('hurricane from space GOES satellite image', ['hurricane'], {'kind': 'news'}),
+    'news-earthquake': ('earthquake damage street USGS', ['earthquake'], {'kind': 'news'}),
+    'news-wildfire': ('wildfire smoke plume satellite image MODIS', ['fire', 'smoke'], {'kind': 'news'}),
+    'news-winter': ('blizzard snowstorm satellite image NASA', ['snow', 'blizzard', 'winter'], {'kind': 'news'}),
+    'news-tornado': ('tornado supercell NOAA photo', ['tornado'], {'kind': 'news'}),
+    'news-flood': ('flooding aerial photograph river', ['flood'], {'kind': 'news'}),
+    'sky-pass': ('satellite trail long exposure night sky stars', ['satellite', 'trail', 'pass'], {'kind': 'news'}),
 }
 if mode in ('all', 'class'):
     for key, (q, kws, tags) in CLASS.items():

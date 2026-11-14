@@ -3,3 +3,6 @@ data/nro_wikitext.json
 data/*.zip
 dist/
 __pycache__/
+
+# large public datasets downloaded on demand
+data/egm96_15.tif

@@ -6,7 +6,8 @@
   "date": "",
   "title": "Small, responsive, employee owned",
   "text": "Roster-5 Software is a Veteran and Employee Owned small business founded in 2012 on the principle that small, responsive companies can meet the current and future needs of the Intelligence Community in an agile and efficient manner.",
-  "link": "roster5.com"
+  "link": "roster5.com",
+  "image": "r5-about.jpg"
  },
  {
   "id": "web-hiring",
@@ -15,7 +16,8 @@
   "date": "",
   "title": "We are hiring in the Denver metro area",
   "text": "Software engineering (Java, C/C++, Python, Oracle, Angular, AWS), infrastructure and DevOps (AWS, Kubernetes, Puppet, Docker) and data and systems engineering, at all experience levels. Fully paid premium healthcare, a 6% 401k match, an employee-driven bonus pool, employee equity and a flat organization where everyone works.",
-  "link": "roster5.com/#careers"
+  "link": "roster5.com/#careers",
+  "image": "r5-join.jpg"
  },
  {
   "id": "web-scheduling",
@@ -24,6 +26,7 @@
   "date": "",
   "title": "Event-driven scheduling",
   "text": "Roster-5's Iterated Distributed Feedback algorithm has been proven in commercial applications and stands ready to revolutionize resource management within the Intelligence Community, building best-known-quality solutions in a handful of seconds.",
-  "link": "roster5.com/#services"
+  "link": "roster5.com/#services",
+  "image": "r5-services.jpg"
  }
 ]

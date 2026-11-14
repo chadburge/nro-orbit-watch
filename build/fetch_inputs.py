@@ -15,6 +15,7 @@ tle = z.read('classfd.tle').decode('latin1').replace('\r', '')
 open(os.path.join(DATA, 'classfd.tle'), 'w', encoding='latin1', newline='\n').write(tle)
 
 open(os.path.join(DATA, 'satcat.csv'), 'wb').write(get('https://celestrak.org/pub/satcat.csv'))
+open(os.path.join(DATA, 'gps.tle'), 'wb').write(get('https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops&FORMAT=tle'))
 
 wiki = get('https://en.wikipedia.org/w/api.php?action=parse&page=List_of_NRO_launches&prop=wikitext&format=json&formatversion=2')
 open(os.path.join(DATA, 'nro_wikitext.json'), 'wb').write(wiki)

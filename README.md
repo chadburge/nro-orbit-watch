@@ -37,6 +37,18 @@ Company posts: LinkedIn and the other networks block automated reading, so paste
 with an image uses a blurred copy of it as the backdrop. It screens every post (profanity,
 politics, money and personnel matters, contact details, length) and only approved items reach the show.
 
+## Newer pieces
+
+- Hyper-real globe (NASA Blue Marble with clouds, relief, specular oceans, limb haze) and a 2D map that uses the same image.
+- Satellite view: select a satellite and press the button in its dossier to look straight down from it; online, Esri
+  World Imagery tiles are streamed for the footprint and prefetched along the ground track.
+- Lobby additions: explainer cards with diagrams and live globe demos (including the exaggerated EGM96 geoid, the oblate
+  Earth and the GPS constellation on its own layer), animated infographics, a weather slide (GOES-19, NWS forecast and
+  hourly chart, alerts, Front Range webcams), a screened headlines slide, an icon key, a slide progress bar, launch
+  trajectories on the launch slides, and branded backdrops for company slides.
+- Data scripts: `fetch_weather.py`, `fetch_news.py` (clustered and screened), `geoid.py` (EGM96 grid), GPS elements in
+  `fetch_inputs.py`.
+
 ## Refresh the data
 
 ```

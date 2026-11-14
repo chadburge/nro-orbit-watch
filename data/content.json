@@ -469,5 +469,125 @@
 "x37b"
 ]
 }
+],
+"concepts": [
+{
+"key": "orbits",
+"title": "Why satellites stay up",
+"diagram": "fall",
+"demo": {},
+"text": "A satellite is falling the whole time. Fired sideways fast enough, about 7.7 km/s in low orbit, it falls toward Earth exactly as quickly as the ground curves away beneath it, so it never lands. Higher orbits are slower: a geostationary satellite at 35,786 km moves at only 3.1 km/s, which is why it takes a full day to go round and seems to hang still over one spot."
+},
+{
+"key": "bands",
+"title": "Low, medium, high",
+"diagram": "bands",
+"demo": {
+"spacing": "true"
+},
+"text": "Low Earth orbit (LEO) runs from roughly 200 to 2,000 km and circles the planet in about 90 minutes; the imaging satellites live here because closer means sharper. Medium orbit (MEO) around 20,000 km is home to GPS. Geostationary orbit (GEO) at 35,786 km matches Earth's rotation, so the big signals-intelligence dishes park there. This view uses true spacing: GEO really is nearly six Earth radii out."
+},
+{
+"key": "apsides",
+"title": "Periapsis and apoapsis",
+"diagram": "ellipse",
+"demo": {
+"orbit": "HEO / Molniya"
+},
+"text": "Most orbits are ellipses, not circles. The point closest to Earth is the periapsis (perigee for Earth), the farthest is the apoapsis (apogee). Kepler's second law says a satellite moves fastest at perigee and slowest at apogee, which is exactly what the Molniya orbit exploits: dip low over the southern hemisphere, then hang for hours high over the Arctic."
+},
+{
+"key": "inclination",
+"title": "Inclination and ground tracks",
+"diagram": "inclination",
+"demo": {
+"layer": "nro"
+},
+"text": "Inclination is the tilt of an orbit against the equator. A 0° orbit stays over the equator; a 90° orbit crosses both poles. Reconnaissance satellites fly near 97°, slightly retrograde, because that tilt lets the orbit plane drift exactly one degree a day and keep pace with the Sun. The ground track below, the path the satellite traces on the surface, shifts west each pass as Earth turns underneath it."
+},
+{
+"key": "sunsync",
+"title": "Sun-synchronous orbits",
+"diagram": "sunsync",
+"demo": {
+"layer": "nro",
+"family": "KH-11"
+},
+"text": "Earth's equatorial bulge tugs on an orbit and makes its plane slowly rotate. Choose the altitude and tilt just right, about 97° at 700 km, and the plane turns once a year, so the satellite crosses every spot at the same local time. Imaging satellites use it to see the same shadows every day, which is how analysts spot what changed."
+},
+{
+"key": "oblate",
+"title": "Earth is an oblate spheroid",
+"diagram": "oblate",
+"demo": {
+"oblate": true
+},
+"text": "Earth is not a sphere. Spinning once a day flings the equator outward: the planet is 43 km wider across the equator than pole to pole, a flattening of about 1 part in 298. The globe here is squashed far beyond reality so you can see the shape. That bulge is what makes orbit planes precess, and ignoring it would put a satellite tens of kilometres off within a day."
+},
+{
+"key": "geoid",
+"title": "Gravity is lumpy",
+"diagram": "geoid",
+"demo": {
+"geoid": true
+},
+"text": "Even the oblate spheroid is only an average. Dense rock and mantle currents pull the sea surface up over some places and let it sag over others: the geoid dips 106 m south of India and rises 85 m near New Guinea. Here those bumps are exaggerated about 24,000 times. Satellites feel every one of them, and missions such as GRACE measured the lumps by tracking how two spacecraft tugged on each other."
+},
+{
+"key": "vis-viva",
+"title": "Orbital dynamics in one equation",
+"diagram": "visviva",
+"demo": {
+"layer": "nro"
+},
+"text": "Speed depends only on where you are and how big the orbit is: v² = GM (2/r − 1/a). Drop lower and you go faster; raise the far side of your orbit and you slow down at the near side. Every manoeuvre is bookkeeping with this equation, which is why engineers talk in delta-v, metres per second of speed change, rather than in kilometres."
+},
+{
+"key": "transfer",
+"title": "Orbit transfers and circularization",
+"diagram": "hohmann",
+"demo": {
+"orbit": "GEO"
+},
+"text": "To climb from a low parking orbit to a higher one, burn once to stretch the orbit into a transfer ellipse whose apoapsis touches the target, coast up, then burn again at the top to circularize. Geostationary payloads ride to a transfer orbit on the rocket and finish the job with their own engine over days or weeks; heavy NRO payloads were often injected directly by the Delta IV Heavy's upper stage."
+},
+{
+"key": "gps",
+"title": "GPS: thirty-one clocks in the sky",
+"diagram": "gps",
+"demo": {
+"layer": "gps"
+},
+"text": "The Global Positioning System flies 31 satellites in six planes at 20,200 km, tilted 55°, each orbiting twice a day. A receiver times signals from four or more of them and solves for its position to a few metres. The satellites' atomic clocks run 38 microseconds a day fast relative to the ground because of relativity, and the system corrects for it. The constellation is flown from Schriever Space Force Base in Colorado Springs, and the newest GPS III satellites are built in Littleton."
+},
+{
+"key": "footprint",
+"title": "Footprints and horizons",
+"diagram": "footprint",
+"demo": {
+"layer": "nro",
+"fp": true
+},
+"text": "From 500 km up, the horizon is about 2,500 km away in every direction, so a satellite can in principle see a circle 5,000 km across. The circles drawn here are those geometric horizons. A real imaging sensor sees far less: a narrow swath beneath it. What the footprint tells you is who could be listening, and who could be watching the satellite."
+},
+{
+"key": "elements",
+"title": "How observers publish an orbit",
+"diagram": "tle",
+"demo": {
+"layer": "nro"
+},
+"text": "An orbit is written down as six numbers plus a date: size, shape, tilt, two angles that orient the ellipse, and where the satellite was on it. Amateur observers time when a satellite crosses between two stars, fit those six numbers, and share them. Everything on this screen is propagated from such element sets with the same SGP4 model the military uses."
+},
+{
+"key": "decay",
+"title": "Decay and re-entry",
+"diagram": "decay",
+"demo": {
+"layer": "nro",
+"orbit": "LEO"
+},
+"text": "Below about 600 km there is still enough air to matter. Drag steals a little energy each pass, the orbit shrinks, the air gets thicker, and the end comes quickly: a satellite at 300 km has weeks, at 200 km days. Operators either boost periodically or plan the fall. USA 193 was destroyed deliberately in 2008 before it could come down uncontrolled."
+}
 ]
 }
