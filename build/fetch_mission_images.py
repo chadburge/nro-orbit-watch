@@ -110,13 +110,12 @@ CLASS = {
     'veh-atlasf': ('Atlas F launch Vandenberg', ['atlas'], {'kind': 'vehicle', 'rocket': 'Atlas F', 'era': [1965, 1995]}),
     'veh-shuttle': ('Space Shuttle launch Discovery', ['shuttle', 'sts'], {'kind': 'vehicle', 'rocket': 'Space Shuttle', 'era': [1981, 2011]}),
     # specific events and places used by fact cards
-    'ev-titan34d-1986': ('Titan 34D explosion Vandenberg 1986', ['titan 34d', 'titan34d', '34d'], {'kind': 'event', 'fact': 'The last HEXAGON exploded'}),
     'ev-titan4a-1998': ('Titan IVA-20 explosion 1998 Cape Canaveral', ['titan iv', 'titan 4', 'a-20', 'k-17'], {'kind': 'event', 'fact': 'A failure 40 seconds in'}),
     'ev-sts36': ('STS-36 launch Atlantis 1990', ['sts-36', 'sts 36'], {'kind': 'event', 'fact': 'The satellite that went missing'}),
     'ev-usa193': ('USS Lake Erie SM-3 launch USA-193 February 2008', ['lake erie', 'sm-3', 'usa-193', 'usa 193'], {'kind': 'event', 'fact': 'USA 193: shot down on purpose'}),
     'nro-hq': ('National Reconnaissance Office headquarters Chantilly Virginia building', ['nro', 'reconnaissance office'], {'kind': 'place', 'fact': 'Eleven agencies, one office'}),
     # topic illustrations for the headlines slide and a night-sky photo for the passes slide
-    'news-aviation': ('air traffic control tower airport apron aircraft', ['tower', 'airport', 'air traffic', 'control'], {'kind': 'news'}),
+    'news-aviation': ('Denver International Airport control tower aircraft', ['denver', 'dia'], {'kind': 'news'}),
     'news-hurricane': ('hurricane from space GOES satellite image', ['hurricane'], {'kind': 'news'}),
     'news-earthquake': ('earthquake damage street USGS', ['earthquake'], {'kind': 'news'}),
     'news-wildfire': ('wildfire smoke plume satellite image MODIS', ['fire', 'smoke'], {'kind': 'news'}),
