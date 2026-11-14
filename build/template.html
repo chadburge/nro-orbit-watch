@@ -1507,13 +1507,19 @@ $('#dataNote').innerHTML = `${OBJ.length} objects, ${D.meta.tleCount} with publi
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 4200); }
 
 /* ---------- resize & loop ---------- */
-function resize() { const r = stage.getBoundingClientRect(); W = Math.max(10, r.width); H = Math.max(10, r.height); dpr = Math.min(2, devicePixelRatio || 1); renderer.setPixelRatio(dpr); renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix(); for (const c of [mapCanvas, ov]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); } clampMap(); }
-new ResizeObserver(resize).observe(stage); window.addEventListener('resize', resize); window.addEventListener('orientationchange', resize); matchMedia(`(resolution: ${devicePixelRatio}dppx)`).addEventListener('change', resize); resize();
+function resize() { const r = stage.getBoundingClientRect(); W = Math.max(10, r.width); H = Math.max(10, r.height); lastCW = stage.clientWidth; lastCH = stage.clientHeight; lastDpr = devicePixelRatio || 1; dpr = Math.min(2, devicePixelRatio || 1); renderer.setPixelRatio(dpr); renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix(); for (const c of [mapCanvas, ov]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); } clampMap(); }
+let lastCW = 0, lastCH = 0, lastDpr = 0;
+function fitCheck() { // runs every frame: re-fit whenever the stage size or the display scale changed, whether or not an event fired
+  const cw = stage.clientWidth, ch = stage.clientHeight, d = devicePixelRatio || 1;
+  if (cw !== lastCW || ch !== lastCH || d !== lastDpr) { lastCW = cw; lastCH = ch; lastDpr = d; resize(); }
+}
+function watchDpr() { try { const mq = matchMedia(`(resolution: ${devicePixelRatio}dppx)`); mq.addEventListener('change', () => { resize(); watchDpr(); }, { once: true }); } catch (e) {} }
+new ResizeObserver(resize).observe(stage); window.addEventListener('resize', resize); window.addEventListener('orientationchange', resize); document.addEventListener('fullscreenchange', resize); if (window.visualViewport) visualViewport.addEventListener('resize', resize); watchDpr(); resize();
 
 let lastPos = 0, lastClock = 0, lastPathT = 0, frame = 0;
 let updMs = 0, frameMs = 0, lastFrameT = 0; window.__perf = () => ({ updMs, frameMs });
 function loop(now) {
-  requestAnimationFrame(loop); if (lastFrameT) frameMs = frameMs * 0.9 + (now - lastFrameT) * 0.1; lastFrameT = now;
+  requestAnimationFrame(loop); fitCheck(); if (lastFrameT) frameMs = frameMs * 0.9 + (now - lastFrameT) * 0.1; lastFrameT = now;
   const dt = Math.min(0.1, (now - lastReal) / 1000); lastReal = now;
   if (!paused) { if (rate === 1) T = Math.max(TMIN, Math.min(TMAX, Date.now() + liveOffset)); else { T += dt * 1000 * rate; liveOffset = T - Date.now(); } if (T >= TMAX && rate !== 1) { T = TMAX; paused = true; $('#playBtn').textContent = '▶'; } }
   if (!paused && rate >= 3600) { if (!visOn) { visOn = true; visT = T; } visT += dt * 1000 * VIS_RATE; TP = visT; } else { visOn = false; TP = T; }
