@@ -174,6 +174,61 @@ td a { text-decoration: none; margin-right: 6px; font-size: 11.5px; }
 .about p { margin: 0; }
 
 body.cine #rail, body.cine #dossier, body.cine .viewctl, body.cine #tip { display: none !important; }
+body.lobby header, body.lobby footer, body.lobby #rail, body.lobby #dossier, body.lobby .viewctl, body.lobby #tip, body.lobby #cineExit, body.lobby #toast { display: none !important; }
+body.lobby #app { grid-template-rows: 1fr; }
+body.lobby #overlay { cursor: none; }
+body.lobby.showcursor #overlay { cursor: default; }
+#lobbyExit { position: absolute; top: 16px; right: max(16px, env(safe-area-inset-right, 0px)); z-index: 9; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+body.lobby.showcursor #lobbyExit { opacity: 1; pointer-events: auto; }
+#lobbyExit[hidden] { display: none; }
+#intro { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; text-align: center; background: radial-gradient(ellipse at 50% 60%, rgba(12,20,38,0.96), rgba(3,6,13,0.98)); opacity: 0; transition: opacity 1.2s ease; pointer-events: none; }
+#intro.in { opacity: 1; }
+#intro[hidden] { display: none; }
+#intro .k { font: 600 14px var(--display); letter-spacing: 0.32em; text-transform: uppercase; color: var(--accent); }
+#intro h1 { margin: 10px 0 8px; font: 700 clamp(44px, 6vw, 96px)/1 var(--display); letter-spacing: 0.04em; color: #fff3d6; }
+#intro .sub { font-size: clamp(14px, 1.3vw, 20px); color: #c9d2e3; }
+#intro .for { margin-top: 26px; font: 600 clamp(14px, 1.2vw, 18px) var(--display); letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); }
+#loading { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; background: var(--stage); transition: opacity 0.8s ease; }
+#loading.out { opacity: 0; pointer-events: none; }
+#loading[hidden] { display: none; }
+#loading .k { font: 700 28px var(--display); letter-spacing: 0.06em; color: #fff3d6; text-transform: uppercase; }
+#loading .k span { color: var(--accent); }
+#loading .s { margin-top: 8px; font: 500 12px var(--mono); color: var(--muted); }
+#loading .bar { width: 220px; height: 3px; background: var(--line); margin: 16px auto 0; overflow: hidden; border-radius: 2px; }
+#loading .bar i { display: block; height: 100%; width: 40%; background: var(--accent); animation: slide 1.2s ease-in-out infinite; }
+@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+#show { position: absolute; inset: 0; pointer-events: none; z-index: 5; font-family: var(--body); }
+#show[hidden] { display: none; }
+.show-eyebrow { font: 600 13px var(--display); letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+.show-card { position: absolute; right: max(28px, 2.5vw); top: 92px; width: min(380px, 34vw); background: linear-gradient(180deg, rgba(10,16,30,0.9), rgba(6,10,18,0.86)); border: 1px solid rgba(242,178,74,0.25); border-radius: 10px; padding: 18px 20px 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); opacity: 0; transform: translateX(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.show-card.in { opacity: 1; transform: none; }
+.show-card h2 { margin: 6px 0 10px; font: 700 clamp(22px, 1.9vw, 32px)/1.05 var(--display); color: #fff3d6; text-wrap: balance; }
+.show-card img, .show-slide img { width: 100%; max-height: 230px; object-fit: cover; border-radius: 6px; display: block; margin: 8px 0 10px; border: 1px solid rgba(255,255,255,0.08); }
+.show-card .model svg { height: 120px; }
+.show-card p, .show-slide p { margin: 8px 0; font-size: clamp(13px, 1vw, 16px); line-height: 1.5; color: #d6deeb; }
+.show-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 0; font-size: 13px; }
+.show-card dt { color: var(--dim); } .show-card dd { margin: 0; font-family: var(--mono); color: #e8edf7; }
+.show-credit { font-size: 10.5px; color: var(--dim); margin-top: 6px; }
+.show-slide { position: absolute; left: 0; top: 96px; bottom: 42px; width: min(620px, 46vw); padding: 18px 36px 40px max(32px, 3vw); background: linear-gradient(90deg, rgba(3,6,13,0.94) 0%, rgba(3,6,13,0.82) 70%, rgba(3,6,13,0) 100%); display: flex; flex-direction: column; gap: 8px; opacity: 0; transform: translateX(-20px); transition: opacity 0.8s ease, transform 0.8s ease; overflow: hidden; }
+.show-slide.in { opacity: 1; transform: none; }
+.show-slide h1 { margin: 4px 0 6px; font: 700 clamp(30px, 3vw, 52px)/1 var(--display); color: #fff3d6; text-wrap: balance; }
+.show-slide .years { font-family: var(--mono); color: var(--accent); font-size: 14px; }
+.show-slide ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.show-slide li { display: grid; grid-template-columns: 92px 1fr; gap: 10px; font-size: clamp(12.5px, 0.95vw, 15px); line-height: 1.35; color: #d6deeb; padding: 5px 8px; border-left: 2px solid rgba(144,160,189,0.3); }
+.show-slide li .d { font-family: var(--mono); color: var(--muted); font-size: 12px; }
+.show-slide li.nro { border-left-color: var(--accent); background: rgba(242,178,74,0.08); color: #fff3d6; }
+.show-slide li.nro .d { color: var(--accent); }
+.show-slide li b { font-weight: 600; }
+.bars { display: grid; gap: 7px; margin-top: 8px; }
+.bar { display: grid; grid-template-columns: 150px 1fr 46px; gap: 10px; align-items: center; font-size: 13.5px; color: #d6deeb; }
+.bar i { display: block; height: 12px; border-radius: 2px; background: var(--accent); }
+.bar b { font-family: var(--mono); font-weight: 500; text-align: right; color: #fff3d6; }
+.show-ticker { position: absolute; left: 0; right: 0; bottom: 0; height: 42px; background: rgba(6,10,18,0.9); border-top: 1px solid rgba(242,178,74,0.3); overflow: hidden; display: flex; align-items: center; }
+.show-ticker .lab { flex: none; padding: 0 16px; height: 100%; display: flex; align-items: center; background: var(--accent); color: var(--accent-ink); font: 700 13px var(--display); letter-spacing: 0.16em; }
+.show-ticker .tk { white-space: nowrap; font: 500 14px var(--mono); color: #e8edf7; will-change: transform; }
+.show-ticker .tk .n { color: var(--accent); } .show-ticker .tk .sep { color: var(--dim); margin: 0 18px; }
+.countdown { font: 700 clamp(28px, 2.6vw, 44px) var(--display); color: #fff3d6; letter-spacing: 0.04em; }
+@media (max-width: 900px) { .show-slide { width: 100%; bottom: 42px; top: 90px; } .show-card { right: 12px; left: 12px; width: auto; top: auto; bottom: 120px; } }
 body.cine footer .stats { display: none; }
 #cineExit { position: absolute; top: 12px; right: max(12px, env(safe-area-inset-right, 0px)); z-index: 6; }
 #cineExit[hidden] { display: none; }
@@ -221,6 +276,7 @@ body.cine footer .stats { display: none; }
       </select>
       <button class="btn" id="railBtn" aria-pressed="true">Filters</button>
       <button class="btn" id="tableBtn">Table <span class="count" id="tableCount">0</span></button>
+      <button class="btn" id="lobbyBtn" title="Full-screen cinematic view for a lobby monitor">Lobby</button>
       <button class="btn" id="aboutBtn">About</button>
     </div>
   </header>
@@ -251,7 +307,7 @@ body.cine footer .stats { display: none; }
             <div class="legend-title">Legend. Click an entry to hide or show it.</div>
             <div id="legend" class="facet-list"></div>
             <div class="mini"><button id="legendAll">all</button><button id="legendNone">none</button><button id="legendInvert">invert</button></div>
-            <div class="badge-note"><span class="dot"></span> public elements &nbsp; <span class="ring"></span> representative orbit, no public data</div>
+            <div class="badge-note">Icons show the satellite type. Bright = public orbital elements; faded = representative orbit, no public data.</div>
           </div>
         </details>
         <details class="sec" open>
@@ -280,6 +336,7 @@ body.cine footer .stats { display: none; }
             <div class="row"><label for="coneOp">Footprint opacity</label><input type="range" id="coneOp" min="0.1" max="3" step="0.1" value="1" style="flex:1;accent-color:var(--accent)" aria-label="Cone opacity"></div>
             <div class="hint">Footprints show what each satellite can see. Circles and cones fade automatically as more satellites are shown; the slider scales that. In Circles mode only the hovered or selected satellite gets a cone.</div>
             <label class="chk"><input type="checkbox" id="hoverCov" checked> Hover coverage: point at the ground to dim satellites that cannot see that spot</label>
+            <label class="chk"><input type="checkbox" id="hqMark" checked> Roster-5 HQ marker (Lafayette, Colorado)</label>
             <label class="chk"><input type="checkbox" id="borders" checked> Country borders</label>
             <label class="chk"><input type="checkbox" id="cities" checked> Major cities</label>
             <label class="chk"><input type="checkbox" id="sites" checked> Launch site pins</label>
@@ -346,6 +403,14 @@ body.cine footer .stats { display: none; }
       <button id="resetView" title="Reset view" aria-label="Reset view">⌂</button>
     </div>
     <button class="btn" id="cineExit" hidden>Exit timelapse</button>
+    <button class="btn" id="lobbyExit" hidden>Exit lobby mode</button>
+    <div id="intro" hidden><div><div class="k">Live reconnaissance tracking</div><h1>NRO ORBIT WATCH</h1><div class="sub">Every acknowledged National Reconnaissance Office satellite, propagated from amateur-observed orbits</div><div class="for">Prepared for Roster-5 Software · Lafayette, Colorado</div></div></div>
+    <div id="loading"><div style="text-align:center"><div class="k">NRO <span>Orbit</span> Watch</div><div class="s" id="loadMsg">loading Earth imagery and propagating orbits</div><div class="bar"><i></i></div></div></div>
+    <div id="show" hidden>
+      <div class="show-slide" id="showSlide"></div>
+      <div class="show-card" id="showCard"></div>
+      <div class="show-ticker"><div class="lab">LIVE</div><div class="tk" id="tickerTrack"></div></div>
+    </div>
     <div id="tip" hidden></div>
     <div class="toast" id="toast" hidden></div>
 
@@ -401,7 +466,8 @@ body.cine footer .stats { display: none; }
 <script>
 (function () {
 'use strict';
-const D = window.NRO_DATA, OBJ = D.objects, LAND = D.land, BORDERS = D.borders || [], CITIES = D.cities || [];
+const D = window.NRO_DATA, OBJ = D.objects, LAND = D.land, BORDERS = D.borders || [], CITIES = D.cities || [], CONTENT = D.content || { programs: {}, sites: {}, facts: [] }, IMAGES = Object.fromEntries((D.images || []).map(i => [i.key, i])), LAUNCHES = D.launches || { previous: [], upcoming: [], asof: '' };
+const HQ = { name: 'Roster-5 HQ', addr: '2600 Campus Dr, Lafayette, Colorado', lat: 39.96683, lon: -105.08874 };
 const SITES = { 'Vandenberg': [34.74, -120.57], 'Cape Canaveral': [28.49, -80.58], 'Kennedy Space Center': [28.61, -80.62], 'Wallops (MARS)': [37.83, -75.49], 'Mahia (Rocket Lab)': [-39.26, 177.86], 'Tanegashima': [30.40, 130.97], 'Kourou': [5.24, -52.77], 'Palmachim': [31.88, 34.68], 'Plesetsk': [62.93, 40.57], 'Baikonur': [45.92, 63.34], 'Jiuquan': [40.96, 100.29], 'Xichang': [28.25, 102.03], 'Taiyuan': [38.85, 111.61], 'Satish Dhawan': [13.72, 80.23], 'Sea Launch (Pacific)': [0.0, -154.0], 'Yasny': [51.21, 59.85] };
 const RE = 6371, REQ = 6378.137, MU = 398600.4418, J2 = 1.08263e-3, DEG = Math.PI / 180;
 const TMIN = Date.UTC(1959, 0, 1), TMAX = Date.UTC(2027, 11, 31);
@@ -450,13 +516,13 @@ function vals(o, k) { const g = FACETS[k].get; const v = g ? g(o) : o[k]; return
 /* ---------- state ---------- */
 let S = { view: '3d', style: 'realistic', colorBy: 'function', spacing: 'compressed', paths: 'none', labels: 'selected', fpMode: 'off', sites: true, terminator: true,
   layers: Object.fromEntries(LAYERS.map(l => [l[0], l[2]])), hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set()])), search: '',
-  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1, trailH: 3, cine: false, hoverCov: true, ground: null, borders: true, cities: true };
-try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator', 'trailH', 'hoverCov', 'borders', 'cities']) if (k in s) S[k] = s[k]; } catch (e) {}
-function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov, borders, cities } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov, borders, cities })); } catch (e) {} }
+  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1, trailH: 3, cine: false, hoverCov: true, ground: null, borders: true, cities: true, hq: true, groundLock: null, lobby: false };
+try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator', 'trailH', 'hoverCov', 'borders', 'cities', 'hq']) if (k in s) S[k] = s[k]; } catch (e) {}
+function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov, borders, cities, hq } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov, borders, cities, hq })); } catch (e) {} }
 
 /* ---------- time ---------- */
-let T = Date.now(), rate = 1, paused = false, lastReal = performance.now();
-const isLive = () => rate === 1 && !paused && Math.abs(T - Date.now()) < 3000;
+let T = Date.now(), rate = 1, paused = false, lastReal = performance.now(), liveOffset = 0;
+const isLive = () => rate === 1 && !paused && Math.abs(liveOffset) < 3000;
 
 /* ---------- orbital mechanics ---------- */
 const ms = (iso) => iso ? Date.parse(iso.length === 10 ? iso + 'T00:00:00Z' : iso) : NaN;
@@ -549,6 +615,8 @@ renderer.setClearColor(0x03060d, 1);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 300);
 const cam = { theta: -1.4, phi: 0.5, dist: 3.4 };
+const camTarget = { active: false, theta: 0, phi: 0, dist: 3.4 };
+function flyTo(theta, phi, dist) { camTarget.active = true; camTarget.theta = theta; camTarget.phi = phi; camTarget.dist = dist; }
 const sun = new THREE.DirectionalLight(0xffffff, 1.35); scene.add(sun);
 const ambient = new THREE.AmbientLight(0xffffff, 0.14); scene.add(ambient);
 const earthGeo = new THREE.SphereGeometry(1, 96, 64);
@@ -587,6 +655,40 @@ function spriteTex(kind, style) {
   const t = new THREE.CanvasTexture(c); t.needsUpdate = true; return t;
 }
 const glowTex = spriteTex('solid', 'flat');
+// icon atlas: 4x4 cells of 128px, white silhouettes with a dark outline, tinted per satellite by vertex color
+const ICONS = ['optical', 'radar', 'sigint-geo', 'elint-heo', 'noss', 'relay', 'starshield', 'film', 'elint-early', 'ssa', 'tech', 'rocket', 'debris', 'unknown'];
+const atlasCanvas = document.createElement('canvas'); atlasCanvas.width = atlasCanvas.height = 512;
+(function drawAtlas() {
+  const x = atlasCanvas.getContext('2d');
+  const cell = (i, draw) => { x.save(); x.translate((i % 4) * 128 + 64, Math.floor(i / 4) * 128 + 64); x.lineJoin = 'round'; x.lineCap = 'round';
+    for (const pass of [0, 1]) { x.strokeStyle = '#0b1626'; x.lineWidth = pass ? 0 : 9; x.fillStyle = pass ? '#ffffff' : '#0b1626'; draw(pass); } x.restore(); };
+  const R = (px, py, w, h, pass) => { x.beginPath(); x.rect(px, py, w, h); if (!pass) x.stroke(); x.fill(); };
+  const P = (pts, pass) => { x.beginPath(); pts.forEach((q, i) => i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1])); x.closePath(); if (!pass) x.stroke(); x.fill(); };
+  const C = (cx, cy, r, pass) => { x.beginPath(); x.arc(cx, cy, r, 0, 7); if (!pass) x.stroke(); x.fill(); };
+  const panels = (pass, gap = 22, w = 30, h = 16) => { R(-gap - w, -h / 2, w, h, pass); R(gap, -h / 2, w, h, pass); };
+  cell(0, pass => { panels(pass); R(-20, -14, 40, 28, pass); C(22, 0, 11, pass); });                                   // optical: tube with aperture
+  cell(1, pass => { R(-54, -8, 108, 16, pass); R(-14, -30, 28, 22, pass); });                                            // radar: long array
+  cell(2, pass => { x.beginPath(); x.arc(0, 10, 40, Math.PI * 1.08, Math.PI * 1.92); x.closePath(); if (!pass) x.stroke(); x.fill(); R(-10, 10, 20, 22, pass); }); // sigint: big dish
+  cell(3, pass => { panels(pass, 18, 26, 14); R(-16, -12, 32, 30, pass); C(0, -26, 13, pass); });                        // elint heo: dish on bus
+  cell(4, pass => { R(-44, -10, 20, 20, pass); R(-10, 2, 20, 20, pass); R(24, -10, 20, 20, pass); });                     // noss: formation of three
+  cell(5, pass => { panels(pass, 20, 28, 14); R(-16, -14, 32, 28, pass); C(-20, -26, 10, pass); C(20, -26, 10, pass); }); // relay: twin dishes
+  cell(6, pass => { R(-40, 10, 80, 12, pass); R(-14, -36, 28, 44, pass); });                                            // starshield: flat bus, single array
+  cell(7, pass => { R(-44, -12, 56, 24, pass); P([[12, -14], [44, 0], [12, 14]], pass); });                             // film return: stage + capsule
+  cell(8, pass => { P([[0, -36], [32, -18], [32, 18], [0, 36], [-32, 18], [-32, -18]], pass); });                        // early elint: polyhedron
+  cell(9, pass => { panels(pass, 20, 26, 14); R(-16, -8, 32, 28, pass); R(-9, -36, 18, 30, pass); });                   // ssa: telescope up
+  cell(10, pass => { panels(pass, 20, 26, 14); R(-18, -18, 36, 36, pass); });                                            // tech: cube
+  cell(11, pass => { R(-44, -10, 70, 20, pass); P([[26, -12], [48, -6], [48, 6], [26, 12]], pass); });                  // rocket body
+  cell(12, pass => { P([[-30, -10], [-6, -30], [22, -22], [30, 6], [10, 30], [-18, 22]], pass); });                     // debris
+  cell(13, pass => { x.lineWidth = pass ? 8 : 20; x.strokeStyle = pass ? '#ffffff' : '#0b1626'; x.beginPath(); x.arc(0, 0, 26, 0, 7); x.stroke(); });                      // unknown: ring
+})();
+const atlasTex = new THREE.CanvasTexture(atlasCanvas); atlasTex.anisotropy = 4;
+const iconMat = new THREE.ShaderMaterial({ uniforms: { atlas: { value: atlasTex }, size: { value: 22 }, dpr: { value: 1 } }, transparent: true, depthWrite: false,
+  vertexShader: 'attribute float icon; attribute float alpha; attribute vec3 color; varying vec2 vCell; varying vec3 vColor; varying float vAlpha; uniform float size; uniform float dpr; void main(){ vColor = color; vAlpha = alpha; vCell = vec2(mod(icon, 4.0), 3.0 - floor(icon / 4.0)); vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; gl_PointSize = size * dpr; }',
+  fragmentShader: 'uniform sampler2D atlas; varying vec2 vCell; varying vec3 vColor; varying float vAlpha; void main(){ vec2 uv = (vCell + vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y)) / 4.0; vec4 t = texture2D(atlas, uv); if (t.a < 0.06) discard; gl_FragColor = vec4(t.rgb * vColor, t.a * vAlpha); }' });
+for (const g of [satGeo, repGeo]) { g.setAttribute('icon', new THREE.Float32BufferAttribute(new Float32Array(MAXN), 1)); g.setAttribute('alpha', new THREE.Float32BufferAttribute(new Float32Array(MAXN), 1)); }
+const tintCache = new Map();
+function tintedAtlas(color) { let c = tintCache.get(color); if (c) return c; c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d'); x.drawImage(atlasCanvas, 0, 0); x.globalCompositeOperation = 'multiply'; x.fillStyle = color; x.fillRect(0, 0, 512, 512); x.globalCompositeOperation = 'destination-in'; x.drawImage(atlasCanvas, 0, 0); tintCache.set(color, c); return c; }
+function iconIndex(o) { const i = ICONS.indexOf(o.model === 'program' ? 'film' : o.model); return i < 0 ? 13 : i; }
 const satMat = new THREE.PointsMaterial({ size: 9, sizeAttenuation: false, vertexColors: true, transparent: true, alphaTest: 0.2, depthWrite: false, map: null });
 const repMat = new THREE.PointsMaterial({ size: 9, sizeAttenuation: false, vertexColors: true, transparent: true, alphaTest: 0.2, depthWrite: false, map: null });
 const satPts = new THREE.Points(satGeo, satMat), repPts = new THREE.Points(repGeo, repMat); scene.add(satPts); scene.add(repPts);
@@ -647,10 +749,12 @@ const earthShader = new THREE.ShaderMaterial({
       vec3 col = mix(nightCol, dayCol, t) + vec3(spec) * vec3(1.0, 0.95, 0.85); gl_FragColor = vec4(col, 1.0); }`
 });
 let imgLoaded = 0;
+function hideLoading() { const l = $('#loading'); if (!l || l.classList.contains('out')) return; l.classList.add('out'); setTimeout(() => { l.hidden = true; }, 900); }
+setTimeout(hideLoading, 7000);
 (function loadEarthImages() {
   const L = new THREE.TextureLoader();
   const want = [['dayTex', 'earth-day.jpg'], ['nightTex', 'earth-night.jpg'], ['specTex', 'earth-spec.jpg']];
-  for (const [u, f] of want) L.load(f, t => { t.anisotropy = 8; t.minFilter = THREE.LinearMipmapLinearFilter; earthUniforms[u].value = t; imgLoaded++; if (imgLoaded === 3 && S.style === 'realistic') applyStyle(); }, undefined, () => {});
+  for (const [u, f] of want) L.load(f, t => { t.anisotropy = 8; t.minFilter = THREE.LinearMipmapLinearFilter; earthUniforms[u].value = t; imgLoaded++; if (imgLoaded === 3) { if (S.style === 'realistic') applyStyle(); hideLoading(); } }, undefined, () => {});
 })();
 function applyStyle() {
   const st = S.style;
@@ -660,7 +764,8 @@ function applyStyle() {
   else if (st === 'cartoon') { earth.material = new THREE.MeshBasicMaterial({ map: textures.cartoon }); atmo.visible = false; outline.visible = true; coast.visible = false; grat.visible = false; stars.material.size = 3; renderer.setClearColor(0x0b1a33); }
   else { earth.material = new THREE.MeshBasicMaterial({ color: 0x0a1222 }); atmo.visible = false; outline.visible = false; coast.visible = true; grat.visible = true; stars.material.size = 1.2; renderer.setClearColor(0x03060d); }
   for (const k of ['solid', 'hollow']) { if (!sprites[k][st]) sprites[k][st] = spriteTex(k, st); }
-  satMat.map = S.cine ? glowTex : sprites.solid[st]; repMat.map = S.cine ? glowTex : sprites.hollow[st]; satMat.blending = repMat.blending = S.cine ? THREE.AdditiveBlending : THREE.NormalBlending; satMat.needsUpdate = repMat.needsUpdate = true;
+  satMat.map = glowTex; repMat.map = glowTex; satMat.blending = repMat.blending = THREE.AdditiveBlending; satMat.needsUpdate = repMat.needsUpdate = true;
+  satPts.material = S.cine ? satMat : iconMat; repPts.material = S.cine ? repMat : iconMat; iconMat.uniforms.size.value = (st === 'cartoon' ? 28 : 22) * S.marker; iconMat.uniforms.dpr.value = dpr;
   pathLines.material.blending = S.cine ? THREE.AdditiveBlending : THREE.NormalBlending; pathLines.material.needsUpdate = true;
   const size = (S.cine ? 15 : st === 'cartoon' ? 16 : st === 'flat' ? 13 : 9) * S.marker; satMat.size = repMat.size = size * (dpr > 1.5 ? 1.25 : 1);
   pathLines.material.opacity = S.cine ? 0.22 : st === 'cartoon' ? 0.9 : 0.55;
@@ -672,7 +777,7 @@ function applyStyle() {
 /* ---------- position update ---------- */
 const sel3 = new THREE.Vector3();
 function updatePositions() {
-  const pos = satGeo.attributes.position.array, col = satGeo.attributes.color.array, rpos = repGeo.attributes.position.array, rcol = repGeo.attributes.color.array;
+  const pos = satGeo.attributes.position.array, col = satGeo.attributes.color.array, rpos = repGeo.attributes.position.array, rcol = repGeo.attributes.color.array, sicon = satGeo.attributes.icon.array, salpha = satGeo.attributes.alpha.array, ricon = repGeo.attributes.icon.array, ralpha = repGeo.attributes.alpha.array;
   let n = 0, m = 0;
   const fpPos = fpGeo.attributes.position.array, fpCol = fpGeo.attributes.color.array; let f = 0;
   const cnPos = coneGeo.attributes.position.array, cnCol = coneGeo.attributes.color.array; let cn = 0;
@@ -683,9 +788,9 @@ function updatePositions() {
     const v = xyz(g.lat, g.lon, radiusFor(g.alt)); o.v3 = v;
     const hot = o === S.selected || o === S.hovered; const dimf = S.ground && !canSee(o, S.ground) ? 0.08 : 1; const hc = hot ? [Math.min(1, c[0] * 0.5 + 0.6), Math.min(1, c[1] * 0.5 + 0.6), Math.min(1, c[2] * 0.5 + 0.6)] : [c[0] * dimf, c[1] * dimf, c[2] * dimf];
     o.dim = false;
-    if (g.rep) { o.slot = m; o.slotRep = true; rpos[m * 3] = v.x; rpos[m * 3 + 1] = v.y; rpos[m * 3 + 2] = v.z; rcol[m * 3] = c[0]; rcol[m * 3 + 1] = c[1]; rcol[m * 3 + 2] = c[2]; m++; }
-    else { o.slot = n; o.slotRep = false; pos[n * 3] = v.x; pos[n * 3 + 1] = v.y; pos[n * 3 + 2] = v.z; col[n * 3] = c[0]; col[n * 3 + 1] = c[1]; col[n * 3 + 2] = c[2]; n++; }
-    if (fp && S.view === '3d') {
+    if (g.rep) { o.slot = m; o.slotRep = true; rpos[m * 3] = v.x; rpos[m * 3 + 1] = v.y; rpos[m * 3 + 2] = v.z; rcol[m * 3] = c[0]; rcol[m * 3 + 1] = c[1]; rcol[m * 3 + 2] = c[2]; ricon[m] = iconIndex(o); ralpha[m] = 0.5; m++; }
+    else { o.slot = n; o.slotRep = false; pos[n * 3] = v.x; pos[n * 3 + 1] = v.y; pos[n * 3 + 2] = v.z; col[n * 3] = c[0]; col[n * 3 + 1] = c[1]; col[n * 3 + 2] = c[2]; sicon[n] = iconIndex(o); salpha[n] = 1; n++; }
+    if (fp && S.view === '3d' && (S.fpMode !== 'selected' || hot)) {
       const ring = footprint(g, 48); o.fp = ring; const pts = ring.map(a => xyz(a[0], a[1], 1.004));
       for (let i = 0; i < 48; i++) { const pa = pts[i], pb = pts[(i + 1) % 48];
         fpPos[f] = pa.x; fpPos[f + 1] = pa.y; fpPos[f + 2] = pa.z; fpPos[f + 3] = pb.x; fpPos[f + 4] = pb.y; fpPos[f + 5] = pb.z;
@@ -694,13 +799,13 @@ function updatePositions() {
           for (let q = 0; q < 3; q++) { cnCol[cn + q * 3] = hc[0]; cnCol[cn + q * 3 + 1] = hc[1]; cnCol[cn + q * 3 + 2] = hc[2]; } cn += 9; }
         if ((cones || hot) && i % 6 === 0) { edPos[ed] = v.x; edPos[ed + 1] = v.y; edPos[ed + 2] = v.z; edPos[ed + 3] = pa.x; edPos[ed + 4] = pa.y; edPos[ed + 5] = pa.z;
           for (let q = 0; q < 2; q++) { edCol[ed + q * 3] = hc[0]; edCol[ed + q * 3 + 1] = hc[1]; edCol[ed + q * 3 + 2] = hc[2]; } ed += 6; } }
-    } else if (fp) o.fp = footprint(g, 72);
+    } else if (fp && (S.fpMode !== 'selected' || hot)) o.fp = footprint(g, 72); else o.fp = null;
   }
   const nCones = cn / (48 * 9); const ca = Math.min(0.5, Math.max(0.006, 0.14 * Math.sqrt(6 / Math.max(nCones, 1)) * S.coneOp)); coneMesh.material.opacity = ca; edgeLines.material.opacity = Math.min(0.6, Math.max(0.03, ca * 2.5)); fpLines.material.opacity = Math.min(0.85, Math.max(0.08, (S.style === 'cartoon' ? 0.8 : 0.55) * Math.sqrt(24 / Math.max(f / 288, 1)) * S.coneOp));
   coneGeo.setDrawRange(0, cn / 3); coneGeo.attributes.position.needsUpdate = true; coneGeo.attributes.color.needsUpdate = true; coneMesh.visible = cn > 0;
   edgeGeo.setDrawRange(0, ed / 3); edgeGeo.attributes.position.needsUpdate = true; edgeGeo.attributes.color.needsUpdate = true; edgeLines.visible = ed > 0;
-  satGeo.setDrawRange(0, n); satGeo.attributes.position.needsUpdate = true; satGeo.attributes.color.needsUpdate = true;
-  repGeo.setDrawRange(0, m); repGeo.attributes.position.needsUpdate = true; repGeo.attributes.color.needsUpdate = true;
+  satGeo.setDrawRange(0, n); satGeo.attributes.position.needsUpdate = true; satGeo.attributes.color.needsUpdate = true; satGeo.attributes.icon.needsUpdate = true; satGeo.attributes.alpha.needsUpdate = true;
+  repGeo.setDrawRange(0, m); repGeo.attributes.position.needsUpdate = true; repGeo.attributes.color.needsUpdate = true; repGeo.attributes.icon.needsUpdate = true; repGeo.attributes.alpha.needsUpdate = true;
   fpGeo.setDrawRange(0, f / 3); fpGeo.attributes.position.needsUpdate = true; fpGeo.attributes.color.needsUpdate = true; fpLines.visible = fp && f > 0;
   const sel = S.selected; selRing.visible = !!(sel && sel.v3 && shown.includes(sel));
   if (selRing.visible) { selRing.position.copy(sel.v3); const sc = 0.028 * cam.dist; selRing.scale.set(sc, sc, 1); }
@@ -763,7 +868,7 @@ function updateCamera() {
   camera.position.set(cam.dist * Math.cos(cam.phi) * Math.cos(cam.theta), cam.dist * Math.sin(cam.phi), -cam.dist * Math.cos(cam.phi) * Math.sin(cam.theta));
   camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
 }
-function centerOn(o) { if (!o || !o.pos) return; cam.theta = o.pos.lon * DEG; cam.phi = o.pos.lat * DEG; if (S.view === '2d') { map2d.cx = o.pos.lon; map2d.cy = o.pos.lat; } }
+function centerOn(o) { if (!o || !o.pos) return; if (S.view === '3d') flyTo(o.pos.lon * DEG, o.pos.lat * DEG, cam.dist); else { map2d.cx = o.pos.lon; map2d.cy = o.pos.lat; clampMap(); } }
 
 /* ---------- 2D map ---------- */
 const mctx = mapCanvas.getContext('2d');
@@ -807,11 +912,9 @@ function drawMap() {
   // sites
   if (S.sites) { for (const k in SITES) { const p = proj2(SITES[k][0], SITES[k][1], G); mctx.fillStyle = '#f2b24a'; mctx.beginPath(); mctx.moveTo(p[0], p[1] - 6); mctx.lineTo(p[0] + 4, p[1]); mctx.lineTo(p[0], p[1] + 6); mctx.lineTo(p[0] - 4, p[1]); mctx.closePath(); mctx.fill(); if (map2d.zoom > 1.8) { mctx.fillStyle = '#f2b24a'; mctx.font = '11px ' + 'IBM Plex Mono, monospace'; mctx.fillText(k, p[0] + 7, p[1] + 4); } } }
   // satellites
-  const r = (st === 'cartoon' ? 6 : st === 'flat' ? 4.5 : 3.5) * S.marker;
   for (const o of shown) { if (!o.pos) continue; const p = proj2(o.pos.lat, o.pos.lon, G); o.sx = p[0]; o.sy = p[1]; o.vis = true; const c = colorOf(o);
-    if (st === 'flat') { mctx.shadowColor = c; mctx.shadowBlur = 10; } else mctx.shadowBlur = 0;
-    mctx.globalAlpha = o.dim ? 0.12 : 1; mctx.beginPath(); mctx.arc(p[0], p[1], r, 0, 7);
-    if (o.pos.rep) { mctx.strokeStyle = c; mctx.lineWidth = 2; mctx.stroke(); } else { mctx.fillStyle = c; mctx.fill(); if (st === 'cartoon') { mctx.strokeStyle = '#0b1626'; mctx.lineWidth = 2; mctx.stroke(); } } }
+    if (st === 'flat') { mctx.shadowColor = c; mctx.shadowBlur = 8; } else mctx.shadowBlur = 0;
+    mctx.globalAlpha = (o.dim ? 0.12 : 1) * (o.pos.rep ? 0.55 : 1); const ii = iconIndex(o), isz = (st === 'cartoon' ? 26 : 20) * S.marker; mctx.drawImage(tintedAtlas(c), (ii % 4) * 128, Math.floor(ii / 4) * 128, 128, 128, p[0] - isz / 2, p[1] - isz / 2, isz, isz); }
   mctx.shadowBlur = 0; mctx.globalAlpha = 1;
   if (S.ground) { const q = proj2(S.ground.lat, S.ground.lon, G); mctx.strokeStyle = '#ffd58a'; mctx.lineWidth = 1.5; mctx.beginPath(); mctx.arc(q[0], q[1], 7, 0, 7); mctx.moveTo(q[0] - 12, q[1]); mctx.lineTo(q[0] + 12, q[1]); mctx.moveTo(q[0], q[1] - 12); mctx.lineTo(q[0], q[1] + 12); mctx.stroke(); }
   if (S.selected && S.selected.pos && shown.includes(S.selected)) { const p = proj2(S.selected.pos.lat, S.selected.pos.lon, G); mctx.strokeStyle = '#ffd58a'; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(p[0], p[1], 10, 0, 7); mctx.stroke(); }
@@ -845,6 +948,10 @@ function drawOverlay() {
   // site labels in 3D when zoomed in
   if (S.view === '3d' && S.sites && cam.dist < 2.2) { octx.font = '11px "IBM Plex Mono", monospace'; siteKeys.forEach((k, i) => { const p = xyz(SITES[k][0], SITES[k][1], 1.004); tmpV.copy(p).project(camera); const dx = camera.position.x - p.x, dy = camera.position.y - p.y, dz = camera.position.z - p.z; if (p.x * dx + p.y * dy + p.z * dz > 0) { const sx = (tmpV.x + 1) / 2 * W + 7, w = octx.measureText(k).width; const sy = placeLabel(sx, (1 - tmpV.y) / 2 * H, w); octx.fillStyle = '#f2b24a'; octx.fillText(k, sx, sy); } }); }
   if (S.ground && S.view === '3d') { const q = padScreen(S.ground.lat, S.ground.lon); if (q) { octx.strokeStyle = '#ffd58a'; octx.lineWidth = 1.5; octx.beginPath(); octx.arc(q[0], q[1], 7, 0, 7); octx.moveTo(q[0] - 12, q[1]); octx.lineTo(q[0] + 12, q[1]); octx.moveTo(q[0], q[1] - 12); octx.lineTo(q[0], q[1] + 12); octx.stroke(); } }
+  if (S.hq) { const q = padScreen(HQ.lat, HQ.lon); if (q) { const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 600); octx.strokeStyle = `rgba(79,209,197,${0.35 + 0.4 * pulse})`; octx.lineWidth = 1.5; octx.beginPath(); octx.arc(q[0], q[1], 9 + 4 * pulse, 0, 7); octx.stroke();
+      octx.fillStyle = '#4fd1c5'; octx.beginPath(); octx.moveTo(q[0], q[1] - 7); octx.lineTo(q[0] + 6, q[1]); octx.lineTo(q[0], q[1] + 7); octx.lineTo(q[0] - 6, q[1]); octx.closePath(); octx.fill(); octx.fillStyle = '#06090f'; octx.beginPath(); octx.arc(q[0], q[1], 2, 0, 7); octx.fill();
+      octx.font = '700 13px "Barlow Condensed", sans-serif'; const w = octx.measureText(HQ.name).width + 10; const ly = placeLabel(q[0] + 12, q[1], w); octx.fillStyle = 'rgba(6,10,18,0.8)'; octx.fillRect(q[0] + 10, ly - 9, w, 18); octx.fillStyle = '#4fd1c5'; octx.fillText(HQ.name, q[0] + 15, ly);
+      if (S.groundLock) { octx.font = '500 11px "IBM Plex Mono", monospace'; octx.fillStyle = 'rgba(232,237,247,0.9)'; octx.fillText(`${groundCount} overhead now`, q[0] + 15, ly + 15); } } }
   // launch pulses
   const now = performance.now(); octx.lineWidth = 1.5; for (let i = pulses.length - 1; i >= 0; i--) { const p = pulses[i], age = (now - p.t) / 1400; if (age > 1) { pulses.splice(i, 1); continue; } let sx, sy, ok = true; if (S.view === '3d') { const v = xyz(p.lat, p.lon, 1.004); tmpV.copy(v).project(camera); const dx = camera.position.x - v.x, dy = camera.position.y - v.y, dz = camera.position.z - v.z; ok = v.x * dx + v.y * dy + v.z * dz > 0; sx = (tmpV.x + 1) / 2 * W; sy = (1 - tmpV.y) / 2 * H; } else { const q = proj2(p.lat, p.lon, mapGeom()); sx = q[0]; sy = q[1]; } if (!ok) continue; octx.strokeStyle = `rgba(242,178,74,${1 - age})`; octx.beginPath(); octx.arc(sx, sy, 4 + age * 26, 0, 7); octx.stroke(); }
 }
@@ -905,34 +1012,159 @@ function exitCine() {
 }
 $('#cineExit').onclick = exitCine;
 
+/* ---------- lobby screensaver ---------- */
+function easeCam(dt) { if (!camTarget.active) return; const k = 1 - Math.pow(0.08, dt); let dth = camTarget.theta - cam.theta; dth = Math.atan2(Math.sin(dth), Math.cos(dth)); cam.theta += dth * k; cam.phi += (camTarget.phi - cam.phi) * k; cam.dist += (camTarget.dist - cam.dist) * k; if (Math.abs(dth) < 0.002 && Math.abs(camTarget.dist - cam.dist) < 0.005) camTarget.active = false; }
+const lobby = { seg: null, started: 0, dur: 0, caption: null, saved: null, cursorT: 0, recent: [], base: null, count: 0, lastTimelapse: 0, lastKey: {} };
+const COOLDOWN = { manifest: 15, hq: 12, 'recent:': 8, 'up:': 8, 'num:': 10, 'ov:': 10 };
+const SHOWEL = { root: $('#show'), slide: $('#showSlide'), card: $('#showCard'), ticker: $('#tickerTrack') };
+let liveUpcoming = null;
+const fmtDate = (iso) => iso ? iso.slice(0, 10) : '';
+function img(key, h) { const i = IMAGES[key]; if (!i) return ''; return `<img src="img/${i.file}" alt="" ${h ? `style="max-height:${h}px"` : ''}><div class="show-credit">${esc(i.title.replace(/\.[a-z]+$/i, ''))}${i.author ? ' · ' + esc(i.author) : ''} · ${esc(i.license)} · Wikimedia Commons</div>`; }
+function firstImg(keys, h) { for (const k of keys || []) if (IMAGES[k]) return img(k, h); return ''; }
+function showCard(html) { const c = SHOWEL.card; c.innerHTML = html; c.classList.remove('in'); requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('in'))); }
+function showSlide(html) { const c = SHOWEL.slide; c.innerHTML = html; c.classList.remove('in'); requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('in'))); }
+function hideShow() { SHOWEL.card.classList.remove('in'); SHOWEL.slide.classList.remove('in'); }
+function pickFresh(list, keyOf) { const fresh = list.filter(x => !lobby.recent.includes(keyOf(x))); const pool = fresh.length ? fresh : list; return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null; }
+function remember(key) { lobby.recent.push(key); if (lobby.recent.length > 140) lobby.recent.shift(); }
+function restoreFilters() { const b = lobby.base; S.layers = { ...b.layers }; for (const k in FACETS) S.hidden[k] = new Set(b.hidden[k]); S.altMin = b.altMin; S.altMax = b.altMax; S.search = ''; }
+function resetScene() {
+  if (S.cine) exitCine(); S.groundLock = null; setGround(null); S.selected = null; S.follow = false; S.orbitSel = false; renderDossier();
+  S.paths = 'none'; S.fpMode = 'off'; S.spin = false; S.labels = 'selected'; S.sites = false; S.hq = true; restoreFilters(); rate = 1; paused = false; setT(Date.now()); hideShow(); lobby.caption = null;
+}
+const nroPayloads = () => OBJ.filter(o => o.layer === 'nro' && o.kind === 'payload');
+const launchesOf = (pred) => { const m = new Map(); for (const o of nroPayloads()) { if (!o.nrol || !o.date || !pred(o)) continue; if (!m.has(o.nrol)) m.set(o.nrol, o); } return [...m.values()].sort((a, b) => a.date.localeCompare(b.date)); };
+function programBlurb(fam) { const pr = CONTENT.programs[fam]; return pr ? pr.text.split('. ')[0] + '.' : ''; }
+function listRows(items) { return '<ul>' + items.map(i => `<li class="${i.nro ? 'nro' : ''}"><span class="d">${esc(i.d)}</span><span><b>${esc(i.t)}</b>${i.s ? '<br>' + esc(i.s) : ''}</span></li>`).join('') + '</ul>'; }
+function bars(pairs, color) { const max = Math.max(...pairs.map(p => p[1]), 1); return '<div class="bars">' + pairs.map(p => `<div class="bar"><span>${esc(p[0])}</span><i style="width:${Math.round(p[1] / max * 100)}%;background:${color ? color(p[0]) : 'var(--accent)'}"></i><b>${p[1]}</b></div>`).join('') + '</div>'; }
+const isMil = (l) => /USSF|NROL|NRO|SDA|GPS|Yaogan|Kosmos|Cosmos|WGS|SBIRS|GSSAP|Silent|military|reconnaissance|Shiyan|Shijian|IGS|CSO|SARah|Ofek|Ofeq|Glonass|Tianlian/i.test((l.name || '') + ' ' + (l.desc || '') + ' ' + (l.type || ''));
+
+const SEGMENTS = [
+  ['overview', 3, () => { const facets = ['function', 'orbit', 'decade', 'family', 'altBand']; const f = pickFresh(facets, x => 'ov:' + x); remember('ov:' + f); return { key: 'ov:' + f, dur: 22000, setup() { S.colorBy = f; S.spin = true; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(cam.theta + 0.7, 0.3, 3.3); applyFilters();
+      const cnt = new Map(); for (const o of shown) for (const v of vals(o, f)) cnt.set(v, (cnt.get(v) || 0) + 1); const rows = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+      showCard(`<div class="show-eyebrow">What is up there · by ${esc(FACETS[f].label.toLowerCase())}</div><h2>${inOrbitCount} satellites in orbit right now</h2>` + bars(rows, v => facetValues[f].colors[v]) + `<p class="show-credit">Solid markers use amateur-observed orbits; hollow markers sit on representative orbits.</p>`);
+      lobby.caption = { h: 'Live reconnaissance picture', s: () => `${new Date(T).toISOString().replace('T', ' ').slice(0, 16)} UTC · colored by ${FACETS[f].label.toLowerCase()}` }; } }; }],
+  ['spotlight', 7, () => { const c = shown.filter(o => o.layer === 'nro' && o.kind === 'payload' && o.tle && o.function !== 'Proliferated architecture'); const o = pickFresh(c, x => 'spot:' + x.id); if (!o) return null; remember('spot:' + o.id);
+      return { key: 'spot:' + o.id, dur: 26000, setup() { S.selected = o; S.follow = true; S.orbitSel = true; S.fpMode = 'selected'; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(o.pos ? o.pos.lon * DEG : cam.theta, o.pos ? o.pos.lat * DEG : cam.phi, o.orbit === 'LEO' ? 2.3 : 3.1);
+        showCard(`<div class="show-eyebrow">Spotlight · ${esc(o.family)}</div><h2>${esc(o.name)}${o.nick ? ' <span style="color:var(--muted)">"' + esc(o.nick) + '"</span>' : ''}</h2><div class="model">${modelSVG(o.model, colorOf(o))}</div><p>${esc(programBlurb(o.family))}</p><dl><dt>Mission</dt><dd>${esc(o.nrol || o.program)}</dd><dt>Role</dt><dd>${esc(o.function)}</dd><dt>Orbit</dt><dd>${esc(o.orbitText || o.orbit)}</dd><dt>Launched</dt><dd>${esc(o.date || '')} · ${esc(o.siteName)}</dd><dt>Rocket</dt><dd>${esc(o.rocket || '')}</dd><dt>Altitude now</dt><dd id="cardAlt">—</dd><dt>Status</dt><dd>${esc(o.status)}</dd></dl>`);
+        lobby.caption = { h: o.name, s: () => `${o.function} · ${o.orbit} · tracked by amateur observers, elements from ${o.epoch}` }; }, tick() { const el = document.getElementById('cardAlt'); if (el && o.pos) el.textContent = `${fmtN(Math.round(o.pos.alt))} km · ${o.pos.lat.toFixed(1)}°, ${o.pos.lon.toFixed(1)}° · ${speedKmS(o).toFixed(2)} km/s`; } }; }],
+  ['program', 5, () => { const fams = Object.keys(CONTENT.programs).filter(f => OBJ.some(o => o.family === f)); const fam = pickFresh(fams, x => 'prog:' + x); if (!fam) return null; remember('prog:' + fam); const pr = CONTENT.programs[fam]; const members = OBJ.filter(o => o.family === fam);
+      const prog = members.find(o => o.kind === 'program'); const alive = members.filter(o => inOrbitAt(o, Date.now()) && o.pos);
+      return { key: 'prog:' + fam, dur: 32000, setup() { S.hidden.family = new Set(facetValues.family.keys.filter(k => k !== fam)); S.layers.program = true; S.layers.rep = true; applyFilters();
+        if (!alive.length) { const t0 = Math.min(...members.map(o => o.t0).filter(isFinite)), t1 = prog ? ms(prog.endDate) : Math.max(...members.map(o => isFinite(o.t1) ? o.t1 : o.t0 + 3e10)); setT(t0 + (t1 - t0) * 0.6); rate = 3600; }
+        S.paths = 'full'; S.spin = true; pathsDirty = true; flyTo(cam.theta + 0.5, 0.35, 3.2);
+        const n = prog ? prog.launches : launchesOf(o => o.family === fam).length || members.length;
+        showSlide(`<div class="show-eyebrow">Program file</div><h1>${esc(fam)}</h1><div class="years">${esc(pr.years)} · ${n} launch${n === 1 ? '' : 'es'}</div><p><b>${esc(pr.head)}.</b> ${esc(pr.text)}</p>${firstImg(pr.images, 260)}`);
+        lobby.caption = { h: fam, s: () => alive.length ? `${alive.length} still in orbit · live positions` : `showing ${new Date(T).getUTCFullYear()} · representative orbits for the program era` }; } }; }],
+  ['fact', 7, () => { const f = pickFresh(CONTENT.facts, x => 'fact:' + x.head); if (!f) return null; remember('fact:' + f.head); const siteFor = { vandenberg: 'Vandenberg', 'delta4h-vafb': 'Vandenberg', cape: 'Cape Canaveral', 'shuttle-sts27': 'Kennedy Space Center', 'electron-nrol': 'Mahia (Rocket Lab)' }[f.image];
+      return { key: 'fact:' + f.head, dur: 20000, setup() { S.spin = !siteFor; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; if (siteFor) { S.sites = true; flyTo(SITES[siteFor][1] * DEG, SITES[siteFor][0] * DEG, 2.4); } else flyTo(cam.theta + 0.5, 0.25 + Math.random() * 0.4, 3.4);
+        showCard(`<div class="show-eyebrow">Did you know</div><h2>${esc(f.head)}</h2>${img(f.image, 200)}<p>${esc(f.text)}</p>`); lobby.caption = { h: 'From the files', s: () => f.head }; } }; }],
+  ['site', 2, () => { const names = Object.keys(CONTENT.sites); const name = pickFresh(names, x => 'site:' + x); if (!name) return null; remember('site:' + name); const st = CONTENT.sites[name]; const ls = launchesOf(o => o.siteName === name); const last = ls.slice(-4).reverse();
+      return { key: 'site:' + name, dur: 24000, setup() { S.sites = true; flyTo(SITES[name][1] * DEG, SITES[name][0] * DEG, 2.0); S.hidden.siteName = new Set(facetValues.siteName.keys.filter(k => k !== name)); applyFilters(); S.paths = 'trail'; S.trailH = 1.5; pathsDirty = true;
+        showCard(`<div class="show-eyebrow">Launch site</div><h2>${esc(st.title)}</h2>${img(st.image, 180)}<p>${esc(st.text)}</p><dl><dt>NRO missions</dt><dd>${ls.length} since ${ls.length ? ls[0].date.slice(0, 4) : '—'}</dd>${last.map(o => `<dt>${esc(o.date.slice(0, 7))}</dt><dd>${esc(o.nrol)} · ${esc(o.rocket || '')}</dd>`).join('')}</dl>`);
+        lobby.caption = { h: name, s: () => `${shown.length} satellites launched from here are in orbit now` }; } }; }],
+  ['hq', 2, () => ({ key: 'hq', dur: 24000, setup() { S.fpMode = 'circles'; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(HQ.lon * DEG, HQ.lat * DEG, 2.1); S.groundLock = { lat: HQ.lat, lon: HQ.lon }; setGround(S.groundLock); lobby.caption = { h: 'Overhead at Roster-5 HQ', s: () => `${groundCount} satellites have Lafayette, Colorado above their horizon right now` };
+      showCard(`<div class="show-eyebrow">Right now over Lafayette</div><h2 id="hqCount">—</h2><p>Satellites with Roster-5 HQ above their horizon. Dimmed markers cannot see Colorado at this moment; the bright circles show the coverage of those that can.</p><dl id="hqList"></dl>`); }, tick() { const el = document.getElementById('hqCount'); if (el) el.textContent = `${groundCount} overhead`; const l = document.getElementById('hqList'); if (l && (lobby.count++ % 20 === 0)) { const vis = shown.filter(o => !o.dim).slice(0, 6); l.innerHTML = vis.map(o => `<dt>${esc(o.family)}</dt><dd>${esc(o.name)} · ${o.pos ? fmtN(Math.round(o.pos.alt)) + ' km' : ''}</dd>`).join(''); } } })],
+  ['recent', 4, () => { const all = LAUNCHES.previous || []; if (!all.length) return null; const variants = [['world', 'Recent launches worldwide', l => true], ['mil', 'Recent military and intelligence launches', isMil]]; const v = pickFresh(variants, x => 'recent:' + x[0]); remember('recent:' + v[0]);
+      const items = all.filter(v[2]).slice(0, 9).map(l => ({ d: fmtDate(l.net), t: l.name, s: `${l.rocket || ''} · ${l.provider || ''} · ${l.location || ''}${l.status && l.status !== 'Success' ? ' · ' + l.status : ''}`, nro: l.nro }));
+      return { key: 'recent:' + v[0], dur: 28000, setup() { S.spin = true; S.layers.allied = v[0] === 'mil'; S.layers.usother = v[0] === 'mil'; applyFilters(); flyTo(cam.theta + 0.6, 0.3, 3.5); showSlide(`<div class="show-eyebrow">Launch log</div><h1>${esc(v[1])}</h1><div class="years">as of ${esc(LAUNCHES.asof)}</div>` + listRows(items)); lobby.caption = { h: v[1], s: () => 'NRO missions highlighted in gold · source: Launch Library 2' }; } }; }],
+  ['upcoming', 4, () => { const all = (liveUpcoming || LAUNCHES.upcoming || []).filter(l => !/Success|Failure|In Flight/.test(l.status || '')); if (!all.length) return null; const variants = [['world', 'Upcoming launches', l => true], ['mil', 'Upcoming military and intelligence launches', isMil], ['nro', 'Next NRO launches', l => l.nro]]; const v = pickFresh(variants, x => 'up:' + x[0]); remember('up:' + v[0]);
+      const list = all.filter(v[2]).slice(0, 8); if (!list.length) return null; const next = list[0];
+      return { key: 'up:' + v[0], dur: 28000, setup() { S.spin = true; flyTo(cam.theta + 0.6, 0.3, 3.5); showSlide(`<div class="show-eyebrow">Manifest</div><h1>${esc(v[1])}</h1><div class="years">${liveUpcoming ? 'live from Launch Library 2' : 'as of ' + esc(LAUNCHES.asof)}</div><p>Next: <b>${esc(next.name)}</b> · ${esc(next.rocket || '')} from ${esc(next.location || '')}</p><div class="countdown" id="cdown">—</div>` + listRows(list.map(l => ({ d: fmtDate(l.net), t: l.name, s: `${l.rocket || ''} · ${l.provider || ''} · ${l.location || ''} · ${l.status || ''}`, nro: l.nro })))); lobby.caption = { h: v[1], s: () => 'Countdown to the next one · NRO missions in gold' }; },
+        tick() { const el = document.getElementById('cdown'); if (!el) return; const dt = Date.parse(next.net) - Date.now(); if (!isFinite(dt)) { el.textContent = 'date pending'; return; } const a = Math.abs(dt), d = Math.floor(a / 86400000), h = Math.floor(a % 86400000 / 3600000), m = Math.floor(a % 3600000 / 60000), sec = Math.floor(a % 60000 / 1000); el.textContent = (dt < 0 ? 'T+ ' : 'T− ') + `${d}d ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`; } }; }],
+  ['manifest', 3, () => { const now = Date.now(); const past = launchesOf(o => o.t0 <= now).slice(-7).reverse(); const future = OBJ.filter(o => o.status === 'Awaiting launch'); const seen = new Set(); const fut = future.filter(o => !seen.has(o.nrol) && seen.add(o.nrol)).sort((a, b) => (a.date || '').localeCompare(b.date || '')).slice(0, 7);
+      return { key: 'manifest', dur: 28000, setup() { S.spin = true; S.sites = true; flyTo(-100 * DEG, 0.6, 3.4); showSlide(`<div class="show-eyebrow">NRO launch record</div><h1>Recent and planned missions</h1>` + listRows(past.map(o => ({ d: o.date, t: `${o.nrol}${o.nick ? ' "' + o.nick + '"' : ''}`, s: `${o.program} · ${o.rocket || ''} · ${o.siteName}`, nro: true }))) + `<div class="show-eyebrow" style="margin-top:14px">On the manifest</div>` + listRows(fut.map(o => ({ d: (o.date || '').slice(0, 4) + (o.dateApprox ? ' TBD' : ''), t: o.nrol, s: `${o.program !== 'Undisclosed' ? o.program + ' · ' : ''}${o.rocket || ''} · ${o.siteName}` })))); lobby.caption = { h: 'NRO launch record', s: () => `${launchesOf(o => true).length} announced NROL missions since 1996` }; } }; }],
+  ['allied', 3, () => { const cands = OBJ.filter(o => (o.layer === 'allied' || o.layer === 'usother') && o.kind === 'payload' && o.tle && o.nation !== 'Unknown' && inOrbitAt(o, Date.now())); const o = pickFresh(cands, x => 'ally:' + x.id); if (!o) return null; remember('ally:' + o.id);
+      return { key: 'ally:' + o.id, dur: 24000, setup() { S.layers.allied = true; S.layers.usother = true; S.hidden.nation = new Set(facetValues.nation.keys.filter(k => k !== o.nation)); S.colorBy = 'nation'; applyFilters(); S.selected = o; S.follow = true; S.orbitSel = true; S.fpMode = 'selected'; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(o.pos ? o.pos.lon * DEG : cam.theta, o.pos ? o.pos.lat * DEG : cam.phi, 2.5);
+        showCard(`<div class="show-eyebrow">${o.layer === 'allied' ? 'Allied reconnaissance · ' + esc(o.nation) : 'Other U.S. military assets'}</div><h2>${esc(o.name)}</h2><div class="model">${modelSVG(o.model, colorOf(o))}</div><dl><dt>Program</dt><dd>${esc(o.program)}</dd><dt>Operator</dt><dd>${esc(o.owner)}</dd><dt>Role</dt><dd>${esc(o.function)}</dd><dt>Orbit</dt><dd>${esc(o.orbit)} · ${fmtN(o.perigee)} × ${fmtN(o.apogee)} km · ${o.inc}°</dd><dt>Launched</dt><dd>${esc(o.date || '')} · ${esc(o.siteName)}</dd></dl>`); lobby.caption = { h: `${o.nation}: ${o.program}`, s: () => `${shown.length} ${o.nation} objects tracked · ${o.function}` }; } }; }],
+  ['decade', 3, () => { const decs = ['1960s', '1970s', '1980s', '1990s', '2000s', '2010s', '2020s']; const d = pickFresh(decs, x => 'dec:' + x); remember('dec:' + d); const y0 = +d.slice(0, 4); const members = OBJ.filter(o => o.layer === 'nro' && o.decades.includes(d)); const fams = new Map(); for (const o of members) fams.set(o.family, (fams.get(o.family) || 0) + (o.kind === 'program' ? o.launches : 1)); const rows = [...fams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8); const pr = rows.map(r => CONTENT.programs[r[0]]).find(x => x && x.images.length);
+      return { key: 'dec:' + d, dur: 30000, setup() { S.hidden.decade = new Set(facetValues.decade.keys.filter(k => k !== d)); S.layers.program = true; applyFilters(); setT(Math.min(Date.now(), Date.UTC(y0 + 9, 11, 1))); rate = 86400; S.paths = 'full'; S.spin = true; pathsDirty = true; flyTo(cam.theta + 0.5, 0.3, 3.3); S.colorBy = 'family';
+        showSlide(`<div class="show-eyebrow">Decade</div><h1>The ${d}</h1><div class="years">${members.length} NRO objects launched${d === '2020s' ? ', most of them Starshield' : ''}</div>` + bars(rows, v => facetValues.family.colors[v]) + (pr ? firstImg(pr.images, 200) : '')); lobby.caption = { h: `The ${d}`, s: () => `showing ${new Date(T).toISOString().slice(0, 10)} · one day per second` }; } }; }],
+  ['numbers', 3, () => { const variants = [['function', 'Roles of the fleet'], ['siteName', 'Where they launch from'], ['orbit', 'Where they fly'], ['family', 'Program families'], ['altBand', 'How high they fly']]; const v = pickFresh(variants, x => 'num:' + x[0]); remember('num:' + v[0]); const pay = nroPayloads(); const cnt = new Map(); for (const o of pay) for (const x of vals(o, v[0])) cnt.set(x, (cnt.get(x) || 0) + 1); const rows = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 9);
+      return { key: 'num:' + v[0], dur: 22000, setup() { S.colorBy = v[0]; S.spin = true; applyFilters(); flyTo(cam.theta + 0.6, 0.3, 3.4); showSlide(`<div class="show-eyebrow">By the numbers</div><h1>${esc(v[1])}</h1><div class="years">${pay.length} NRO payloads on record, 1968 to today</div>` + bars(rows, x => facetValues[v[0]].colors[x])); lobby.caption = { h: v[1], s: () => `${pay.filter(o => inOrbitAt(o, Date.now())).length} of them are in orbit now` }; } }; }],
+  ['timelapse', 1, () => { if (performance.now() - lobby.lastTimelapse < 8 * 60000) return null; lobby.lastTimelapse = performance.now(); return { key: 'timelapse', dur: 95000, setup() { enterCine(); rate = 2.4 * 31557600; flyTo(cam.theta, 0.3, 4.2); lobby.caption = null; }, tick() { if (T >= Date.now() - 86400000 * 30) nextSegment(); } }; }],
+];
+function nextSegment() {
+  resetScene(); let seg = null; for (let tries = 0; tries < 12 && !seg; tries++) { const total = SEGMENTS.reduce((a, s) => a + s[1], 0); let r = Math.random() * total; let pick = SEGMENTS[0]; for (const sg of SEGMENTS) { r -= sg[1]; if (r <= 0) { pick = sg; break; } } if (lobby.seg && pick[0] === lobby.seg.type && pick[0] !== 'spotlight' && pick[0] !== 'fact') continue; try { const b = pick[2](); if (b) { const cd = Object.entries(COOLDOWN).find(([k]) => b.key.startsWith(k)); const last = lobby.lastKey[b.key] || 0; if (cd && tries < 10 && performance.now() - last < cd[1] * 60000) continue; b.type = pick[0]; seg = b; } } catch (e) { console.warn('segment failed', pick[0], e); } }
+  if (!seg) seg = SEGMENTS[0][2]();
+  lobby.seg = seg; lobby.started = performance.now(); lobby.dur = seg.dur; lobby.count = 0; lobby.lastKey[seg.key] = performance.now(); try { seg.setup(); } catch (e) { console.warn('setup failed', e); } applyStyle(); updatePositions(); pathsDirty = true; buildTicker();
+}
+function buildTicker() { const parts = []; const up = (liveUpcoming || LAUNCHES.upcoming || []).filter(l => !/Success|Failure/.test(l.status || '')).slice(0, 6); for (const l of up) parts.push(`<span class="n">NEXT</span> ${esc(fmtDate(l.net))} ${esc(l.name)} · ${esc(l.rocket || '')} · ${esc(l.location || '')}`); for (const l of (LAUNCHES.previous || []).slice(0, 6)) parts.push(`<span class="n">LAUNCHED</span> ${esc(fmtDate(l.net))} ${esc(l.name)} · ${esc(l.location || '')}`); parts.push(`<span class="n">NOW</span> ${inOrbitCount} reconnaissance satellites in orbit`); const facts = CONTENT.facts.slice().sort(() => Math.random() - 0.5).slice(0, 4); for (const f of facts) parts.push(`<span class="n">FILE</span> ${esc(f.head)}: ${esc(f.text)}`); SHOWEL.ticker.innerHTML = parts.join('<span class="sep">◆</span>'); SHOWEL.ticker.dataset.x = String(W); }
+function tickTicker(dt) { const t = SHOWEL.ticker; let x = parseFloat(t.dataset.x || W); x -= 70 * dt; if (x < -t.scrollWidth) x = W; t.dataset.x = String(x); t.style.transform = `translateX(${x}px)`; }
+function lobbyTick(now, dt) {
+  if (!S.lobby) return; tickTicker(dt);
+  const seg = lobby.seg; if (!seg) return; if (seg.tick) { try { seg.tick(); } catch (e) {} }
+  if (now - lobby.started > lobby.dur) nextSegment();
+  if (now - lobby.cursorT > 3000) document.body.classList.remove('showcursor');
+}
+function drawLobby(now) {
+  if (!S.lobby) return; const el = now - lobby.started; const fadeIn = Math.min(1, el / 900), fadeOut = Math.min(1, (lobby.dur - el) / 900); const a = Math.max(0, Math.min(fadeIn, fadeOut));
+  const vg = octx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.45, W / 2, H / 2, Math.max(W, H) * 0.75); vg.addColorStop(0, 'rgba(3,6,13,0)'); vg.addColorStop(1, 'rgba(3,6,13,0.75)'); octx.fillStyle = vg; octx.fillRect(0, 0, W, H);
+  octx.textAlign = 'left'; octx.textBaseline = 'alphabetic'; const m = Math.max(24, W * 0.03);
+  octx.fillStyle = '#e8edf7'; octx.font = `700 ${Math.round(Math.max(26, W * 0.022))}px "Barlow Condensed", sans-serif`; octx.fillText('NRO ORBIT WATCH', m, m + 26);
+  octx.fillStyle = '#f2b24a'; octx.fillRect(m, m + 36, 46, 3);
+  octx.fillStyle = '#90a0bd'; octx.font = `500 ${Math.round(Math.max(12, W * 0.009))}px "IBM Plex Mono", monospace`; octx.fillText(new Date(T).toISOString().replace('T', ' ').slice(0, 19) + ' UTC' + (isLive() ? '' : '  ·  archive view'), m, m + 60);
+  octx.textAlign = 'right'; octx.fillStyle = '#4fd1c5'; octx.font = `600 ${Math.round(Math.max(14, W * 0.011))}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SOFTWARE', W - m, m + 26); octx.fillStyle = '#90a0bd'; octx.font = `500 ${Math.round(Math.max(11, W * 0.008))}px "IBM Plex Sans", sans-serif`; octx.fillText('Lafayette, Colorado', W - m, m + 46); octx.fillStyle = '#5d6b85'; octx.fillText('Prepared by Chad Burge', W - m, m + 64);
+  if (lobby.caption && !S.cine) { const right = SHOWEL.slide.classList.contains('in'); octx.globalAlpha = a; octx.textAlign = right ? 'right' : 'left'; const hy = H - m - 70, x = right ? W - m - 16 : m + 16; octx.fillStyle = '#f2b24a'; octx.fillRect(right ? W - m - 4 : m, hy - 34, 4, 62);
+    octx.fillStyle = '#fff3d6'; octx.font = `700 ${Math.round(Math.max(28, W * 0.026))}px "Barlow Condensed", sans-serif`; octx.fillText(lobby.caption.h, x, hy);
+    octx.fillStyle = '#c9d2e3'; octx.font = `400 ${Math.round(Math.max(13, W * 0.011))}px "IBM Plex Sans", sans-serif`; octx.fillText(lobby.caption.s(), x, hy + 26); octx.globalAlpha = 1; }
+  const dark = 1 - a; if (dark > 0 && !S.cine) { octx.fillStyle = `rgba(3,6,13,${dark * 0.85})`; octx.fillRect(0, 0, W, H); }
+  octx.textBaseline = 'middle';
+}
+function enterLobby() {
+  if (S.lobby) return; if (S.cine) exitCine();
+  lobby.saved = { paths: S.paths, labels: S.labels, fpMode: S.fpMode, spin: S.spin, sites: S.sites, view: S.view, style: S.style, dist: cam.dist, phi: cam.phi, theta: cam.theta, hq: S.hq, rail: $('#rail').hidden, colorBy: S.colorBy, trailH: S.trailH, layers: { ...S.layers }, hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set(S.hidden[k])])), altMin: S.altMin, altMax: S.altMax };
+  lobby.base = { layers: { ...S.layers, nro: true }, hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set()])), altMin: 150, altMax: 45000 };
+  S.lobby = true; document.body.classList.add('lobby'); $('#lobbyExit').hidden = false; $('#rail').hidden = true; SHOWEL.root.hidden = false; setView('3d'); S.style = 'realistic'; applyStyle();
+  try { const r = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (r && r.catch) r.catch(() => {}); } catch (e) {}
+  lobby.lastTimelapse = performance.now() - 6 * 60000; resize(); S.spin = true; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; applyStyle(); updatePositions();
+  const intro = $('#intro'); intro.hidden = false; requestAnimationFrame(() => intro.classList.add('in')); setTimeout(() => { intro.classList.remove('in'); setTimeout(() => { intro.hidden = true; }, 1300); if (S.lobby) nextSegment(); }, 5200);
+  try { const ctl = new AbortController(); setTimeout(() => ctl.abort(), 9000); fetch('https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=30&mode=detailed', { signal: ctl.signal }).then(r => r.json()).then(j => { if (j && j.results) { liveUpcoming = j.results.map(l => { const mi = l.mission || {}, pad = l.pad || {}, loc = pad.location || {}, rk = ((l.rocket || {}).configuration) || {}; return { name: l.name, net: l.net, status: (l.status || {}).abbrev, provider: (l.launch_service_provider || {}).name, rocket: rk.full_name || rk.name, location: loc.name, type: mi.type, desc: (mi.description || '').slice(0, 300), nro: /NRO/.test(l.name || '') || /reconnaissance/i.test(mi.description || '') }; }); buildTicker(); } }).catch(() => {}); } catch (e) {}
+}
+function exitLobby() {
+  if (!S.lobby) return; if (S.cine) exitCine(); S.lobby = false; document.body.classList.remove('lobby', 'showcursor'); $('#lobbyExit').hidden = true; SHOWEL.root.hidden = true; hideShow(); camTarget.active = false; S.groundLock = null; setGround(null); S.selected = null; S.follow = false; S.orbitSel = false; renderDossier(); lobby.seg = null;
+  const v = lobby.saved; Object.assign(S, { paths: v.paths, labels: v.labels, fpMode: v.fpMode, spin: v.spin, sites: v.sites, hq: v.hq, colorBy: v.colorBy, trailH: v.trailH, layers: v.layers, altMin: v.altMin, altMax: v.altMax }); for (const k in FACETS) S.hidden[k] = v.hidden[k]; S.style = v.style; cam.dist = v.dist; cam.phi = v.phi; cam.theta = v.theta; $('#rail').hidden = v.rail; setView(v.view);
+  ['#pathSeg', '#labelSeg', '#fpSeg'].forEach((id, i) => { const key = ['paths', 'labels', 'fpMode'][i]; $(id).querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S[key]))); });
+  $('#spinBtn').setAttribute('aria-pressed', String(S.spin)); $('#hqMark').checked = S.hq; $('#colorBy').value = S.colorBy; rate = 1; paused = false; setT(Date.now()); buildLayers(); applyFilters(); applyStyle(); updatePositions(); pathsDirty = true; resize();
+  if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+}
+window.__nextSegment = nextSegment; window.__segType = () => lobby.seg && lobby.seg.type + ':' + lobby.seg.key;
+$('#lobbyBtn').onclick = enterLobby; $('#lobbyExit').onclick = exitLobby;
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && S.lobby && lobby.started && performance.now() - lobby.started > 1500) exitLobby(); });
+ov.addEventListener('pointermove', () => { if (S.lobby) { lobby.cursorT = performance.now(); document.body.classList.add('showcursor'); } });
+if (location.hash === '#lobby') setTimeout(enterLobby, 1200);
+window.addEventListener('hashchange', () => { if (location.hash === '#lobby') enterLobby(); else if (S.lobby) exitLobby(); });
+
 /* ---------- picking ---------- */
-function pick(x, y) { let best = null, bd = 14 * 14; for (const o of shown) { if (!o.vis) continue; const d = (o.sx - x) ** 2 + (o.sy - y) ** 2; if (d < bd) { bd = d; best = o; } } return best; }
+function pick(x, y) { let best = null, bd = 16 * 16; for (const o of shown) { if (!o.vis) continue; const d = (o.sx - x) ** 2 + (o.sy - y) ** 2; if (d < bd) { bd = d; best = o; } } return best; }
+function pickHQ(x, y) { if (!S.hq) return false; const q = padScreen(HQ.lat, HQ.lon); return !!(q && (q[0] - x) ** 2 + (q[1] - y) ** 2 < 144); }
 function pickSite(x, y) { if (!S.sites) return null; const G = S.view === '2d' ? mapGeom() : null; for (const k in SITES) { let sx, sy; if (G) { [sx, sy] = proj2(SITES[k][0], SITES[k][1], G); } else { const v = xyz(SITES[k][0], SITES[k][1], 1.004); tmpV.copy(v).project(camera); const dx = camera.position.x - v.x, dy = camera.position.y - v.y, dz = camera.position.z - v.z; if (v.x * dx + v.y * dy + v.z * dz < 0) continue; sx = (tmpV.x + 1) / 2 * W; sy = (1 - tmpV.y) / 2 * H; } if ((sx - x) ** 2 + (sy - y) ** 2 < 100) return k; } return null; }
 
 /* ---------- interaction ---------- */
 let drag = null, pinch = null, moved = false;
-ov.addEventListener('pointerdown', e => { ov.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, id: e.pointerId }; moved = false; ov.classList.add('dragging'); });
+ov.addEventListener('pointerdown', e => { if (S.lobby) return; ov.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, id: e.pointerId }; moved = false; ov.classList.add('dragging'); });
 ov.addEventListener('pointermove', e => {
   const r = ov.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
   if (drag && drag.id === e.pointerId && !pinch) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
-    if (S.view === '3d') { const k = 0.005 * Math.min(1, (cam.dist - 1) / 2.4); cam.theta -= dx * k; cam.phi += dy * k; S.follow = false; $('#followBtn').setAttribute('aria-pressed', 'false'); }
+    if (S.view === '3d') { camTarget.active = false; const k = 0.005 * Math.min(1, (cam.dist - 1) / 2.4); cam.theta -= dx * k; cam.phi += dy * k; S.follow = false; $('#followBtn').setAttribute('aria-pressed', 'false'); }
     else { const G = mapGeom(); map2d.cx -= dx / G.s; map2d.cy += dy / G.s; clampMap(); }
     drag.x = e.clientX; drag.y = e.clientY; return; }
-  const o = pick(x, y); if (o !== S.hovered) { S.hovered = o; if (S.fpMode !== 'off') updatePositions(); } const site = o ? null : pickSite(x, y); ov.classList.toggle('pick', !!(o || site));
-  setGround(S.hoverCov && !o && !site ? groundAt(x, y) : null);
+  const o = pick(x, y); if (o !== S.hovered) { S.hovered = o; if (S.fpMode !== 'off') updatePositions(); } const hq = !o && pickHQ(x, y); const site = o || hq ? null : pickSite(x, y); ov.classList.toggle('pick', !!(o || site || hq));
+  if (S.groundLock) setGround(S.groundLock); else setGround(S.hoverCov && !o && !site ? (hq ? { lat: HQ.lat, lon: HQ.lon } : groundAt(x, y)) : null);
   const tip = $('#tip'); if (o) { tip.hidden = false; tip.innerHTML = `<b>${esc(o.name)}</b><div class="m">${esc(o.program)}${o.nrol ? ' · ' + esc(o.nrol) : ''}</div><div class="m">${o.pos ? fmtPos(o.pos) : ''}${o.pos && o.pos.rep ? ' · representative' : ''}</div>`; placeTip(x, y); }
+  else if (hq) { tip.hidden = false; tip.innerHTML = `<b>${HQ.name}</b><div class="m">${HQ.addr}</div><div class="m">${groundCount} of ${shown.length} satellites overhead now · click to ${S.groundLock ? 'unlock' : 'lock'} this view</div>`; placeTip(x, y); }
   else if (site) { tip.hidden = false; const n = shown.filter(q => q.siteName === site).length; tip.innerHTML = `<b>${esc(site)}</b><div class="m">launch site · ${n} shown object${n === 1 ? '' : 's'} launched here</div>`; placeTip(x, y); }
   else if (S.ground) { tip.hidden = false; tip.innerHTML = `<b>${groundCount} of ${shown.length} can see this spot</b><div class="m">${S.ground.lat.toFixed(1)}°, ${S.ground.lon.toFixed(1)}° · above the horizon from here</div>`; placeTip(x, y); }
   else tip.hidden = true;
 });
 function placeTip(x, y) { const tip = $('#tip'); tip.style.left = Math.min(W - 250, x + 14) + 'px'; tip.style.top = Math.max(8, y - 10) + 'px'; }
-ov.addEventListener('pointerup', e => { ov.classList.remove('dragging'); if (drag && !moved) { const r = ov.getBoundingClientRect(); const o = pick(e.clientX - r.left, e.clientY - r.top); if (o) select(o); else { const site = pickSite(e.clientX - r.left, e.clientY - r.top); if (site) { S.hidden.siteName = new Set(facetValues.siteName.keys.filter(k => k !== site)); buildFilters(); applyFilters(); toast('Showing only launches from ' + site + '. Use Filters to reset.'); } else select(null); } } drag = null; });
+ov.addEventListener('pointerup', e => { if (S.lobby) return; ov.classList.remove('dragging'); if (drag && !moved) { const r = ov.getBoundingClientRect(); const o = pick(e.clientX - r.left, e.clientY - r.top); if (o) select(o); else if (pickHQ(e.clientX - r.left, e.clientY - r.top)) { S.groundLock = S.groundLock ? null : { lat: HQ.lat, lon: HQ.lon }; setGround(S.groundLock); toast(S.groundLock ? 'Locked on Roster-5 HQ: satellites that cannot see Lafayette are dimmed.' : 'Unlocked.'); } else { const site = pickSite(e.clientX - r.left, e.clientY - r.top); if (site) { S.hidden.siteName = new Set(facetValues.siteName.keys.filter(k => k !== site)); buildFilters(); applyFilters(); toast('Showing only launches from ' + site + '. Use Filters to reset.'); } else select(null); } } drag = null; });
 ov.addEventListener('pointercancel', () => { drag = null; pinch = null; ov.classList.remove('dragging'); });
-ov.addEventListener('pointerleave', () => { setGround(null); S.hovered = null; $('#tip').hidden = true; });
+ov.addEventListener('pointerleave', () => { if (!S.groundLock) setGround(null); S.hovered = null; $('#tip').hidden = true; });
+$('#hqMark').checked = S.hq; $('#hqMark').onchange = e => { S.hq = e.target.checked; if (!S.hq && S.groundLock) { S.groundLock = null; setGround(null); } persist(); };
 $('#borders').checked = S.borders; $('#borders').onchange = e => { S.borders = e.target.checked; borderLines.visible = S.borders; persist(); };
 $('#cities').checked = S.cities; $('#cities').onchange = e => { S.cities = e.target.checked; cityPts.visible = S.cities; persist(); };
 $('#hoverCov').checked = S.hoverCov; $('#hoverCov').onchange = e => { S.hoverCov = e.target.checked; if (!S.hoverCov) setGround(null); persist(); };
-ov.addEventListener('wheel', e => { e.preventDefault(); const f = Math.exp(e.deltaY * 0.0012); if (S.view === '3d') cam.dist = 1 + (cam.dist - 1) * f; else { const r = ov.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, G = mapGeom(); const lon = (x - G.ox) / G.s - 180, lat = 90 - (y - G.oy) / G.s; map2d.zoom = Math.min(10, Math.max(1, map2d.zoom / f)); const G2 = mapGeom(); map2d.cx += (lon - ((x - G2.ox) / G2.s - 180)); map2d.cy += (lat - (90 - (y - G2.oy) / G2.s)); clampMap(); } }, { passive: false });
+ov.addEventListener('wheel', e => { e.preventDefault(); if (S.lobby) return; const f = Math.exp(e.deltaY * 0.0012); if (S.view === '3d') cam.dist = 1 + (cam.dist - 1) * f; else { const r = ov.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, G = mapGeom(); const lon = (x - G.ox) / G.s - 180, lat = 90 - (y - G.oy) / G.s; map2d.zoom = Math.min(10, Math.max(1, map2d.zoom / f)); const G2 = mapGeom(); map2d.cx += (lon - ((x - G2.ox) / G2.s - 180)); map2d.cy += (lat - (90 - (y - G2.oy) / G2.s)); clampMap(); } }, { passive: false });
 ov.addEventListener('touchstart', e => { if (e.touches.length === 2) { pinch = { d: Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY) }; } }, { passive: true });
 ov.addEventListener('touchmove', e => { if (pinch && e.touches.length === 2) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); const f = pinch.d / d; if (S.view === '3d') cam.dist = 1 + (cam.dist - 1) * f; else { map2d.zoom = Math.min(10, Math.max(1, map2d.zoom / f)); clampMap(); } pinch.d = d; } }, { passive: true });
 ov.addEventListener('touchend', () => { pinch = null; });
@@ -1035,19 +1267,19 @@ const trailHours = v => Math.pow(1008, v / 1000) / 6, trailInv = h => Math.round
 function trailLabel(h) { return h < 1 ? Math.round(h * 60) + ' min' : h < 24 ? (h < 3 ? h.toFixed(1) : Math.round(h)) + ' h' : (h / 24).toFixed(h < 48 ? 1 : 0) + ' d'; }
 $('#trailLen').value = trailInv(S.trailH); $('#trailLab').textContent = trailLabel(S.trailH);
 $('#trailLen').addEventListener('input', e => { S.trailH = trailHours(+e.target.value); $('#trailLab').textContent = trailLabel(S.trailH); persist(); if (S.paths === 'trail') pathsDirty = true; });
-$('#zoomIn').onclick = () => { if (S.view === '3d') cam.dist *= 0.8; else { map2d.zoom = Math.min(10, map2d.zoom * 1.25); clampMap(); } };
-$('#zoomOut').onclick = () => { if (S.view === '3d') cam.dist /= 0.8; else { map2d.zoom = Math.max(1, map2d.zoom / 1.25); clampMap(); } };
+$('#zoomIn').onclick = () => { camTarget.active = false; if (S.view === '3d') cam.dist *= 0.8; else { map2d.zoom = Math.min(10, map2d.zoom * 1.25); clampMap(); } };
+$('#zoomOut').onclick = () => { camTarget.active = false; if (S.view === '3d') cam.dist /= 0.8; else { map2d.zoom = Math.max(1, map2d.zoom / 1.25); clampMap(); } };
 $('#spinBtn').onclick = () => { S.spin = !S.spin; $('#spinBtn').setAttribute('aria-pressed', String(S.spin)); if (S.spin) { S.follow = false; $('#followBtn').setAttribute('aria-pressed', 'false'); } };
-$('#resetView').onclick = () => { cam.theta = -1.4; cam.phi = 0.5; cam.dist = S.spacing === 'true' ? 4.5 : 3.4; map2d.zoom = 1; map2d.cx = 0; map2d.cy = 0; S.spin = false; $('#spinBtn').setAttribute('aria-pressed', 'false'); };
+$('#resetView').onclick = () => { camTarget.active = false; cam.theta = -1.4; cam.phi = 0.5; cam.dist = S.spacing === 'true' ? 4.5 : 3.4; map2d.zoom = 1; map2d.cx = 0; map2d.cy = 0; S.spin = false; $('#spinBtn').setAttribute('aria-pressed', 'false'); };
 seg('#fpSeg', 'fpMode', () => { updatePositions(); }); seg('#pathSeg', 'paths', () => { pathsDirty = true; }); seg('#labelSeg', 'labels'); seg('#spaceSeg', 'spacing', () => { cam.dist = S.spacing === 'true' ? 4.5 : 3.4; pathsDirty = true; updatePositions(); });
 
 /* ---------- time deck ---------- */
 const scrub = $('#scrub');
-function setT(t) { T = Math.max(TMIN, Math.min(TMAX, t)); lastPulseT = T; refilter(); updatePositions(); pathsDirty = true; }
+function setT(t) { T = Math.max(TMIN, Math.min(TMAX, t)); liveOffset = T - Date.now(); lastPulseT = T; refilter(); updatePositions(); pathsDirty = true; }
 scrub.addEventListener('input', () => { setT(TMIN + (TMAX - TMIN) * scrub.value / 100000); });
-$('#rate').value = '1'; $('#rate').onchange = e => { rate = +e.target.value; };
-$('#playBtn').onclick = () => { paused = !paused; $('#playBtn').textContent = paused ? '▶' : '❚❚'; $('#playBtn').setAttribute('aria-label', paused ? 'Play' : 'Pause'); };
-$('#liveBtn').onclick = () => { exitCine(); rate = 1; $('#rate').value = '1'; paused = false; $('#playBtn').textContent = '❚❚'; setT(Date.now()); };
+$('#rate').value = '1'; $('#rate').onchange = e => { rate = +e.target.value; liveOffset = T - Date.now(); };
+$('#playBtn').onclick = () => { paused = !paused; if (!paused && rate === 1) liveOffset = T - Date.now(); $('#playBtn').textContent = paused ? '▶' : '❚❚'; $('#playBtn').setAttribute('aria-label', paused ? 'Play' : 'Pause'); };
+$('#liveBtn').onclick = () => { exitCine(); rate = 1; $('#rate').value = '1'; paused = false; $('#playBtn').textContent = '❚❚'; setT(Date.now()); liveOffset = 0; };
 $('#lapseBtn').onclick = () => { if (S.cine) { setT(TMIN); paused = false; $('#playBtn').textContent = '❚❚'; } else enterCine(); };
 { const t = $('#ticks'); t.innerHTML = ''; for (let y = 1960; y <= 2020; y += 10) { const s = document.createElement('span'); s.textContent = y; t.appendChild(s); } }
 function updateClock() { const d = new Date(T); $('#clock').textContent = d.toISOString().replace('T', ' ').slice(0, 19); const live = isLive(); $('#liveBtn').classList.toggle('off', !live); $('#liveBtn').textContent = live ? 'LIVE' : (paused ? 'PAUSED' : (rate === 1 ? 'OFFSET' : 'TIMELAPSE')); $('#clockSub').textContent = live ? 'UTC · real time' : 'UTC · ' + $('#rate').selectedOptions[0].textContent + (paused ? ' · paused' : ''); if (document.activeElement !== scrub) scrub.value = Math.round((T - TMIN) / (TMAX - TMIN) * 100000); }
@@ -1071,7 +1303,17 @@ $('#tableBtn').onclick = () => { $('#tableModal').hidden = false; renderTable();
 $('#tableClose').onclick = () => { $('#tableModal').hidden = true; };
 ['tSearch', 'tViewport', 'tAll'].forEach(id => $('#' + id).addEventListener('input', renderTable));
 document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.hidden = true; }));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.modal').forEach(m => m.hidden = true); exitCine(); } });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.querySelectorAll('.modal').forEach(m => m.hidden = true); if (S.lobby) exitLobby(); else exitCine(); return; }
+  if (e.target.matches('input, select, textarea') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === ' ') { e.preventDefault(); $('#playBtn').click(); }
+  else if (k === 'l') { S.lobby ? exitLobby() : enterLobby(); }
+  else if (k === 'f') { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (err) {} }
+  else if (k === '1') setView('3d'); else if (k === '2') setView('2d');
+  else if (k === 't') $('#tableBtn').click(); else if (k === 'n' && S.lobby) nextSegment();
+  else if (k === 'r') $('#resetView').click(); else if (k === 'h') $('#liveBtn').click();
+});
 
 /* ---------- about & data note ---------- */
 $('#aboutBtn').onclick = () => { $('#aboutModal').hidden = false; };
@@ -1093,6 +1335,10 @@ $('#aboutBody').innerHTML = `
 <p>Country borders and about ninety major cities can be switched on in Display for orientation. More city labels appear as you zoom in.</p>
 <h3>Hover coverage</h3>
 <p>Point at any spot on the ground and the satellites that cannot see it fade out, leaving the ones that have it above their horizon at full brightness, with a count in the tooltip. Turn it off in Display if you prefer a steady picture.</p>
+<h3>Lobby mode</h3>
+<p>The Lobby button opens a full-screen, hands-off show for a wall monitor: live overviews, satellite spotlights, program histories with declassified imagery, fact cards, launch-site tours, what is overhead at Roster-5 HQ, recent and upcoming launches worldwide with NRO missions highlighted, decade retrospectives, fleet statistics and the occasional 1959-to-today timelapse. Segments are picked at random with a long no-repeat memory, and a ticker carries the launch feed. Open the page with <code>#lobby</code> on the end of the address to start straight into it. Move the mouse for the exit button, or press Esc.</p>
+<h3>Keyboard</h3>
+<p>Space pauses time, H jumps back to live, 1 and 2 switch globe and map, F toggles full screen, L toggles lobby mode (N skips to the next segment while it runs), T opens the table, R resets the view, Esc closes anything open.</p>
 <h3>Reading the view</h3>
 <p>Recent trails cover the length set by the Trail length slider (10 minutes to 7 days) and brighten toward the present. Footprints are the geometric horizon circle, and the Cones option draws the volume between each satellite and its circle so you can tell which circle belongs to which satellite: everything inside it can see the satellite above the horizon and vice versa. Imaging satellites photograph a strip a few tens of kilometres wide inside that circle; SIGINT satellites in geosynchronous orbit genuinely listen to a third of the planet at once. Orbit paths are drawn relative to the rotating Earth, so a geosynchronous satellite's path collapses to a dot and a Molniya orbit traces its figure of eight.</p>`;
 $('#dataNote').innerHTML = `${OBJ.length} objects, ${D.meta.tleCount} with public elements (newest ${D.meta.tleNewest}, oldest ${D.meta.tleOldest}). Elements from ${D.meta.tleSource}; identities from ${D.meta.catalog}. Built ${D.meta.built}. Open About for what is live and what is representative.`;
@@ -1107,17 +1353,18 @@ let lastPos = 0, lastClock = 0, lastPathT = 0, frame = 0;
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, (now - lastReal) / 1000); lastReal = now;
-  if (!paused) { T += dt * 1000 * rate; if (T > TMAX) { T = TMAX; paused = true; $('#playBtn').textContent = '▶'; } }
+  if (!paused) { if (rate === 1) T = Math.max(TMIN, Math.min(TMAX, Date.now() + liveOffset)); else { T += dt * 1000 * rate; liveOffset = T - Date.now(); } if (T >= TMAX && rate !== 1) { T = TMAX; paused = true; $('#playBtn').textContent = '▶'; } }
   const timeJump = rate >= 86400;
   if (now - lastPos > (timeJump ? 120 : 250) || frame === 0) { lastPos = now; refilter(); checkLaunches(); updatePositions(); if (S.selected) updateLive(); }
   if (now - lastClock > 200) { lastClock = now; updateClock(); if (frame % 10 === 0) buildLegendCountsOnly(); }
   if (pathsDirty || (pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && now - lastPathBuild > (S.paths === 'trail' ? 1200 : 2500) && Math.abs(T - pathT) > (S.paths === 'trail' ? Math.max(3000, S.trailH * 3600000 / 400) : 300000))) schedulePaths();
   if (pathQueue.length) workPaths(7);
-  if (S.follow && S.selected && S.selected.pos) centerOn(S.selected);
+  if (S.follow && S.selected && S.selected.pos) { if (S.lobby) { camTarget.active = true; camTarget.theta = S.selected.pos.lon * DEG; camTarget.phi = S.selected.pos.lat * DEG; } else centerOn(S.selected); }
   if (S.spin && !drag && S.view === '3d') cam.theta += dt * (S.cine ? 0.08 : 0.12);
+  easeCam(dt); lobbyTick(now, dt);
   const sunPos = subsolar(T); const sv = xyz(sunPos.lat, sunPos.lon, 50); sun.position.copy(sv); earthUniforms.sunDir.value.copy(sv).normalize();
   if (S.view === '3d') { updateCamera(); renderer.render(scene, camera); project3(); } else { drawMap(); }
-  drawOverlay(); if (S.cine) drawCine(); frame++;
+  drawOverlay(); if (S.cine) drawCine(); drawLobby(now); frame++;
 }
 function buildLegendCountsOnly() { const k = S.colorBy, cnt = new Map(); for (const o of shown) for (const v of vals(o, k)) cnt.set(v, (cnt.get(v) || 0) + 1); const items = $('#legend').querySelectorAll('.chk'); facetValues[k].keys.forEach((v, i) => { const n = items[i] && items[i].querySelector('.n'); if (n) n.textContent = cnt.get(v) || 0; }); }
 

@@ -403,7 +403,10 @@ meta = {'built': datetime.date.today().isoformat(), 'tleCount': len(epochs), 'tl
         'tleSource': 'Mike McCants classfd.tle (amateur observations)', 'catalog': 'CelesTrak SATCAT', 'launches': 'Wikipedia: List of NRO launches; Gunter\'s Space Page'}
 borders = json.load(open(d + '/borders.json')) if os.path.exists(d + '/borders.json') else []
 cities = json.load(open(d + '/cities.json', encoding='utf-8')) if os.path.exists(d + '/cities.json') else []
-json.dump({'objects': objects, 'land': land, 'borders': borders, 'cities': cities, 'meta': meta}, open(d + '/data.json', 'w'), separators=(',', ':'))
+def opt(name):
+    f = d + '/' + name
+    return json.load(open(f, encoding='utf-8')) if os.path.exists(f) else None
+json.dump({'objects': objects, 'land': land, 'borders': borders, 'cities': cities, 'meta': meta, 'content': opt('content.json'), 'images': opt('images.json') or [], 'launches': opt('launches.json') or {'previous': [], 'upcoming': [], 'asof': ''}}, open(d + '/data.json', 'w'), separators=(',', ':'))
 
 c = collections.Counter
 print('objects', len(objects), 'with tle', len(epochs))

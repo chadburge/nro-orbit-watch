@@ -1,0 +1,377 @@
+{
+"programs": {
+"CORONA": {
+"years": "1959 to 1972",
+"head": "The first eyes in orbit",
+"text": "CORONA flew 145 missions and returned its film in capsules snatched out of the air by C-119 and C-130 aircraft over the Pacific. The first recovered film, from Discoverer 14 in August 1960, covered more of the Soviet Union in one pass than every U-2 flight combined. Declassified in 1995.",
+"images": [
+"corona",
+"discoverer-capsule"
+]
+},
+"ARGON": {
+"years": "1961 to 1964",
+"head": "Mapping the target",
+"text": "ARGON carried a wide-angle mapping camera so that CORONA imagery could be tied to precise geodetic coordinates for missile targeting. Twelve launches, declassified in 1995.",
+"images": [
+"corona"
+]
+},
+"LANYARD": {
+"years": "1963",
+"head": "A short-lived close look",
+"text": "LANYARD was an interim high-resolution camera rushed into service to inspect suspected Soviet anti-missile sites near Tallinn. Only three launches flew before GAMBIT took over.",
+"images": [
+"corona"
+]
+},
+"GAMBIT": {
+"years": "1963 to 1984",
+"head": "The close-look satellite",
+"text": "GAMBIT delivered the detail CORONA could not: the KH-7 resolved objects about two feet across, and the KH-8 GAMBIT-3 reached better than a foot by the end of its 54 missions. Declassified in 2011.",
+"images": [
+"gambit"
+]
+},
+"HEXAGON": {
+"years": "1971 to 1986",
+"head": "Big Bird",
+"text": "HEXAGON, the KH-9, was the size of a school bus and carried 60 miles of film in four recovery capsules. Its twin panoramic cameras could image a swath 370 miles wide. Nineteen successful flights; the last Titan 34D exploded seconds after liftoff in 1986. Declassified in 2011.",
+"images": [
+"hexagon",
+"hexagon-camera"
+]
+},
+"KH-11": {
+"years": "1976 to present",
+"head": "Real-time imaging",
+"text": "KH-11 KENNEN ended the film era in December 1976: a digital electro-optical telescope relaying pictures through data-relay satellites within minutes. Its optics are believed to be in the class of the Hubble Space Telescope, which shares a contractor and a bus heritage. Launched on Titan III, Titan IV and Delta IV Heavy.",
+"images": [
+"kh11",
+"delta4h"
+]
+},
+"Misty": {
+"years": "1990 and 1999",
+"head": "The stealth satellites",
+"text": "Two payloads believed to carry radar-signature-reducing shrouds so that adversaries could not predict when they would pass overhead. Amateur observers lost USA 53 shortly after its 1990 Shuttle deployment and later found an object many believe was the same satellite.",
+"images": [
+"shuttle-sts27"
+]
+},
+"Lacrosse / Onyx": {
+"years": "1988 to 2005",
+"head": "Radar through the clouds",
+"text": "Lacrosse carried a synthetic-aperture radar that imaged day or night and through cloud, filling the gaps that optical satellites left over Northern Europe and Russia in winter. The first flew on Space Shuttle Atlantis in December 1988; the last Lacrosse re-entered after 2015.",
+"images": [
+"lacrosse",
+"shuttle-sts27"
+]
+},
+"Topaz (FIA Radar)": {
+"years": "2010 to 2018",
+"head": "The radar that survived FIA",
+"text": "The Future Imagery Architecture program was cancelled on the optical side in 2005 after billions in overruns, but its radar segment survived as Topaz. Five satellites fly in unusual retrograde 123-degree orbits at about 1,100 km.",
+"images": [
+"atlasv"
+]
+},
+"Canyon": {
+"years": "1968 to 1977",
+"head": "Listening from 36,000 km",
+"text": "Canyon was the first satellite to eavesdrop on communications from near-geosynchronous altitude, parked in inclined orbits that let it drift slowly over the Soviet Union each day. Seven launches on Atlas-Agena from Cape Canaveral.",
+"images": [
+"atlas-agena"
+]
+},
+"Rhyolite / Aquacade": {
+"years": "1970 to 1978",
+"head": "Telemetry intercept",
+"text": "Rhyolite collected the telemetry of Soviet and Chinese missile tests from geostationary orbit, with a mesh antenna reported at 20 metres across. The program was compromised in 1977 when a TRW employee sold its details to the KGB.",
+"images": [
+"atlas-agena"
+]
+},
+"Chalet / Vortex": {
+"years": "1978 to 1989",
+"head": "The successor to Canyon",
+"text": "Chalet, renamed Vortex after its name leaked, and then Mercury, carried larger antennas for communications intelligence from geosynchronous orbit. Flown on Titan IIIC and Titan 34D.",
+"images": [
+"titan3"
+]
+},
+"Orion": {
+"years": "1985 to present",
+"head": "The largest antennas in space",
+"text": "Magnum, later Orion and Mentor, is widely reported to unfold a mesh dish approaching 100 metres across in geosynchronous orbit, the largest structure ever deployed by a single launch. The first two rode the Space Shuttle; the rest took Titan IV and Delta IV Heavy, which was built with these payloads in mind.",
+"images": [
+"delta4h",
+"shuttle-sts27"
+]
+},
+"Jumpseat": {
+"years": "1971 to 1987",
+"head": "Dwelling over the pole",
+"text": "Jumpseat used a Molniya orbit, lingering for hours over the northern hemisphere to intercept signals that geostationary satellites could not reach at high latitudes. Eight launches on Titan IIIB from Vandenberg.",
+"images": [
+"titan3",
+"molniya"
+]
+},
+"Trumpet": {
+"years": "1994 to present",
+"head": "Molniya eavesdropper",
+"text": "Trumpet and its follow-ons continue the Jumpseat mission in highly elliptical orbit. The later satellites also host the Space Force SBIRS HEO missile-warning sensors.",
+"images": [
+"molniya",
+"sbirs"
+]
+},
+"Mercury": {
+"years": "1994 to 1998",
+"head": "Advanced Vortex",
+"text": "Mercury refined the Vortex design on Titan IV Centaur. The third, NROL-7, was lost 40 seconds after launch in August 1998 when the Titan IV self-destructed over the Atlantic.",
+"images": [
+"titan4"
+]
+},
+"Quasar / SDS": {
+"years": "1976 to present",
+"head": "The relay that makes it instant",
+"text": "The Satellite Data System relays imagery from KH-11 satellites over the far side of the world back to the United States in near real time. Early relays used Molniya orbits; later Quasars alternate between Molniya and geosynchronous slots.",
+"images": [
+"molniya"
+]
+},
+"NOSS / Intruder": {
+"years": "1976 to present",
+"head": "Finding ships by their radios",
+"text": "The Naval Ocean Surveillance System flies satellites in formation and locates ships at sea by timing the arrival of their radar and radio emissions. The first generation flew in triplets; the current Intruder pairs are catalogued as a payload and a piece of debris.",
+"images": [
+"atlasv"
+]
+},
+"Starshield": {
+"years": "2024 to present",
+"head": "The proliferated architecture",
+"text": "Since May 2024 the NRO has launched batches of roughly twenty SpaceX-built Starshield satellites at a time, aiming for hundreds of small sensors in low orbit that revisit targets every few minutes instead of a handful of large satellites visiting once a day.",
+"images": [
+"starlink",
+"falcon9-nrol"
+]
+},
+"Silentbarker": {
+"years": "2023 to present",
+"head": "Watching the watchers",
+"text": "Silentbarker is a joint NRO and Space Force constellation in geosynchronous orbit that tracks other satellites and manoeuvring objects, giving warning of inspection or interference attempts.",
+"images": [
+"atlasv"
+]
+},
+"GeoLITE": {
+"years": "2001",
+"head": "Laser links tested",
+"text": "GeoLITE tested laser communications from geosynchronous orbit a decade before commercial operators adopted it, and carried an experimental UHF communications package.",
+"images": []
+}
+},
+"sites": {
+"Vandenberg": {
+"title": "Vandenberg Space Force Base, California",
+"text": "The polar-orbit gateway. Launching south over the Pacific reaches the sun-synchronous and high-inclination orbits imaging satellites need. SLC-4E has hosted Titan IV and now Falcon 9; SLC-6, built for the cancelled Manned Orbiting Laboratory, flew the Delta IV Heavy.",
+"image": "vandenberg"
+},
+"Cape Canaveral": {
+"title": "Cape Canaveral Space Force Station, Florida",
+"text": "Eastward launches here get a free boost from Earth's rotation, the efficient way to reach geosynchronous orbit for the big SIGINT and relay satellites. Atlas-Agena, Titan IIIC, Titan IV and Atlas V have all carried NRO payloads from the Cape.",
+"image": "cape"
+},
+"Kennedy Space Center": {
+"title": "Kennedy Space Center, Florida",
+"text": "Eight classified Space Shuttle missions deployed NRO payloads between 1985 and 1992, including the first Orion and Lacrosse satellites, before the fleet returned to expendable rockets.",
+"image": "shuttle-sts27"
+},
+"Wallops (MARS)": {
+"title": "Mid-Atlantic Regional Spaceport, Virginia",
+"text": "Minotaur rockets built from retired Minuteman and Peacekeeper missile stages fly small NRO payloads from Wallops Island.",
+"image": "minotaur"
+},
+"Mahia (Rocket Lab)": {
+"title": "Rocket Lab Launch Complex 1, New Zealand",
+"text": "Under the Rapid Acquisition of a Small Rocket program the NRO has flown several small payloads on Electron from the Mahia Peninsula, the first NRO launches outside the United States.",
+"image": "electron-nrol"
+}
+},
+"facts": [
+{
+"head": "The NRO did not officially exist until 1992",
+"text": "Established in September 1961, the National Reconnaissance Office was itself classified. Its existence was declassified in September 1992, 31 years later.",
+"image": "nro-hq"
+},
+{
+"head": "Film from space, caught in mid-air",
+"text": "CORONA capsules descended under parachute and were snagged by aircraft trailing a hook. The first successful mid-air recovery was Discoverer 14 on 19 August 1960.",
+"image": "discoverer-capsule"
+},
+{
+"head": "One pass beat every U-2 flight",
+"text": "Discoverer 14's single reel of film photographed 1.65 million square miles of the Soviet Union, more than all 24 U-2 overflights combined.",
+"image": "corona"
+},
+{
+"head": "60 miles of film",
+"text": "Each KH-9 HEXAGON carried about 60 miles of film and four re-entry capsules, enough for a mission of several months.",
+"image": "hexagon"
+},
+{
+"head": "The last HEXAGON exploded",
+"text": "On 18 April 1986 the final KH-9 was destroyed when its Titan 34D failed eight seconds after liftoff from Vandenberg, leaving the US without a wide-area film satellite.",
+"image": "hexagon"
+},
+{
+"head": "The missile gap that was not there",
+"text": "CORONA imagery in 1961 showed the Soviet Union had only a handful of operational ICBMs, not the hundreds feared, reshaping US strategy.",
+"image": "corona"
+},
+{
+"head": "Real-time imaging arrives",
+"text": "The first KH-11 launched on 19 December 1976. Its digital pictures reached Washington within minutes instead of weeks.",
+"image": "kh11"
+},
+{
+"head": "A spy satellite's secret cousin",
+"text": "The KH-11 and the Hubble Space Telescope share a 2.4-metre primary mirror class and contractor heritage. In 2012 the NRO gave NASA two surplus telescope assemblies.",
+"image": "kh11"
+},
+{
+"head": "A Shuttle full of secrets",
+"text": "STS-27 in December 1988 deployed the first Lacrosse radar satellite. Atlantis suffered severe heat-shield damage on that flight and the crew could not tell Houston over the classified link.",
+"image": "shuttle-sts27"
+},
+{
+"head": "Radar sees in the dark",
+"text": "Lacrosse's synthetic-aperture radar could image targets at night and through cloud. Amateur observers tracked its bright orange solar arrays for years.",
+"image": "lacrosse"
+},
+{
+"head": "The largest antenna in orbit",
+"text": "Orion signals-intelligence satellites are reported to unfold mesh dishes around 100 metres across, wider than a football field, in geosynchronous orbit.",
+"image": "delta4h"
+},
+{
+"head": "Why Delta IV Heavy existed",
+"text": "The heaviest NRO payloads, believed to be the KH-11 and Orion classes, were the main customers for ULA's Delta IV Heavy. Its last flight was NROL-70 in April 2024.",
+"image": "delta4h"
+},
+{
+"head": "Nothing is beyond our reach",
+"text": "The NROL-39 mission patch of 2013 showed an octopus wrapped around the globe with that motto. It became the most discussed patch in NRO history.",
+"image": "nrol39-patch"
+},
+{
+"head": "The spy who sold Rhyolite",
+"text": "TRW employee Christopher Boyce sold details of the Rhyolite telemetry-intercept satellite to the KGB in 1975 to 1977, the story told in The Falcon and the Snowman.",
+"image": "atlas-agena"
+},
+{
+"head": "The Molniya trick",
+"text": "A satellite in a 12-hour Molniya orbit climbs to 39,000 km over the northern hemisphere and hangs there for eight hours of every orbit, perfect for listening over the Arctic.",
+"image": "molniya"
+},
+{
+"head": "Titan IV: the big, expensive workhorse",
+"text": "From 1989 to 2005 the Titan IV launched most of the NRO's heaviest payloads. Each launch cost well over 400 million dollars.",
+"image": "titan4"
+},
+{
+"head": "A failure 40 seconds in",
+"text": "On 12 August 1998 a Titan IV carrying NROL-7, a Mercury SIGINT satellite, lost power to its guidance system and broke apart off Cape Canaveral.",
+"image": "titan4"
+},
+{
+"head": "The satellite that went missing",
+"text": "After the 1990 Shuttle deployment of USA 53, believed to be the stealthy Misty, amateur trackers lost it. Debris was announced, but observers later found a candidate object.",
+"image": "shuttle-sts27"
+},
+{
+"head": "Retrograde radar",
+"text": "The five Topaz radar satellites fly backwards relative to Earth's rotation, in 123-degree inclined orbits, which sharpens their radar return.",
+"image": "atlasv"
+},
+{
+"head": "Hunting ships by their radios",
+"text": "NOSS satellites fly in close formation and pinpoint ships by the tiny time differences in when each receives a radar pulse.",
+"image": "atlasv"
+},
+{
+"head": "The watchers in the sky",
+"text": "Since the 1980s a small community of amateur observers has timed the passes of classified satellites with stopwatches and binoculars and published their orbits.",
+"image": "vandenberg"
+},
+{
+"head": "From one to hundreds",
+"text": "Between May 2024 and 2026 the NRO launched more satellites than in its first 60 years combined, as Starshield batches of about 20 at a time built a proliferated constellation.",
+"image": "starlink"
+},
+{
+"head": "Space Launch Complex 6",
+"text": "Vandenberg's SLC-6 was built for the Air Force's Manned Orbiting Laboratory in the 1960s, rebuilt for the Shuttle in the 1980s, and finally flew Delta IV Heavy NRO missions.",
+"image": "delta4h-vafb"
+},
+{
+"head": "USA 193: shot down on purpose",
+"text": "NROL-21 failed shortly after its December 2006 launch. With a full tank of toxic hydrazine, it was destroyed by a Navy SM-3 missile in February 2008 before it could re-enter.",
+"image": "cape"
+},
+{
+"head": "GRAB: the first",
+"text": "The Navy's GRAB satellite, launched 22 June 1960, was the first US reconnaissance satellite to work, intercepting Soviet radar signals under the cover of a solar-radiation experiment.",
+"image": "grab"
+},
+{
+"head": "Poppy",
+"text": "GRAB's successor Poppy flew seven missions from 1962 to 1971, launching in clusters. It was declassified in 2005.",
+"image": "poppy"
+},
+{
+"head": "The U-2 and the SR-71 handed over",
+"text": "After Gary Powers was shot down in May 1960, satellites took over overflights of the Soviet Union; aircraft kept the peripheral and tactical missions.",
+"image": "u2"
+},
+{
+"head": "Eleven agencies, one office",
+"text": "The NRO is staffed jointly by the Air Force, Space Force, Navy, CIA and NSA, and sits in Chantilly, Virginia, in a headquarters whose construction was itself revealed by the press in 1994.",
+"image": "nro-hq"
+},
+{
+"head": "Small rockets, quick missions",
+"text": "The Rapid Acquisition of a Small Rocket program put NRO payloads on Rocket Lab's Electron from New Zealand and on Minotaur rockets built from retired ICBM stages.",
+"image": "electron-nrol"
+},
+{
+"head": "Mission numbers are not in order",
+"text": "NROL designations are assigned at contract, not at launch. NROL-1 flew in 2004, eight years after NROL-2.",
+"image": "nrol-patch"
+},
+{
+"head": "The Shuttle years",
+"text": "Nine Shuttle missions between 1985 and 1992 carried Department of Defense payloads, including Orion, Lacrosse and SDS relay satellites for the NRO.",
+"image": "shuttle-sts27"
+},
+{
+"head": "Watching the watchers",
+"text": "Silentbarker satellites, launched in 2023 with the Space Force, sit in geosynchronous orbit to track other nations' satellites approaching US assets.",
+"image": "sbirs"
+},
+{
+"head": "Allied eyes",
+"text": "Japan's IGS, Germany's SAR-Lupe and SARah, France's CSO and Israel's Ofeq satellites give allies their own reconnaissance; many are tracked in this view under the Allied layer.",
+"image": "x37b"
+},
+{
+"head": "The X-37B",
+"text": "The Space Force's reusable X-37B spaceplane has spent years in orbit on classified missions; its eighth flight launched in August 2025 and is tracked here among the other U.S. military objects.",
+"image": "x37b"
+}
+]
+}
