@@ -178,6 +178,10 @@ td a { text-decoration: none; margin-right: 6px; font-size: 11.5px; }
 .about h3 { margin: 8px 0 0; font: 600 14px var(--display); letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg); }
 .about p { margin: 0; }
 
+body.cine #rail, body.cine #dossier, body.cine .viewctl, body.cine #tip { display: none !important; }
+body.cine footer .stats { display: none; }
+#cineExit { position: absolute; top: 12px; right: max(12px, env(safe-area-inset-right, 0px)); z-index: 6; }
+#cineExit[hidden] { display: none; }
 .toast { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: var(--panel-solid); border: 1px solid var(--accent); color: var(--fg); padding: 8px 14px; border-radius: 999px; font-size: 13px; z-index: 7; box-shadow: var(--shadow); }
 .toast[hidden] { display: none; }
 
@@ -282,6 +286,7 @@ td a { text-decoration: none; margin-right: 6px; font-size: 11.5px; }
             </div>
             <div class="row"><label for="coneOp">Footprint opacity</label><input type="range" id="coneOp" min="0.1" max="3" step="0.1" value="1" style="flex:1;accent-color:var(--accent)" aria-label="Cone opacity"></div>
             <div class="hint">Footprints show what each satellite can see. Circles and cones fade automatically as more satellites are shown; the slider scales that. In Circles mode only the hovered or selected satellite gets a cone.</div>
+            <label class="chk"><input type="checkbox" id="hoverCov" checked> Hover coverage: point at the ground to dim satellites that cannot see that spot</label>
             <label class="chk"><input type="checkbox" id="sites" checked> Launch site pins</label>
             <label class="chk"><input type="checkbox" id="terminator" checked> Day and night shading</label>
             <div class="row"><label>Orbit paths</label>
@@ -345,6 +350,7 @@ td a { text-decoration: none; margin-right: 6px; font-size: 11.5px; }
       <button id="spinBtn" title="Auto-rotate the globe" aria-label="Auto-rotate" aria-pressed="false">↻</button>
       <button id="resetView" title="Reset view" aria-label="Reset view">⌂</button>
     </div>
+    <button class="btn" id="cineExit" hidden>Exit timelapse</button>
     <div id="tip" hidden></div>
     <div class="toast" id="toast" hidden></div>
 
@@ -449,9 +455,9 @@ function vals(o, k) { const g = FACETS[k].get; const v = g ? g(o) : o[k]; return
 /* ---------- state ---------- */
 let S = { view: '3d', style: 'realistic', colorBy: 'function', spacing: 'compressed', paths: 'none', labels: 'selected', fpMode: 'off', sites: true, terminator: true,
   layers: Object.fromEntries(LAYERS.map(l => [l[0], l[2]])), hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set()])), search: '',
-  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1, trailH: 3 };
-try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator', 'trailH']) if (k in s) S[k] = s[k]; } catch (e) {}
-function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH })); } catch (e) {} }
+  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1, trailH: 3, cine: false, hoverCov: true, ground: null };
+try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator', 'trailH', 'hoverCov']) if (k in s) S[k] = s[k]; } catch (e) {}
+function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH, hoverCov })); } catch (e) {} }
 
 /* ---------- time ---------- */
 let T = Date.now(), rate = 1, paused = false, lastReal = performance.now();
@@ -536,7 +542,8 @@ function refilter() {
   $('#sInOrbit').textContent = inOrbitCount; $('#sShown').textContent = shown.length; $('#sLaunched').textContent = launchedCount; $('#tableCount').textContent = shown.length;
   pathsDirty = true;
 }
-function colorOf(o) { const v = vals(o, S.colorBy)[0]; return facetValues[S.colorBy].colors[v] || '#94a3b8'; }
+function colorOf(o) { if (S.cine) return CINE_GOLD; const v = vals(o, S.colorBy)[0]; return facetValues[S.colorBy].colors[v] || '#94a3b8'; }
+const CINE_GOLD = '#ffd66b';
 function hexToRgb(h) { const n = parseInt(h.slice(1), 16); return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]; }
 
 /* ---------- 3D scene ---------- */
@@ -579,6 +586,7 @@ function spriteTex(kind, style) {
   else { x.fillStyle = '#fff'; x.beginPath(); x.arc(32, 32, 22, 0, 7); x.fill(); if (kind === 'hollow') { x.globalCompositeOperation = 'destination-out'; x.beginPath(); x.arc(32, 32, 13, 0, 7); x.fill(); } }
   const t = new THREE.CanvasTexture(c); t.needsUpdate = true; return t;
 }
+const glowTex = spriteTex('solid', 'flat');
 const satMat = new THREE.PointsMaterial({ size: 9, sizeAttenuation: false, vertexColors: true, transparent: true, alphaTest: 0.2, depthWrite: false, map: null });
 const repMat = new THREE.PointsMaterial({ size: 9, sizeAttenuation: false, vertexColors: true, transparent: true, alphaTest: 0.2, depthWrite: false, map: null });
 const satPts = new THREE.Points(satGeo, satMat), repPts = new THREE.Points(repGeo, repMat); scene.add(satPts); scene.add(repPts);
@@ -652,9 +660,10 @@ function applyStyle() {
   else if (st === 'cartoon') { earth.material = new THREE.MeshBasicMaterial({ map: textures.cartoon }); atmo.visible = false; outline.visible = true; coast.visible = false; grat.visible = false; stars.material.size = 3; renderer.setClearColor(0x0b1a33); }
   else { earth.material = new THREE.MeshBasicMaterial({ color: 0x0a1222 }); atmo.visible = false; outline.visible = false; coast.visible = true; grat.visible = true; stars.material.size = 1.2; renderer.setClearColor(0x03060d); }
   for (const k of ['solid', 'hollow']) { if (!sprites[k][st]) sprites[k][st] = spriteTex(k, st); }
-  satMat.map = sprites.solid[st]; repMat.map = sprites.hollow[st]; satMat.needsUpdate = repMat.needsUpdate = true;
-  const size = (st === 'cartoon' ? 16 : st === 'flat' ? 13 : 9) * S.marker; satMat.size = repMat.size = size * (dpr > 1.5 ? 1.25 : 1);
-  pathLines.material.opacity = st === 'cartoon' ? 0.9 : 0.55;
+  satMat.map = S.cine ? glowTex : sprites.solid[st]; repMat.map = S.cine ? glowTex : sprites.hollow[st]; satMat.blending = repMat.blending = S.cine ? THREE.AdditiveBlending : THREE.NormalBlending; satMat.needsUpdate = repMat.needsUpdate = true;
+  pathLines.material.blending = S.cine ? THREE.AdditiveBlending : THREE.NormalBlending; pathLines.material.needsUpdate = true;
+  const size = (S.cine ? 15 : st === 'cartoon' ? 16 : st === 'flat' ? 13 : 9) * S.marker; satMat.size = repMat.size = size * (dpr > 1.5 ? 1.25 : 1);
+  pathLines.material.opacity = S.cine ? 0.22 : st === 'cartoon' ? 0.9 : 0.55;
   $('#styleSel').value = st;
 }
 
@@ -670,9 +679,10 @@ function updatePositions() {
   for (const o of shown) {
     const g = posAt(o, T); o.pos = g; const c = hexToRgb(colorOf(o)); o.rgb = c;
     const v = xyz(g.lat, g.lon, radiusFor(g.alt)); o.v3 = v;
-    const hot = o === S.selected || o === S.hovered; const hc = hot ? [Math.min(1, c[0] * 0.5 + 0.6), Math.min(1, c[1] * 0.5 + 0.6), Math.min(1, c[2] * 0.5 + 0.6)] : c;
-    if (g.rep) { rpos[m * 3] = v.x; rpos[m * 3 + 1] = v.y; rpos[m * 3 + 2] = v.z; rcol[m * 3] = c[0]; rcol[m * 3 + 1] = c[1]; rcol[m * 3 + 2] = c[2]; m++; }
-    else { pos[n * 3] = v.x; pos[n * 3 + 1] = v.y; pos[n * 3 + 2] = v.z; col[n * 3] = c[0]; col[n * 3 + 1] = c[1]; col[n * 3 + 2] = c[2]; n++; }
+    const hot = o === S.selected || o === S.hovered; const dimf = S.ground && !canSee(o, S.ground) ? 0.08 : 1; const hc = hot ? [Math.min(1, c[0] * 0.5 + 0.6), Math.min(1, c[1] * 0.5 + 0.6), Math.min(1, c[2] * 0.5 + 0.6)] : [c[0] * dimf, c[1] * dimf, c[2] * dimf];
+    o.dim = false;
+    if (g.rep) { o.slot = m; o.slotRep = true; rpos[m * 3] = v.x; rpos[m * 3 + 1] = v.y; rpos[m * 3 + 2] = v.z; rcol[m * 3] = c[0]; rcol[m * 3 + 1] = c[1]; rcol[m * 3 + 2] = c[2]; m++; }
+    else { o.slot = n; o.slotRep = false; pos[n * 3] = v.x; pos[n * 3 + 1] = v.y; pos[n * 3 + 2] = v.z; col[n * 3] = c[0]; col[n * 3 + 1] = c[1]; col[n * 3 + 2] = c[2]; n++; }
     if (fp && S.view === '3d') {
       const ring = footprint(g, 48); o.fp = ring; const pts = ring.map(a => xyz(a[0], a[1], 1.004));
       for (let i = 0; i < 48; i++) { const pa = pts[i], pb = pts[(i + 1) % 48];
@@ -692,6 +702,7 @@ function updatePositions() {
   fpGeo.setDrawRange(0, f / 3); fpGeo.attributes.position.needsUpdate = true; fpGeo.attributes.color.needsUpdate = true; fpLines.visible = fp && f > 0;
   const sel = S.selected; selRing.visible = !!(sel && sel.v3 && shown.includes(sel));
   if (selRing.visible) { selRing.position.copy(sel.v3); const sc = 0.028 * cam.dist; selRing.scale.set(sc, sc, 1); }
+  if (S.ground) applyGround();
 }
 function footprint(g, n) {
   const psi = Math.acos(RE / (RE + Math.max(g.alt, 1))), la = g.lat * DEG, lo = g.lon * DEG, out = [];
@@ -699,6 +710,22 @@ function footprint(g, n) {
     const lon2 = lo + Math.atan2(Math.sin(th) * Math.sin(psi) * Math.cos(la), Math.cos(psi) - Math.sin(la) * Math.sin(lat2)); out.push([lat2 / DEG, ((lon2 / DEG + 540) % 360) - 180]); }
   return out;
 }
+
+/* ---------- hover coverage: which satellites can see the ground point under the cursor ---------- */
+let groundCount = 0;
+function canSee(o, g) { if (!o.pos) return false; const psi = Math.acos(RE / (RE + Math.max(o.pos.alt, 1))); const la1 = o.pos.lat * DEG, la2 = g.lat * DEG, dl = (o.pos.lon - g.lon) * DEG; const cosd = Math.sin(la1) * Math.sin(la2) + Math.cos(la1) * Math.cos(la2) * Math.cos(dl); return Math.acos(Math.max(-1, Math.min(1, cosd))) <= psi; }
+function applyGround() {
+  const g = S.ground, col = satGeo.attributes.color.array, rcol = repGeo.attributes.color.array; groundCount = 0;
+  for (const o of shown) { const c = o.rgb || hexToRgb(colorOf(o)); let f = 1; if (g) { const ok = canSee(o, g); o.dim = !ok; if (ok) groundCount++; f = ok ? 1 : 0.1; } else o.dim = false;
+    const arr = o.slotRep ? rcol : col, k = o.slot * 3; if (k == null || k < 0) continue; arr[k] = c[0] * f; arr[k + 1] = c[1] * f; arr[k + 2] = c[2] * f; }
+  satGeo.attributes.color.needsUpdate = true; repGeo.attributes.color.needsUpdate = true;
+}
+const groundRay = new THREE.Raycaster();
+function groundAt(x, y) {
+  if (S.view === '3d') { groundRay.setFromCamera(new THREE.Vector2(x / W * 2 - 1, 1 - y / H * 2), camera); const hit = groundRay.intersectObject(earth, false)[0]; if (!hit) return null; const p = hit.point; return { lat: Math.asin(Math.max(-1, Math.min(1, p.y / p.length()))) / DEG, lon: Math.atan2(-p.z, p.x) / DEG }; }
+  const G = mapGeom(); const lon = (x - G.ox) / G.s - 180, lat = 90 - (y - G.oy) / G.s; if (lon < -180 || lon > 180 || lat < -90 || lat > 90) return null; return { lat, lon };
+}
+function setGround(g) { const had = !!S.ground; S.ground = g; if (g || had) applyGround(); }
 
 /* ---------- paths (budgeted) ---------- */
 let pathsDirty = true, pathQueue = [], pathT = 0, pathCount = 0, lastPathBuild = 0;
@@ -769,7 +796,7 @@ function drawMap() {
   // paths
   if (S.paths !== 'none' || S.orbitSel) { for (const o of shown) { if (!o.path) continue; if (S.paths === 'none' && o !== S.selected) continue; mctx.strokeStyle = colorOf(o); mctx.globalAlpha = 0.6; mctx.lineWidth = o === S.selected ? 2 : 1; polyline(o.path, G); } mctx.globalAlpha = 1; }
   // footprints
-  if (S.fpMode !== 'off') { const cones = S.fpMode === 'cones'; const k = Math.min(1, Math.sqrt(12 / Math.max(shown.length, 1))) * S.coneOp; for (const o of shown) { if (!o.fp) continue; const hot = o === S.selected || o === S.hovered; mctx.strokeStyle = hot ? '#ffd58a' : colorOf(o); mctx.fillStyle = colorOf(o); mctx.globalAlpha = hot ? 0.22 : Math.min(0.3, (cones ? 0.12 : 0.08) * k); polygon(o.fp, G, true); mctx.globalAlpha = hot ? 0.95 : Math.min(0.7, Math.max(0.12, 0.5 * k)); mctx.lineWidth = hot ? 2.5 : 1; polygon(o.fp, G, false);
+  if (S.fpMode !== 'off') { const cones = S.fpMode === 'cones'; const k = Math.min(1, Math.sqrt(12 / Math.max(shown.length, 1))) * S.coneOp; for (const o of shown) { if (!o.fp || (o.dim && !S.cine)) continue; const hot = o === S.selected || o === S.hovered; mctx.strokeStyle = hot ? '#ffd58a' : colorOf(o); mctx.fillStyle = colorOf(o); mctx.globalAlpha = hot ? 0.22 : Math.min(0.3, (cones ? 0.12 : 0.08) * k); polygon(o.fp, G, true); mctx.globalAlpha = hot ? 0.95 : Math.min(0.7, Math.max(0.12, 0.5 * k)); mctx.lineWidth = hot ? 2.5 : 1; polygon(o.fp, G, false);
       if ((cones || hot) && o.pos) { const c0 = proj2(o.pos.lat, o.pos.lon, G); mctx.globalAlpha = hot ? 0.9 : 0.45; mctx.lineWidth = 1; mctx.beginPath(); for (let i = 0; i < o.fp.length; i += Math.floor(o.fp.length / 6)) { const q = o.fp[i]; if (Math.abs(q[1] - o.pos.lon) > 180) continue; const p = proj2(q[0], q[1], G); mctx.moveTo(c0[0], c0[1]); mctx.lineTo(p[0], p[1]); } mctx.stroke(); } }
     mctx.globalAlpha = 1; }
   // sites
@@ -778,9 +805,10 @@ function drawMap() {
   const r = (st === 'cartoon' ? 6 : st === 'flat' ? 4.5 : 3.5) * S.marker;
   for (const o of shown) { if (!o.pos) continue; const p = proj2(o.pos.lat, o.pos.lon, G); o.sx = p[0]; o.sy = p[1]; o.vis = true; const c = colorOf(o);
     if (st === 'flat') { mctx.shadowColor = c; mctx.shadowBlur = 10; } else mctx.shadowBlur = 0;
-    mctx.beginPath(); mctx.arc(p[0], p[1], r, 0, 7);
+    mctx.globalAlpha = o.dim ? 0.12 : 1; mctx.beginPath(); mctx.arc(p[0], p[1], r, 0, 7);
     if (o.pos.rep) { mctx.strokeStyle = c; mctx.lineWidth = 2; mctx.stroke(); } else { mctx.fillStyle = c; mctx.fill(); if (st === 'cartoon') { mctx.strokeStyle = '#0b1626'; mctx.lineWidth = 2; mctx.stroke(); } } }
-  mctx.shadowBlur = 0;
+  mctx.shadowBlur = 0; mctx.globalAlpha = 1;
+  if (S.ground) { const q = proj2(S.ground.lat, S.ground.lon, G); mctx.strokeStyle = '#ffd58a'; mctx.lineWidth = 1.5; mctx.beginPath(); mctx.arc(q[0], q[1], 7, 0, 7); mctx.moveTo(q[0] - 12, q[1]); mctx.lineTo(q[0] + 12, q[1]); mctx.moveTo(q[0], q[1] - 12); mctx.lineTo(q[0], q[1] + 12); mctx.stroke(); }
   if (S.selected && S.selected.pos && shown.includes(S.selected)) { const p = proj2(S.selected.pos.lat, S.selected.pos.lon, G); mctx.strokeStyle = '#ffd58a'; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(p[0], p[1], 10, 0, 7); mctx.stroke(); }
   mctx.restore();
 }
@@ -807,11 +835,66 @@ function drawOverlay() {
   else { if (S.hovered && shown.includes(S.hovered) && mode === 'hover') labelFor(S.hovered, false); if (S.selected && shown.includes(S.selected)) labelFor(S.selected, true); }
   // site labels in 3D when zoomed in
   if (S.view === '3d' && S.sites && cam.dist < 2.2) { octx.font = '11px "IBM Plex Mono", monospace'; siteKeys.forEach((k, i) => { const p = xyz(SITES[k][0], SITES[k][1], 1.004); tmpV.copy(p).project(camera); const dx = camera.position.x - p.x, dy = camera.position.y - p.y, dz = camera.position.z - p.z; if (p.x * dx + p.y * dy + p.z * dz > 0) { octx.fillStyle = '#f2b24a'; octx.fillText(k, (tmpV.x + 1) / 2 * W + 7, (1 - tmpV.y) / 2 * H); } }); }
+  if (S.ground && S.view === '3d') { const q = padScreen(S.ground.lat, S.ground.lon); if (q) { octx.strokeStyle = '#ffd58a'; octx.lineWidth = 1.5; octx.beginPath(); octx.arc(q[0], q[1], 7, 0, 7); octx.moveTo(q[0] - 12, q[1]); octx.lineTo(q[0] + 12, q[1]); octx.moveTo(q[0], q[1] - 12); octx.lineTo(q[0], q[1] + 12); octx.stroke(); } }
   // launch pulses
   const now = performance.now(); octx.lineWidth = 1.5; for (let i = pulses.length - 1; i >= 0; i--) { const p = pulses[i], age = (now - p.t) / 1400; if (age > 1) { pulses.splice(i, 1); continue; } let sx, sy, ok = true; if (S.view === '3d') { const v = xyz(p.lat, p.lon, 1.004); tmpV.copy(v).project(camera); const dx = camera.position.x - v.x, dy = camera.position.y - v.y, dz = camera.position.z - v.z; ok = v.x * dx + v.y * dy + v.z * dz > 0; sx = (tmpV.x + 1) / 2 * W; sy = (1 - tmpV.y) / 2 * H; } else { const q = proj2(p.lat, p.lon, mapGeom()); sx = q[0]; sy = q[1]; } if (!ok) continue; octx.strokeStyle = `rgba(242,178,74,${1 - age})`; octx.beginPath(); octx.arc(sx, sy, 4 + age * 26, 0, 7); octx.stroke(); }
 }
-const pulses = []; let lastPulseT = T;
-function checkLaunches() { if (!S.sites || reduced) { lastPulseT = T; return; } if (T > lastPulseT && T - lastPulseT < 400 * 86400000) { for (const o of OBJ) { if (o.t0 > lastPulseT && o.t0 <= T && S.layers[o.lyr] && SITES[o.siteName] && (rate >= 86400)) { if (!pulses.some(p => p.site === o.siteName && performance.now() - p.t < 300)) pulses.push({ lat: SITES[o.siteName][0], lon: SITES[o.siteName][1], t: performance.now(), site: o.siteName }); } } } lastPulseT = T; }
+const pulses = [], beams = []; let lastPulseT = T; let cineSeries = null;
+function checkLaunches() { if (!S.sites || reduced) { lastPulseT = T; return; } if (T > lastPulseT && T - lastPulseT < 400 * 86400000) { for (const o of OBJ) { if (o.t0 > lastPulseT && o.t0 <= T && S.layers[o.lyr] && SITES[o.siteName] && (rate >= 86400)) { if (!pulses.some(p => p.site === o.siteName && performance.now() - p.t < 300)) pulses.push({ lat: SITES[o.siteName][0], lon: SITES[o.siteName][1], t: performance.now(), site: o.siteName }); if (S.cine && matchesFilters(o) && !beams.some(b => b.o === o)) beams.push({ o, site: o.siteName, lat: SITES[o.siteName][0], lon: SITES[o.siteName][1], t: performance.now() }); } } } lastPulseT = T; }
+
+/* ---------- cinematic timelapse ---------- */
+function buildCineSeries() { const pts = []; for (let t = TMIN; t <= TMAX; t += 30 * 86400000) { let n = 0, l = 0; for (const o of OBJ) { if (!matchesFilters(o) || !isFinite(o.t0) || o.t0 > t || o.status === 'Canceled') continue; l++; if (inOrbitAt(o, t)) n++; } pts.push([t, n, l]); } cineSeries = pts; }
+function padScreen(lat, lon) { if (S.view === '3d') { const v = xyz(lat, lon, 1.004); tmpV.copy(v).project(camera); const dx = camera.position.x - v.x, dy = camera.position.y - v.y, dz = camera.position.z - v.z; if (v.x * dx + v.y * dy + v.z * dz < 0) return null; return [(tmpV.x + 1) / 2 * W, (1 - tmpV.y) / 2 * H]; } const q = proj2(lat, lon, mapGeom()); return [q[0], q[1]]; }
+function drawCine() {
+  const now = performance.now(); const d = new Date(T);
+  // launch beams: vertical lift-off, then a pitch-over downrange toward the satellite (a gravity-turn profile)
+  octx.lineCap = 'round'; octx.lineJoin = 'round'; const labelled = new Set();
+  for (let i = beams.length - 1; i >= 0; i--) { const b = beams[i], age = (now - b.t) / 2200; if (age > 1) { beams.splice(i, 1); continue; } const o = b.o;
+    if (!b.end && o.v3) { b.end = o.v3.clone(); b.pad = xyz(b.lat, b.lon, 1.0); }
+    if (!b.end) continue;
+    const prog = Math.min(1, age * 1.6), a = age < 0.65 ? 1 : 1 - (age - 0.65) / 0.35; let pts = [];
+    if (S.view === '3d') {
+      const rS = b.end.length(), padDir = b.pad.clone().normalize(), satDir = b.end.clone().normalize();
+      const P1 = padDir.clone().multiplyScalar(1 + 0.5 * (rS - 1)), P2 = padDir.clone().multiplyScalar(0.3).add(satDir.clone().multiplyScalar(0.7)).normalize().multiplyScalar(rS * 0.985);
+      const N = 40, cp = camera.position; for (let j = 0; j <= N * prog; j++) { const u = j / N, v = 1 - u; const q = b.pad.clone().multiplyScalar(v * v * v).add(P1.clone().multiplyScalar(3 * v * v * u)).add(P2.clone().multiplyScalar(3 * v * u * u)).add(b.end.clone().multiplyScalar(u * u * u));
+        const dx = cp.x - q.x, dy = cp.y - q.y, dz = cp.z - q.z, dd = dx * dx + dy * dy + dz * dz, t = -(q.x * dx + q.y * dy + q.z * dz) / dd; let hidden = false; if (t > 0 && t < 1) { const hx = q.x + t * dx, hy = q.y + t * dy, hz = q.z + t * dz; hidden = hx * hx + hy * hy + hz * hz < 0.999; }
+        tmpV.copy(q).project(camera); pts.push(hidden ? null : [(tmpV.x + 1) / 2 * W, (1 - tmpV.y) / 2 * H]); }
+    } else { const G = mapGeom(); const p0 = proj2(b.lat, b.lon, G), p3 = proj2(o.pos.lat, o.pos.lon, G); const mx = (p0[0] + p3[0]) / 2, my = (p0[1] + p3[1]) / 2, ddx = p3[0] - p0[0], ddy = p3[1] - p0[1], L = Math.hypot(ddx, ddy) || 1;
+      const c1 = [p0[0] - ddy / L * L * 0.25, p0[1] + ddx / L * L * 0.25 - 40]; const N = 30; for (let j = 0; j <= N * prog; j++) { const u = j / N, v = 1 - u; pts.push([v * v * p0[0] + 2 * v * u * c1[0] + u * u * p3[0], v * v * p0[1] + 2 * v * u * c1[1] + u * u * p3[1]]); } }
+    if (pts.length < 2) continue;
+    octx.lineWidth = 2.2; let seg = []; const flush = () => { if (seg.length > 1) { const g = octx.createLinearGradient(seg[0][0], seg[0][1], seg[seg.length - 1][0], seg[seg.length - 1][1]); g.addColorStop(0, `rgba(255,214,107,${0.2 * a})`); g.addColorStop(1, `rgba(255,243,204,${a})`); octx.strokeStyle = g; octx.beginPath(); octx.moveTo(seg[0][0], seg[0][1]); for (const q of seg) octx.lineTo(q[0], q[1]); octx.stroke(); } seg = []; };
+    for (const q of pts) { if (q) seg.push(q); else flush(); } flush();
+    const head = pts[pts.length - 1]; if (head) { octx.fillStyle = `rgba(255,246,214,${a})`; octx.shadowColor = 'rgba(255,214,107,0.9)'; octx.shadowBlur = 10; octx.beginPath(); octx.arc(head[0], head[1], 3.5, 0, 7); octx.fill(); octx.shadowBlur = 0; }
+    const p0 = pts[0]; if (p0 && !labelled.has(b.site)) { labelled.add(b.site); octx.fillStyle = `rgba(255,214,107,${a})`; octx.font = '600 12px "Barlow Condensed", sans-serif'; octx.fillText(b.site.toUpperCase(), p0[0] + 8, p0[1] + 14); } }
+  // year counter and totals
+  const cx = W / 2; octx.textAlign = 'center'; octx.textBaseline = 'alphabetic';
+  octx.shadowColor = 'rgba(255,214,107,0.55)'; octx.shadowBlur = 18; octx.fillStyle = '#ffe9a8'; octx.font = '700 64px "Barlow Condensed", sans-serif'; octx.fillText('Year ' + d.getUTCFullYear(), cx, H - 54);
+  octx.shadowBlur = 0; octx.fillStyle = '#c9b67a'; octx.font = '500 18px "IBM Plex Mono", monospace'; octx.fillText(`In orbit ${inOrbitCount}   ·   Launched ${launchedCount}`, cx, H - 26);
+  // growing count graph (top left)
+  if (cineSeries) { const gx = 36, gy = 40, gw = Math.min(360, W * 0.36), gh = 110; const maxN = Math.max(10, ...cineSeries.map(q => q[1]));
+    octx.strokeStyle = 'rgba(144,160,189,0.35)'; octx.lineWidth = 1; octx.beginPath(); octx.moveTo(gx, gy); octx.lineTo(gx, gy + gh); octx.lineTo(gx + gw, gy + gh); octx.stroke();
+    octx.textAlign = 'left'; octx.fillStyle = '#90a0bd'; octx.font = '500 11px "IBM Plex Mono", monospace'; octx.fillText('satellites in orbit', gx + 6, gy + 12); octx.fillText(String(maxN), gx + 4, gy - 4);
+    octx.textAlign = 'right'; octx.fillText('1959', gx + 12, gy + gh + 14); octx.fillText('2027', gx + gw, gy + gh + 14);
+    octx.strokeStyle = CINE_GOLD; octx.lineWidth = 2; octx.shadowColor = 'rgba(255,214,107,0.6)'; octx.shadowBlur = 8; octx.beginPath(); let last = null;
+    for (const q of cineSeries) { if (q[0] > T) break; const x = gx + (q[0] - TMIN) / (TMAX - TMIN) * gw, y = gy + gh - q[1] / maxN * gh; if (last) octx.lineTo(x, y); else octx.moveTo(x, y); last = [x, y]; }
+    octx.stroke(); octx.shadowBlur = 0; if (last) { octx.fillStyle = '#fff3cc'; octx.beginPath(); octx.arc(last[0], last[1], 3.5, 0, 7); octx.fill(); octx.fillStyle = CINE_GOLD; octx.textAlign = 'left'; octx.font = '600 13px "Barlow Condensed", sans-serif'; octx.fillText(String(inOrbitCount), last[0] + 7, last[1] + 4); } }
+  octx.textAlign = 'left'; octx.textBaseline = 'middle';
+}
+let cineSaved = null;
+function enterCine() {
+  if (S.cine) return; cineSaved = { paths: S.paths, labels: S.labels, fpMode: S.fpMode, spin: S.spin, sites: S.sites, dist: cam.dist, phi: cam.phi, marker: S.marker };
+  S.cine = true; document.body.classList.add('cine'); $('#cineExit').hidden = false; S.paths = 'full'; S.labels = 'selected'; S.fpMode = 'off'; S.sites = true; S.spin = true; S.marker = 1; S.selected = null; renderDossier();
+  if (S.view === '3d') { cam.dist = Math.max(cam.dist, 4.2); cam.phi = 0.35; } buildCineSeries(); applyStyle(); updatePositions(); pathsDirty = true;
+  setT(TMIN); rate = 31557600; $('#rate').value = String(rate); paused = false; $('#playBtn').textContent = '❚❚';
+  toast('Cinematic timelapse: one year per second. Launch beams rise from each pad. Press Esc or Exit to return.');
+}
+function exitCine() {
+  if (!S.cine) return; S.cine = false; document.body.classList.remove('cine'); $('#cineExit').hidden = true; beams.length = 0;
+  Object.assign(S, { paths: cineSaved.paths, labels: cineSaved.labels, fpMode: cineSaved.fpMode, spin: cineSaved.spin, sites: cineSaved.sites, marker: cineSaved.marker }); cam.dist = cineSaved.dist; cam.phi = cineSaved.phi;
+  ['#pathSeg', '#labelSeg', '#fpSeg'].forEach((id, i) => { const key = ['paths', 'labels', 'fpMode'][i]; $(id).querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S[key]))); });
+  $('#spinBtn').setAttribute('aria-pressed', String(S.spin)); applyStyle(); updatePositions(); pathsDirty = true;
+}
+$('#cineExit').onclick = exitCine;
 
 /* ---------- picking ---------- */
 function pick(x, y) { let best = null, bd = 14 * 14; for (const o of shown) { if (!o.vis) continue; const d = (o.sx - x) ** 2 + (o.sy - y) ** 2; if (d < bd) { bd = d; best = o; } } return best; }
@@ -827,13 +910,17 @@ ov.addEventListener('pointermove', e => {
     else { const G = mapGeom(); map2d.cx -= dx / G.s; map2d.cy += dy / G.s; clampMap(); }
     drag.x = e.clientX; drag.y = e.clientY; return; }
   const o = pick(x, y); if (o !== S.hovered) { S.hovered = o; if (S.fpMode !== 'off') updatePositions(); } const site = o ? null : pickSite(x, y); ov.classList.toggle('pick', !!(o || site));
+  setGround(S.hoverCov && !o && !site ? groundAt(x, y) : null);
   const tip = $('#tip'); if (o) { tip.hidden = false; tip.innerHTML = `<b>${esc(o.name)}</b><div class="m">${esc(o.program)}${o.nrol ? ' · ' + esc(o.nrol) : ''}</div><div class="m">${o.pos ? fmtPos(o.pos) : ''}${o.pos && o.pos.rep ? ' · representative' : ''}</div>`; placeTip(x, y); }
   else if (site) { tip.hidden = false; const n = shown.filter(q => q.siteName === site).length; tip.innerHTML = `<b>${esc(site)}</b><div class="m">launch site · ${n} shown object${n === 1 ? '' : 's'} launched here</div>`; placeTip(x, y); }
+  else if (S.ground) { tip.hidden = false; tip.innerHTML = `<b>${groundCount} of ${shown.length} can see this spot</b><div class="m">${S.ground.lat.toFixed(1)}°, ${S.ground.lon.toFixed(1)}° · above the horizon from here</div>`; placeTip(x, y); }
   else tip.hidden = true;
 });
 function placeTip(x, y) { const tip = $('#tip'); tip.style.left = Math.min(W - 250, x + 14) + 'px'; tip.style.top = Math.max(8, y - 10) + 'px'; }
 ov.addEventListener('pointerup', e => { ov.classList.remove('dragging'); if (drag && !moved) { const r = ov.getBoundingClientRect(); const o = pick(e.clientX - r.left, e.clientY - r.top); if (o) select(o); else { const site = pickSite(e.clientX - r.left, e.clientY - r.top); if (site) { S.hidden.siteName = new Set(facetValues.siteName.keys.filter(k => k !== site)); buildFilters(); applyFilters(); toast('Showing only launches from ' + site + '. Use Filters to reset.'); } else select(null); } } drag = null; });
 ov.addEventListener('pointercancel', () => { drag = null; pinch = null; ov.classList.remove('dragging'); });
+ov.addEventListener('pointerleave', () => { setGround(null); S.hovered = null; $('#tip').hidden = true; });
+$('#hoverCov').checked = S.hoverCov; $('#hoverCov').onchange = e => { S.hoverCov = e.target.checked; if (!S.hoverCov) setGround(null); persist(); };
 ov.addEventListener('wheel', e => { e.preventDefault(); const f = Math.exp(e.deltaY * 0.0012); if (S.view === '3d') cam.dist = 1 + (cam.dist - 1) * f; else { const r = ov.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, G = mapGeom(); const lon = (x - G.ox) / G.s - 180, lat = 90 - (y - G.oy) / G.s; map2d.zoom = Math.min(10, Math.max(1, map2d.zoom / f)); const G2 = mapGeom(); map2d.cx += (lon - ((x - G2.ox) / G2.s - 180)); map2d.cy += (lat - (90 - (y - G2.oy) / G2.s)); clampMap(); } }, { passive: false });
 ov.addEventListener('touchstart', e => { if (e.touches.length === 2) { pinch = { d: Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY) }; } }, { passive: true });
 ov.addEventListener('touchmove', e => { if (pinch && e.touches.length === 2) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); const f = pinch.d / d; if (S.view === '3d') cam.dist = 1 + (cam.dist - 1) * f; else { map2d.zoom = Math.min(10, Math.max(1, map2d.zoom / f)); clampMap(); } pinch.d = d; } }, { passive: true });
@@ -914,7 +1001,7 @@ function buildFilters() {
     el.appendChild(det); }
   const reset = document.createElement('button'); reset.className = 'btn small'; reset.textContent = 'Reset all filters'; reset.onclick = () => { for (const k in FACETS) S.hidden[k].clear(); S.search = ''; $('#search').value = ''; applyFilters(); }; el.appendChild(reset);
 }
-function applyFilters() { refilter(); buildLegend(); const open = [...document.querySelectorAll('#filters details')].map(d => d.open); buildFilters(); document.querySelectorAll('#filters details').forEach((d, i) => d.open = open[i] || false); updatePositions(); renderDossier(); if (!$('#tableModal').hidden) renderTable(); }
+function applyFilters() { if (S.cine) buildCineSeries(); refilter(); buildLegend(); const open = [...document.querySelectorAll('#filters details')].map(d => d.open); buildFilters(); document.querySelectorAll('#filters details').forEach((d, i) => d.open = open[i] || false); updatePositions(); renderDossier(); if (!$('#tableModal').hidden) renderTable(); }
 $('#search').addEventListener('input', e => { S.search = e.target.value.trim().toLowerCase(); applyFilters(); });
 
 /* ---------- UI: header & display ---------- */
@@ -949,8 +1036,8 @@ function setT(t) { T = Math.max(TMIN, Math.min(TMAX, t)); lastPulseT = T; refilt
 scrub.addEventListener('input', () => { setT(TMIN + (TMAX - TMIN) * scrub.value / 100000); });
 $('#rate').value = '1'; $('#rate').onchange = e => { rate = +e.target.value; };
 $('#playBtn').onclick = () => { paused = !paused; $('#playBtn').textContent = paused ? '▶' : '❚❚'; $('#playBtn').setAttribute('aria-label', paused ? 'Play' : 'Pause'); };
-$('#liveBtn').onclick = () => { rate = 1; $('#rate').value = '1'; paused = false; $('#playBtn').textContent = '❚❚'; setT(Date.now()); };
-$('#lapseBtn').onclick = () => { setT(TMIN); rate = 31557600; $('#rate').value = String(rate); paused = false; $('#playBtn').textContent = '❚❚'; toast('Timelapse: one year per second. Launches pulse at their pads; objects fade when they re-enter.'); };
+$('#liveBtn').onclick = () => { exitCine(); rate = 1; $('#rate').value = '1'; paused = false; $('#playBtn').textContent = '❚❚'; setT(Date.now()); };
+$('#lapseBtn').onclick = () => { if (S.cine) { setT(TMIN); paused = false; $('#playBtn').textContent = '❚❚'; } else enterCine(); };
 { const t = $('#ticks'); t.innerHTML = ''; for (let y = 1960; y <= 2020; y += 10) { const s = document.createElement('span'); s.textContent = y; t.appendChild(s); } }
 function updateClock() { const d = new Date(T); $('#clock').textContent = d.toISOString().replace('T', ' ').slice(0, 19); const live = isLive(); $('#liveBtn').classList.toggle('off', !live); $('#liveBtn').textContent = live ? 'LIVE' : (paused ? 'PAUSED' : (rate === 1 ? 'OFFSET' : 'TIMELAPSE')); $('#clockSub').textContent = live ? 'UTC · real time' : 'UTC · ' + $('#rate').selectedOptions[0].textContent + (paused ? ' · paused' : ''); if (document.activeElement !== scrub) scrub.value = Math.round((T - TMIN) / (TMAX - TMIN) * 100000); }
 
@@ -973,7 +1060,7 @@ $('#tableBtn').onclick = () => { $('#tableModal').hidden = false; renderTable();
 $('#tableClose').onclick = () => { $('#tableModal').hidden = true; };
 ['tSearch', 'tViewport', 'tAll'].forEach(id => $('#' + id).addEventListener('input', renderTable));
 document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.hidden = true; }));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.modal').forEach(m => m.hidden = true); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.modal').forEach(m => m.hidden = true); exitCine(); } });
 
 /* ---------- about & data note ---------- */
 $('#aboutBtn').onclick = () => { $('#aboutModal').hidden = false; };
@@ -989,6 +1076,10 @@ $('#aboutBody').innerHTML = `
 <p>Classified re-entries are not in the public catalog either. Where a decay date is missing, the timeline uses an approximate year from observer reports, flagged in the dossier.</p>
 <h3>Sources</h3>
 <p>Elements: ${D.meta.tleSource}. Identities and launch dates: ${D.meta.catalog}. Mission list: ${D.meta.launches}, Gunter's Space Page. Coastlines: Natural Earth via world-atlas. Built ${D.meta.built}. Rendered with three.js and satellite.js.</p>
+<h3>Cinematic timelapse</h3>
+<p>The Timelapse button switches to a presentation view: gold glowing satellites with their orbit rings, a year counter, a growing graph of how many are in orbit, and an ascent path from each launch pad that lifts off vertically and pitches over downrange to the satellite it put up (the direction follows where the satellite is on its orbit at that moment, since the real insertion point is not public). Filters still apply, so you can run the film for one program or one launch site. Esc or Exit returns to the normal view at the same date.</p>
+<h3>Hover coverage</h3>
+<p>Point at any spot on the ground and the satellites that cannot see it fade out, leaving the ones that have it above their horizon at full brightness, with a count in the tooltip. Turn it off in Display if you prefer a steady picture.</p>
 <h3>Reading the view</h3>
 <p>Recent trails cover the length set by the Trail length slider (10 minutes to 7 days) and brighten toward the present. Footprints are the geometric horizon circle, and the Cones option draws the volume between each satellite and its circle so you can tell which circle belongs to which satellite: everything inside it can see the satellite above the horizon and vice versa. Imaging satellites photograph a strip a few tens of kilometres wide inside that circle; SIGINT satellites in geosynchronous orbit genuinely listen to a third of the planet at once. Orbit paths are drawn relative to the rotating Earth, so a geosynchronous satellite's path collapses to a dot and a Molniya orbit traces its figure of eight.</p>`;
 $('#dataNote').innerHTML = `${OBJ.length} objects, ${D.meta.tleCount} with public elements (newest ${D.meta.tleNewest}, oldest ${D.meta.tleOldest}). Elements from ${D.meta.tleSource}; identities from ${D.meta.catalog}. Built ${D.meta.built}. Open About for what is live and what is representative.`;
@@ -1010,10 +1101,10 @@ function loop(now) {
   if (pathsDirty || (pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && now - lastPathBuild > (S.paths === 'trail' ? 1200 : 2500) && Math.abs(T - pathT) > (S.paths === 'trail' ? Math.max(3000, S.trailH * 3600000 / 400) : 300000))) schedulePaths();
   if (pathQueue.length) workPaths(7);
   if (S.follow && S.selected && S.selected.pos) centerOn(S.selected);
-  if (S.spin && !drag && S.view === '3d') cam.theta += dt * 0.12;
+  if (S.spin && !drag && S.view === '3d') cam.theta += dt * (S.cine ? 0.08 : 0.12);
   const sunPos = subsolar(T); const sv = xyz(sunPos.lat, sunPos.lon, 50); sun.position.copy(sv); earthUniforms.sunDir.value.copy(sv).normalize();
   if (S.view === '3d') { updateCamera(); renderer.render(scene, camera); project3(); } else { drawMap(); }
-  drawOverlay(); frame++;
+  drawOverlay(); if (S.cine) drawCine(); frame++;
 }
 function buildLegendCountsOnly() { const k = S.colorBy, cnt = new Map(); for (const o of shown) for (const v of vals(o, k)) cnt.set(v, (cnt.get(v) || 0) + 1); const items = $('#legend').querySelectorAll('.chk'); facetValues[k].keys.forEach((v, i) => { const n = items[i] && items[i].querySelector('.n'); if (n) n.textContent = cnt.get(v) || 0; }); }
 
