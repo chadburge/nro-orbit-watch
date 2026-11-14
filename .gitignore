@@ -1,0 +1,5 @@
+data/satcat.csv
+data/nro_wikitext.json
+data/*.zip
+dist/
+__pycache__/
