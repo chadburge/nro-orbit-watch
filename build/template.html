@@ -206,7 +206,7 @@ body.lobby, #show { --u: max(min(1vw, 1.78vh), 10px); }
 #show { position: absolute; inset: 0; pointer-events: none; z-index: 5; font-family: var(--body); }
 #show[hidden] { display: none; }
 .show-eyebrow { font: 600 calc(0.95 * var(--u)) var(--display); letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
-.show-card { position: absolute; left: 0; top: calc(10.6 * var(--u)); width: calc(29 * var(--u)); max-height: calc(100% - 16.6 * var(--u)); overflow: hidden; background: linear-gradient(180deg, rgba(10,16,30,0.93), rgba(6,10,18,0.9)); border: 1px solid rgba(242,178,74,0.3); border-radius: calc(0.7 * var(--u)); padding: calc(1.3 * var(--u)) calc(1.5 * var(--u)) calc(1.5 * var(--u)); box-shadow: 0 calc(1.2 * var(--u)) calc(3.5 * var(--u)) rgba(0,0,0,0.65); opacity: 0; transform: translateX(2vw); transition: opacity 0.7s ease, transform 0.7s ease; }
+.show-card { position: absolute; left: 0; top: calc(10.6 * var(--u)); width: calc(29 * var(--u)); max-height: calc(100% - 14.6 * var(--u)); overflow: hidden; background: linear-gradient(180deg, rgba(10,16,30,0.93), rgba(6,10,18,0.9)); border: 1px solid rgba(242,178,74,0.3); border-radius: calc(0.7 * var(--u)); padding: calc(1.3 * var(--u)) calc(1.5 * var(--u)) calc(1.5 * var(--u)); box-shadow: 0 calc(1.2 * var(--u)) calc(3.5 * var(--u)) rgba(0,0,0,0.65); opacity: 0; transform: translateX(2vw); transition: opacity 0.7s ease, transform 0.7s ease; }
 .show-card.in { opacity: 1; transform: none; }
 .show-card h2 { margin: calc(0.3 * var(--u)) 0 calc(0.7 * var(--u)); font: 700 calc(2.1 * var(--u))/1.05 var(--display); color: #fff3d6; text-wrap: balance; }
 .show-card img, .show-slide img, .show-full img { width: 100%; max-height: calc(14 * var(--u)); object-fit: cover; border-radius: calc(0.4 * var(--u)); display: block; margin: calc(0.5 * var(--u)) 0 calc(0.4 * var(--u)); border: 1px solid rgba(255,255,255,0.1); }
@@ -245,7 +245,7 @@ body.lobby, #show { --u: max(min(1vw, 1.78vh), 10px); }
 .show-full ul { margin-top: calc(0.8 * var(--u)); } .show-full li { font-size: calc(1.15 * var(--u)); grid-template-columns: calc(9 * var(--u)) 1fr; } .show-full li .d { font-size: calc(1.05 * var(--u)); }
 .countdown { font: 700 calc(2.5 * var(--u)) var(--display); color: #fff3d6; letter-spacing: 0.04em; }
 /* narrow or square windows: panels dock below the globe instead of beside it */
-body.dock-bottom .show-slide, body.dock-bottom .show-card { left: calc(2.2 * var(--u)) !important; right: calc(2.2 * var(--u)); width: auto; top: auto; bottom: calc(3.6 * var(--u)); max-height: 46%; transform: translateY(2vh); }
+body.dock-bottom .show-slide, body.dock-bottom .show-card { left: calc(2.2 * var(--u)) !important; right: calc(2.2 * var(--u)); width: auto !important; top: auto; bottom: calc(3.6 * var(--u)); max-height: 33.3%; transform: translateY(2vh); }
 body.dock-bottom .show-slide.in, body.dock-bottom .show-card.in { transform: none; }
 body.dock-bottom .show-slide { padding: calc(1 * var(--u)) calc(1.5 * var(--u)) calc(1.2 * var(--u)); background: linear-gradient(180deg, rgba(5,9,18,0.92), rgba(3,6,13,0.97)); border: 1px solid rgba(242,178,74,0.3); border-radius: calc(0.7 * var(--u)); }
 body.dock-bottom .show-full { width: calc(100% - 4.4 * var(--u)); }
@@ -424,7 +424,7 @@ body.cine footer .stats { display: none; }
     </div>
     <button class="btn" id="cineExit" hidden>Exit timelapse</button>
     <button class="btn" id="lobbyExit" hidden>Exit lobby mode</button>
-    <div id="lobbyCtl" hidden><button class="btn" id="lcPrev" title="Previous slide (←)">◀ Back</button><button class="btn" id="lcNext" title="Next slide (→ or N)">Next ▶</button><button class="btn" id="lcHide" title="Never show this slide again (Alt+click restores all hidden slides)">Hide this slide</button><span class="hint" id="lcInfo"></span></div>
+    <div id="lobbyCtl" hidden><button class="btn" id="lcPrev" title="Previous slide (←)">◀ Back</button><button class="btn" id="lcNext" title="Next slide (→ or N)">Next ▶</button><button class="btn" id="lcHide" title="Never show this slide again (Alt+click restores all hidden slides)">Hide this slide</button><button class="btn" id="lcFull" title="Toggle full screen (F)">⛶ Full screen</button><span class="hint" id="lcInfo"></span></div>
     <div id="intro" hidden><div><div class="k">Live reconnaissance tracking</div><h1>NRO ORBIT WATCH</h1><div class="sub">Every acknowledged National Reconnaissance Office satellite, propagated from amateur-observed orbits</div><div class="for">Roster-5 Software · Louisville, Colorado</div><div class="note">All satellite data on this display comes from publicly available sources</div></div></div>
     <div id="loading"><div style="text-align:center"><div class="k">NRO <span>Orbit</span> Watch</div><div class="s" id="loadMsg">loading Earth imagery and propagating orbits</div><div class="bar"><i></i></div></div></div>
     <div id="show" hidden>
@@ -1206,6 +1206,8 @@ function hideSegment(all) {
 }
 function updateCtl() { const el = $('#lcInfo'); if (!el || !lobby.seg) return; el.textContent = `${lobby.seg.type} · ${lobby.pos + 1} of ${lobby.hist.length}${lobby.blocked.size ? ' · ' + lobby.blocked.size + ' hidden' : ''}`; }
 $('#lcPrev').onclick = prevSegment; $('#lcNext').onclick = nextSegment; $('#lcHide').onclick = (e) => hideSegment(e.altKey);
+async function toggleFull() { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch (e) { if (!popOut(location.hash)) toast('Full screen is blocked in this frame. Press F11, or open the page in its own window.'); } }
+$('#lcFull').onclick = toggleFull; document.addEventListener('fullscreenchange', () => { $('#lcFull').textContent = document.fullscreenElement ? '⛶ Exit full screen' : '⛶ Full screen'; });
 /* lobby camera: keep the globe clear of the panels and far enough out to show the highest orbits in the frame */
 const lobbyUnit = () => Math.max(10, Math.min(W / 100, H / 56));
 const lobbyDock = () => (W < 900 || W / H < 1.15) ? 'bottom' : 'side';
@@ -1214,8 +1216,8 @@ function lobbyFree() {
   const v = lobbyUnit(), m = 2.2 * v, g = 1.5 * v, p = lobby.panel, dock = lobbyDock();
   let x0 = m, x1 = W - m, y0 = m + 6.3 * v, y1 = H - 3.1 * v;
   if (p === 'slide' || p === 'card') {
-    if (dock === 'side') { if (p === 'slide') x0 = m + 38 * v + g; else x1 = W - m - 29 * v - g; }
-    else { const el = p === 'card' ? SHOWEL.card : SHOWEL.slide; y1 = H - 3.6 * v - (el.offsetHeight || H * 0.4) - g; }
+    if (dock === 'side') { if (p === 'slide') x0 = W / 3 + g / 2; else x1 = 2 * W / 3 - g / 2; }   // the panel owns one third of the width
+    else { y1 = H - 3.6 * v - H / 3 - g; }                                                        // or the bottom third of the height
   }
   return { v, m, g, dock, x0, x1, y0, y1 };
 }
@@ -1225,7 +1227,6 @@ function lobbyFit(dist, R) {
   const dR = R > 1.25 ? R * H / (2 * avail * t) : 0;
   return Math.min(5.8, Math.max(dist, dS, dR));
 }
-const clampShift = (lo, hi) => lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, 0));
 let tickerDirty = false;
 function buildTicker() { const parts = []; const up = (liveUpcoming || LAUNCHES.upcoming || []).filter(l => !/Success|Failure|In Flight/.test(l.status || '')).slice(0, 6); for (const l of up) parts.push(`<span class="n">NEXT</span> ${esc(fmtDate(l.net))} ${esc(l.name)} · ${esc(l.rocket || '')} · ${esc(l.location || '')}`); for (const l of (LAUNCHES.previous || []).slice(0, 6)) parts.push(`<span class="n">LAUNCHED</span> ${esc(fmtDate(l.net))} ${esc(l.name)} · ${esc(l.location || '')}`); parts.push(`<span class="n">NOW</span> ${inOrbitCount} reconnaissance satellites in orbit`); const facts = CONTENT.facts.slice().sort(() => Math.random() - 0.5).slice(0, 4); for (const f of facts) parts.push(`<span class="n">FILE</span> ${esc(f.head)}: ${esc(f.text)}`); parts.push(`<span class="n">NOTE</span> All satellite data on this display comes from publicly available sources`); SHOWEL.ticker.innerHTML = parts.join('<span class="sep">◆</span>'); tickerDirty = false; if (!SHOWEL.ticker.dataset.x) SHOWEL.ticker.dataset.x = String(SHOWEL.ticker.parentElement.clientWidth || W); }
 function tickTicker(dt) { const t = SHOWEL.ticker; const cw = t.parentElement.clientWidth || W; let x = parseFloat(t.dataset.x || cw); x -= W * 0.05 * dt; if (x < -t.scrollWidth) { x = cw; if (tickerDirty) buildTicker(); } t.dataset.x = String(x); t.style.transform = `translateX(${x}px)`; }
@@ -1243,13 +1244,13 @@ function layoutLobby() {
   tmpV.set(0, 0, 0).project(camera); const gx = (tmpV.x + 1) / 2 * W, gy = (1 - tmpV.y) / 2 * H;
   const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0); tmpV.copy(right).project(camera); const gr = Math.abs((tmpV.x + 1) / 2 * W - gx);
   const slideW = 38 * v, cardW = 29 * v;
-  // the globe stays centred when it fits; otherwise it slides just far enough (view offset) to clear the panel, title band and ticker
-  lobbyShift.tgt = lobby.panel === 'full' ? 0 : clampShift(f.x0 + gr - W / 2, f.x1 - gr - W / 2);
-  lobbyShift.cyT = lobby.panel === 'full' ? 0 : clampShift(H / 2 + gr - f.y1, H / 2 - gr - f.y0);
-  const left = f.dock === 'side' ? Math.max(m, gx - gr - g - slideW) : m; const cardLeft = f.dock === 'side' ? Math.min(W - cardW - m, gx + gr + g) : m;
-  const gr0 = H / 2 * Math.tan(Math.asin(1 / 3.3)) / Math.tan(21 * DEG); const titleLeft = f.dock === 'side' ? Math.max(m, W / 2 - gr0 - g - slideW) : m;
-  Object.assign(lobbyLayout, { gx, gy, gr, left, cardLeft, titleLeft, dock: f.dock });
-  if (f.dock === 'side') { SHOWEL.slide.style.left = left + 'px'; SHOWEL.card.style.left = cardLeft + 'px'; } else { SHOWEL.slide.style.left = ''; SHOWEL.card.style.left = ''; }
+  // the globe is centred (view offset) in whatever region the panel, title band and ticker leave free
+  lobbyShift.tgt = lobby.panel === 'full' ? 0 : (f.x0 + f.x1) / 2 - W / 2;
+  lobbyShift.cyT = lobby.panel === 'full' ? 0 : H / 2 - (f.y0 + f.y1) / 2;
+  const pw = W / 3 - m - g / 2; const left = m, cardLeft = f.dock === 'side' ? 2 * W / 3 + g / 2 : m;
+  Object.assign(lobbyLayout, { gx, gy, gr, left, cardLeft, cardRight: f.dock === 'side' ? W - m : W - m, titleLeft: m, dock: f.dock });
+  if (f.dock === 'side') { SHOWEL.slide.style.left = left + 'px'; SHOWEL.slide.style.width = pw + 'px'; SHOWEL.card.style.left = cardLeft + 'px'; SHOWEL.card.style.width = pw + 'px'; }
+  else { SHOWEL.slide.style.left = ''; SHOWEL.slide.style.width = ''; SHOWEL.card.style.left = ''; SHOWEL.card.style.width = ''; }
 }
 function drawLobby(now) {
   if (!S.lobby) return; layoutLobby(); const el = now - lobby.started; const fadeIn = Math.min(1, el / 900), fadeOut = Math.min(1, (lobby.dur - el) / 900); const a = Math.max(0, Math.min(fadeIn, fadeOut));
@@ -1265,7 +1266,7 @@ function drawLobby(now) {
   octx.textAlign = 'right'; octx.fillStyle = '#4fd1c5'; octx.font = `600 ${Math.round((narrow ? 1.2 : 1.55) * v)}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SOFTWARE', rx - ls - 0.9 * v, m + (narrow ? 0.9 : 1.2) * v);
   octx.fillStyle = '#b4bfd4'; octx.font = `500 ${Math.round((narrow ? 0.85 : 1.0) * v)}px "IBM Plex Sans", sans-serif`; octx.fillText('Louisville, CO', rx - ls - 0.9 * v, m + (narrow ? 2.0 : 2.5) * v); octx.textAlign = 'left';
 
-  if (lobby.caption && !S.cine && !(lobbyLayout.dock === 'bottom' && lobby.panel)) { const right = SHOWEL.slide.classList.contains('in'); octx.globalAlpha = a; octx.textAlign = right ? 'right' : 'left'; const cx2 = Math.min(W - m, lobbyLayout.cardLeft + 29 * v); const hy = H - m - 4.4 * v, x = right ? cx2 - 1.2 * v : ax + 1.2 * v; octx.fillStyle = '#f2b24a'; octx.fillRect(right ? cx2 - 0.3 * v : ax, hy - 2.3 * v, 0.3 * v, 4.1 * v);
+  if (lobby.caption && !S.cine && !(lobbyLayout.dock === 'bottom' && lobby.panel)) { const right = SHOWEL.slide.classList.contains('in'); octx.globalAlpha = a; octx.textAlign = right ? 'right' : 'left'; const cx2 = W - m; const hy = H - m - 4.4 * v, x = right ? cx2 - 1.2 * v : ax + 1.2 * v; octx.fillStyle = '#f2b24a'; octx.fillRect(right ? cx2 - 0.3 * v : ax, hy - 2.3 * v, 0.3 * v, 4.1 * v);
     octx.fillStyle = '#fff3d6'; octx.font = `700 ${Math.round(2.5 * v)}px "Barlow Condensed", sans-serif`; octx.fillText(lobby.caption.h, x, hy);
     octx.fillStyle = '#d6deeb'; octx.font = `400 ${Math.round(1.15 * v)}px "IBM Plex Sans", sans-serif`; octx.fillText(lobby.caption.s(), x, hy + 1.7 * v); octx.globalAlpha = 1; }
   const dark = 1 - a; if (dark > 0 && !S.cine) { octx.fillStyle = `rgba(3,6,13,${dark * 0.85})`; octx.fillRect(0, 0, W, H); }
@@ -1289,10 +1290,15 @@ function exitLobby() {
   if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
 }
 window.__nextSegment = nextSegment; window.__dbg = () => ({ seg: lobby.seg && { key: lobby.seg.key, R: lobby.seg.R, base: lobby.seg.baseDist }, cam: { ...cam }, tgt: { ...camTarget }, shift: { ...lobbyShift }, free: lobbyFree(), panel: lobby.panel, fit: lobby.seg ? lobbyFit(lobby.seg.baseDist, lobby.seg.R) : null, maxR: maxShownR(), shown: shown.length }); window.__segType = () => lobby.seg && lobby.seg.type + ':' + lobby.seg.key;
-$('#lobbyBtn').onclick = enterLobby; $('#lobbyExit').onclick = exitLobby;
+const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+function popOut(hash) { if (!framed) return false; try { const w = window.open(location.href.split('#')[0] + (hash || ''), '_blank'); if (w) { toast('Opened in its own window; press F there for full screen.'); return true; } } catch (e) {} return false; }
+$('#lobbyBtn').onclick = () => { if (!popOut('#lobby')) enterLobby(); };
+$('#lobbyExit').onclick = exitLobby;
+if (framed) { const b = document.createElement('button'); b.className = 'btn'; b.id = 'popBtn'; b.title = 'This page is embedded in another page; open it in a window of its own'; b.textContent = '⤢ Full window'; b.onclick = () => popOut(location.hash); $('#lobbyBtn').before(b); }
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && S.lobby && lobby.started && performance.now() - lobby.started > 1500) exitLobby(); });
 ov.addEventListener('pointermove', () => { if (S.lobby) { lobby.cursorT = performance.now(); document.body.classList.add('showcursor'); } });
 if (location.hash === '#lobby') setTimeout(enterLobby, 1200);
+window.__framed = framed;
 window.addEventListener('hashchange', () => { if (location.hash === '#lobby') enterLobby(); else if (S.lobby) exitLobby(); });
 
 /* ---------- picking ---------- */
@@ -1470,7 +1476,7 @@ document.addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   if (k === ' ') { e.preventDefault(); $('#playBtn').click(); }
   else if (k === 'l') { S.lobby ? exitLobby() : enterLobby(); }
-  else if (k === 'f') { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (err) {} }
+  else if (k === 'f') toggleFull();
   else if (k === '1') setView('3d'); else if (k === '2') setView('2d');
   else if (k === 't') $('#tableBtn').click(); else if ((k === 'n' || k === 'arrowright') && S.lobby) nextSegment(); else if ((k === 'p' || k === 'arrowleft') && S.lobby) prevSegment();
   else if (k === 'r') $('#resetView').click(); else if (k === 'h') $('#liveBtn').click();

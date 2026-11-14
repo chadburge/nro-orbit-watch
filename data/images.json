@@ -466,5 +466,101 @@
 "h": 732,
 "kind": "patch",
 "nrol": "NROL-79"
+},
+{
+"key": "patch-nrol-145",
+"file": "patch-nrol-145.jpg",
+"title": "NROL-145 patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "A bunch of circles representing satellites shaped like an eye's Iris. On the bottom reads \"strength in numbers.\"",
+"w": 900,
+"h": 900,
+"kind": "patch",
+"nrol": "NROL-145"
+},
+{
+"key": "patch-nrol-146",
+"file": "patch-nrol-146.jpg",
+"title": "NROL-146 patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "The emblem's blue circles artistically depict a proliferated constellation of satellites, reflecting the new paradigm for assets the NRO is putting on orbit. The constellation design also suggests an eye's iris, reflecting the NRO's reconnaissance mission – seeing Earth from the perspective of stars",
+"w": 722,
+"h": 723,
+"kind": "patch",
+"nrol": "NROL-146"
+},
+{
+"key": "patch-nrol-149",
+"file": "patch-nrol-149.jpg",
+"title": "NROL-149 patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "A standard Starshield patch for NROL-149, resembling an iris to signify its large-number LEO constellation.",
+"w": 360,
+"h": 360,
+"kind": "patch",
+"nrol": "NROL-149"
+},
+{
+"key": "patch-nrol-151",
+"file": "patch-nrol-151.jpg",
+"title": "NROL-151 Mission Patch.svg",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "National Reconnaissance Office (NRO) L-151 mission patch featuring a deer head. \"The NROL-151 mission logo is a light-hearted way to wish NROL-151 good fortune and luck on its mission\" according to the NRO.",
+"w": 900,
+"h": 900,
+"kind": "patch",
+"nrol": "NROL-151"
+},
+{
+"key": "patch-nrol-153",
+"file": "patch-nrol-153.jpg",
+"title": "NROL-153 patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "A standard Starshield patch for NROL-153, resembling an iris to signify its large-number LEO constellation.",
+"w": 900,
+"h": 900,
+"kind": "patch",
+"nrol": "NROL-153"
+},
+{
+"key": "patch-nrol-162",
+"file": "patch-nrol-162.jpg",
+"title": "NROL-162 Patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "We asked yesterday if you could guess the #reptile on the #NROL162 patch just on its shadow. It’s the frilled lizard! Primarily found in Northern Australia, this lizard is small but mighty, and represents the small and agile nature of the payload.",
+"w": 696,
+"h": 693,
+"kind": "patch",
+"nrol": "NROL-162"
+},
+{
+"key": "patch-nrol-167",
+"file": "patch-nrol-167.jpg",
+"title": "NROL-167 patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "The emblem's blue circles artistically depict a proliferated constellation of satellites, reflecting the new paradigm for assets the NRO is putting on orbit. The constellation design also suggests an eye's iris, reflecting the NRO's reconnaissance mission – seeing Earth from the perspective of stars",
+"w": 900,
+"h": 900,
+"kind": "patch",
+"nrol": "NROL-167"
+},
+{
+"key": "patch-nrol-179",
+"file": "patch-nrol-179.jpg",
+"title": "NROL-179 patch.png",
+"author": "National Reconnaissance Office",
+"license": "Public domain",
+"desc": "A standard Starshield patch, featuring a star making a trail to the aperture of an iris. On the bottom reads \"Strength in numbers.\"",
+"w": 360,
+"h": 360,
+"kind": "patch",
+"nrol": "NROL-179"
 }
 ]
