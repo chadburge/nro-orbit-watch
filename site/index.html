@@ -291,6 +291,7 @@ td a { text-decoration: none; margin-right: 6px; font-size: 11.5px; }
                 <button data-v="full" aria-pressed="false">Full</button>
               </div>
             </div>
+            <div class="row"><label for="trailLen">Trail length</label><input type="range" id="trailLen" min="0" max="1000" value="215" style="flex:1;accent-color:var(--accent)" aria-label="Trail length"><span class="num" id="trailLab" style="font-size:11px;color:var(--muted);min-width:52px;text-align:right">3 h</span></div>
             <div class="row"><label>Labels</label>
               <div class="seg" role="group" id="labelSeg">
                 <button data-v="selected" aria-pressed="true">Selected</button>
@@ -448,9 +449,9 @@ function vals(o, k) { const g = FACETS[k].get; const v = g ? g(o) : o[k]; return
 /* ---------- state ---------- */
 let S = { view: '3d', style: 'realistic', colorBy: 'function', spacing: 'compressed', paths: 'none', labels: 'selected', fpMode: 'off', sites: true, terminator: true,
   layers: Object.fromEntries(LAYERS.map(l => [l[0], l[2]])), hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set()])), search: '',
-  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1 };
-try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator']) if (k in s) S[k] = s[k]; } catch (e) {}
-function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator })); } catch (e) {} }
+  selected: null, hovered: null, follow: false, orbitSel: false, altMin: 150, altMax: 45000, marker: 1, spin: false, coneOp: 1, trailH: 3 };
+try { const s = JSON.parse(localStorage.getItem('now-settings') || '{}'); for (const k of ['view', 'style', 'colorBy', 'spacing', 'paths', 'labels', 'fpMode', 'sites', 'terminator', 'trailH']) if (k in s) S[k] = s[k]; } catch (e) {}
+function persist() { try { const { view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH } = S; localStorage.setItem('now-settings', JSON.stringify({ view, style, colorBy, spacing, paths, labels, fpMode, sites, terminator, trailH })); } catch (e) {} }
 
 /* ---------- time ---------- */
 let T = Date.now(), rate = 1, paused = false, lastReal = performance.now();
@@ -588,8 +589,8 @@ const coneGeo = new THREE.BufferGeometry(); coneGeo.setAttribute('position', new
 const coneMesh = new THREE.Mesh(coneGeo, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.13, side: THREE.DoubleSide, depthWrite: false })); coneMesh.renderOrder = -1; scene.add(coneMesh);
 const edgeGeo = new THREE.BufferGeometry(); edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(MAXN * 8 * 2 * 3), 3)); edgeGeo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(MAXN * 8 * 2 * 3), 3));
 const edgeLines = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.35 })); scene.add(edgeLines);
-const PATH_PTS = 128;
-const pathGeo = new THREE.BufferGeometry(); pathGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(MAXN * PATH_PTS * 2 * 3), 3)); pathGeo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(MAXN * PATH_PTS * 2 * 3), 3));
+const PATH_PTS = 128, MAXP = 512, PATH_FLOATS = MAXN * MAXP * 2 * 3;
+const pathGeo = new THREE.BufferGeometry(); pathGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(PATH_FLOATS), 3)); pathGeo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(PATH_FLOATS), 3));
 const pathLines = new THREE.LineSegments(pathGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.55 })); scene.add(pathLines);
 // launch sites
 const siteGeo = new THREE.BufferGeometry(); { const a = []; for (const k in SITES) { const p = xyz(SITES[k][0], SITES[k][1], 1.004); a.push(p.x, p.y, p.z); } siteGeo.setAttribute('position', new THREE.Float32BufferAttribute(a, 3)); }
@@ -701,22 +702,27 @@ function footprint(g, n) {
 
 /* ---------- paths (budgeted) ---------- */
 let pathsDirty = true, pathQueue = [], pathT = 0, pathCount = 0, lastPathBuild = 0;
-const stagePos = new Float32Array(MAXN * PATH_PTS * 2 * 3), stageCol = new Float32Array(MAXN * PATH_PTS * 2 * 3); let stagePath = new Map();
-function schedulePaths() { pathQueue = (S.paths === 'none' && !S.orbitSel) ? [] : (S.paths === 'none' ? [S.selected].filter(o => o && shown.includes(o)) : shown.slice()); pathCount = 0; pathT = T; pathsDirty = false; lastPathBuild = performance.now(); stagePath = new Map(); if (!pathQueue.length) { pathGeo.setDrawRange(0, 0); for (const o of OBJ) o.path = null; } }
+const stagePos = new Float32Array(PATH_FLOATS), stageCol = new Float32Array(PATH_FLOATS); let stagePath = new Map(), stageFloats = 0;
+function schedulePaths() { pathQueue = (S.paths === 'none' && !S.orbitSel) ? [] : (S.paths === 'none' ? [S.selected].filter(o => o && shown.includes(o)) : shown.slice()); pathCount = 0; stageFloats = 0; pathT = T; pathsDirty = false; lastPathBuild = performance.now(); stagePath = new Map(); if (!pathQueue.length) { pathGeo.setDrawRange(0, 0); for (const o of OBJ) o.path = null; } }
 function workPaths(budgetMs) {
   const start = performance.now(); const pos = stagePos, col = stageCol;
   while (pathQueue.length && performance.now() - start < budgetMs) {
     const o = pathQueue.shift(); const period = 2 * Math.PI / o.kep.n * 1000; const mode = (S.paths === 'none' ? 'full' : S.paths);
-    const span = mode === 'full' ? period : Math.min(period * 0.3, 5400000), steps = mode === 'full' ? PATH_PTS : 48, t0 = mode === 'full' ? pathT - period / 2 : pathT - span;
+    let span, steps, t0;
+    if (mode === 'full') { span = period; steps = PATH_PTS; t0 = pathT - period / 2; }
+    else { span = S.trailH * 3600000; steps = Math.min(MAXP, Math.max(32, Math.ceil(span / (period / 48)))); t0 = pathT - span; }
     const pts = []; for (let i = 0; i <= steps; i++) { const g = posAt(o, t0 + span * i / steps); pts.push([g.lat, g.lon, g.alt]); }
     stagePath.set(o, pts); const c = o.rgb || hexToRgb(colorOf(o));
-    if (pathCount < MAXN) { let k = pathCount * PATH_PTS * 6; for (let i = 0; i < steps && i < PATH_PTS; i++) { const a = xyz(pts[i][0], pts[i][1], radiusFor(pts[i][2])), b = xyz(pts[i + 1][0], pts[i + 1][1], radiusFor(pts[i + 1][2])); pos[k] = a.x; pos[k + 1] = a.y; pos[k + 2] = a.z; pos[k + 3] = b.x; pos[k + 4] = b.y; pos[k + 5] = b.z; for (let q = 0; q < 2; q++) { col[k + q * 3] = c[0]; col[k + q * 3 + 1] = c[1]; col[k + q * 3 + 2] = c[2]; } k += 6; }
-      for (let i = steps; i < PATH_PTS; i++) { let k2 = pathCount * PATH_PTS * 6 + i * 6; for (let q = 0; q < 6; q++) pos[k2 + q] = 0; }
-      pathCount++; }
+    if (stageFloats + steps * 6 <= PATH_FLOATS) { let k = stageFloats;
+      for (let i = 0; i < steps; i++) { const a = xyz(pts[i][0], pts[i][1], radiusFor(pts[i][2])), b = xyz(pts[i + 1][0], pts[i + 1][1], radiusFor(pts[i + 1][2]));
+        const fade = mode === 'full' ? 1 : 0.25 + 0.75 * i / steps; // trails brighten toward the present
+        pos[k] = a.x; pos[k + 1] = a.y; pos[k + 2] = a.z; pos[k + 3] = b.x; pos[k + 4] = b.y; pos[k + 5] = b.z;
+        for (let q = 0; q < 2; q++) { col[k + q * 3] = c[0] * fade; col[k + q * 3 + 1] = c[1] * fade; col[k + q * 3 + 2] = c[2] * fade; } k += 6; }
+      stageFloats = k; pathCount++; }
   }
   if (!pathQueue.length) { // build complete: swap the finished set in at once so nothing blinks
-    pathGeo.attributes.position.array.set(stagePos.subarray(0, pathCount * PATH_PTS * 6)); pathGeo.attributes.color.array.set(stageCol.subarray(0, pathCount * PATH_PTS * 6));
-    pathGeo.setDrawRange(0, pathCount * PATH_PTS * 2); pathGeo.attributes.position.needsUpdate = true; pathGeo.attributes.color.needsUpdate = true;
+    pathGeo.attributes.position.array.set(stagePos.subarray(0, stageFloats)); pathGeo.attributes.color.array.set(stageCol.subarray(0, stageFloats));
+    pathGeo.setDrawRange(0, stageFloats / 3); pathGeo.attributes.position.needsUpdate = true; pathGeo.attributes.color.needsUpdate = true;
     for (const o of OBJ) o.path = stagePath.get(o) || null; }
 }
 
@@ -927,6 +933,10 @@ $('#altMax').addEventListener('input', e => setAlt(S.altMin, altScale(+e.target.
 document.querySelectorAll('[data-alt]').forEach(b => b.onclick = () => { const [a, c] = b.dataset.alt.split(',').map(Number); setAlt(a, c); });
 $('#markerSize').addEventListener('input', e => { S.marker = +e.target.value; applyStyle(); });
 $('#coneOp').addEventListener('input', e => { S.coneOp = +e.target.value; updatePositions(); });
+const trailHours = v => Math.pow(168, v / 1000), trailInv = h => Math.round(1000 * Math.log(h) / Math.log(168));
+function trailLabel(h) { return h < 1.5 ? '1 h' : h < 24 ? Math.round(h) + ' h' : (h / 24).toFixed(h < 48 ? 1 : 0) + ' d'; }
+$('#trailLen').value = trailInv(S.trailH); $('#trailLab').textContent = trailLabel(S.trailH);
+$('#trailLen').addEventListener('input', e => { S.trailH = trailHours(+e.target.value); $('#trailLab').textContent = trailLabel(S.trailH); persist(); if (S.paths === 'trail') pathsDirty = true; });
 $('#zoomIn').onclick = () => { if (S.view === '3d') cam.dist *= 0.8; else { map2d.zoom = Math.min(10, map2d.zoom * 1.25); clampMap(); } };
 $('#zoomOut').onclick = () => { if (S.view === '3d') cam.dist /= 0.8; else { map2d.zoom = Math.max(1, map2d.zoom / 1.25); clampMap(); } };
 $('#spinBtn').onclick = () => { S.spin = !S.spin; $('#spinBtn').setAttribute('aria-pressed', String(S.spin)); if (S.spin) { S.follow = false; $('#followBtn').setAttribute('aria-pressed', 'false'); } };
@@ -980,7 +990,7 @@ $('#aboutBody').innerHTML = `
 <h3>Sources</h3>
 <p>Elements: ${D.meta.tleSource}. Identities and launch dates: ${D.meta.catalog}. Mission list: ${D.meta.launches}, Gunter's Space Page. Coastlines: Natural Earth via world-atlas. Built ${D.meta.built}. Rendered with three.js and satellite.js.</p>
 <h3>Reading the view</h3>
-<p>Footprints are the geometric horizon circle, and the Cones option draws the volume between each satellite and its circle so you can tell which circle belongs to which satellite: everything inside it can see the satellite above the horizon and vice versa. Imaging satellites photograph a strip a few tens of kilometres wide inside that circle; SIGINT satellites in geosynchronous orbit genuinely listen to a third of the planet at once. Orbit paths are drawn relative to the rotating Earth, so a geosynchronous satellite's path collapses to a dot and a Molniya orbit traces its figure of eight.</p>`;
+<p>Recent trails cover the length set by the Trail length slider (1 hour to 7 days) and brighten toward the present. Footprints are the geometric horizon circle, and the Cones option draws the volume between each satellite and its circle so you can tell which circle belongs to which satellite: everything inside it can see the satellite above the horizon and vice versa. Imaging satellites photograph a strip a few tens of kilometres wide inside that circle; SIGINT satellites in geosynchronous orbit genuinely listen to a third of the planet at once. Orbit paths are drawn relative to the rotating Earth, so a geosynchronous satellite's path collapses to a dot and a Molniya orbit traces its figure of eight.</p>`;
 $('#dataNote').innerHTML = `${OBJ.length} objects, ${D.meta.tleCount} with public elements (newest ${D.meta.tleNewest}, oldest ${D.meta.tleOldest}). Elements from ${D.meta.tleSource}; identities from ${D.meta.catalog}. Built ${D.meta.built}. Open About for what is live and what is representative.`;
 
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 4200); }
@@ -997,7 +1007,7 @@ function loop(now) {
   const timeJump = rate >= 86400;
   if (now - lastPos > (timeJump ? 120 : 250) || frame === 0) { lastPos = now; refilter(); checkLaunches(); updatePositions(); if (S.selected) updateLive(); }
   if (now - lastClock > 200) { lastClock = now; updateClock(); if (frame % 10 === 0) buildLegendCountsOnly(); }
-  if (pathsDirty || (pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && now - lastPathBuild > 2500 && Math.abs(T - pathT) > (S.paths === 'trail' ? 20000 : 300000))) schedulePaths();
+  if (pathsDirty || (pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && now - lastPathBuild > (S.paths === 'trail' ? 1200 : 2500) && Math.abs(T - pathT) > (S.paths === 'trail' ? Math.max(8000, S.trailH * 3600000 / 400) : 300000))) schedulePaths();
   if (pathQueue.length) workPaths(7);
   if (S.follow && S.selected && S.selected.pos) centerOn(S.selected);
   if (S.spin && !drag && S.view === '3d') cam.theta += dt * 0.12;
