@@ -11,11 +11,11 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(ROOT, 'site')
 PORT = int(os.environ.get('PORT', '8787'))
 
-def run(script):
-    subprocess.run([sys.executable, os.path.join(ROOT, 'build', script)], check=True, cwd=ROOT)
+def run(script, *args):
+    subprocess.run([sys.executable, os.path.join(ROOT, 'build', script), *args], check=True, cwd=ROOT)
 
 if '--refresh' in sys.argv:
-    run('fetch_inputs.py'); run('fetch_launches.py'); run('fetch_images.py'); run('parse_nrol.py'); run('land.py'); run('borders.py'); run('content.py'); run('build_data.py'); run('build_page.py')
+    run('fetch_inputs.py'); run('fetch_launches.py'); run('fetch_images.py'); run('parse_nrol.py'); run('fetch_mission_images.py', 'all'); run('fetch_social.py'); run('land.py'); run('borders.py'); run('content.py'); run('build_data.py'); run('build_page.py')
 elif '--build' in sys.argv or not os.path.exists(os.path.join(SITE, 'index.html')):
     run('build_page.py')
 

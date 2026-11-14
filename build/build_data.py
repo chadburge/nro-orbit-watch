@@ -406,7 +406,7 @@ cities = json.load(open(d + '/cities.json', encoding='utf-8')) if os.path.exists
 def opt(name):
     f = d + '/' + name
     return json.load(open(f, encoding='utf-8')) if os.path.exists(f) else None
-json.dump({'objects': objects, 'land': land, 'borders': borders, 'cities': cities, 'meta': meta, 'content': opt('content.json'), 'images': opt('images.json') or [], 'launches': opt('launches.json') or {'previous': [], 'upcoming': [], 'asof': ''}}, open(d + '/data.json', 'w'), separators=(',', ':'))
+json.dump({'objects': objects, 'land': land, 'borders': borders, 'cities': cities, 'meta': meta, 'content': opt('content.json'), 'images': opt('images.json') or [], 'social': opt('social.json') or [], 'launches': opt('launches.json') or {'previous': [], 'upcoming': [], 'asof': ''}}, open(d + '/data.json', 'w'), separators=(',', ':'))
 
 c = collections.Counter
 print('objects', len(objects), 'with tle', len(epochs))
