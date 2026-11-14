@@ -1035,30 +1035,6 @@
 ]
 },
 {
-"key": "sat-cso",
-"file": "sat-cso.jpg",
-"title": "Lamotte 2008 CSO 2.jpg",
-"author": "user:Maloq",
-"license": "Public domain",
-"desc": "picture taken at 2008 generali opn de france 2008",
-"w": 1333,
-"h": 1000,
-"kind": "satellite",
-"family": "CSO"
-},
-{
-"key": "sat-hubble",
-"file": "sat-hubble.jpg",
-"title": "NASA-HS201427a-HubbleUltraDeepField2014-20140603.jpg",
-"author": "NASA, ESA, H. Teplitz and M. Rafelski (IPAC/Caltech), A. Koekemoer (STScI), R. W",
-"license": "Public domain",
-"desc": "June 3, 2014\nRELEASE 14-151\nHubble Team Unveils Most Colorful View of Universe Captured by Space Telescope\nhttp://www.nasa.gov/press/2014/june/hubble-team-unveils-most-colorful-view-of-universe-captured-by-space-telescope/\nhttp://hubblesite.org/newscenter/archive/releases/2014/27\nComposite image sho",
-"w": 1095,
-"h": 1000,
-"kind": "similar",
-"family": "KH-11"
-},
-{
 "key": "ev-sts36",
 "file": "ev-sts36.jpg",
 "title": "STS-36 Launch.jpg",
