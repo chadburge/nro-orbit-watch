@@ -265,7 +265,12 @@ for cospar, (name, l1, l2) in tles.items():
     date = s['LAUNCH_DATE'] if s else f"{cospar[:4]}"
     # NRO-associated hardware (rocket bodies / debris from NRO launches)
     nro_hw = name in ('Jumpseat 3 Rk', 'USA 89 r', 'USA 144 Deb', 'USA 225 r', 'Mentor 10 Rk', 'USA 521 r', 'USA 582 r', 'NOSS 2-3 (D)') or (s and s['OBJECT_NAME'].startswith('USA') and kind != 'payload')
-    if nro_hw:
+    if 'StarSh' in name and kind == 'payload':   # unnumbered or USA-numbered Starshield objects in the element file
+        nm = name.replace('StarSh', '').strip()
+        o = {'name': (nm + ' (Starshield)') if nm else f'Starshield {cospar}', 'program': 'Starshield', 'function': 'Proliferated architecture', 'kind': kind, 'layer': 'nro',
+             'owner': 'NRO (SpaceX-built)', 'nation': 'United States', 'date': date, 'status': 'Active (presumed)', 'cospar': cospar, 'orbit': orbit_class_from_tle(l2),
+             'notes': 'Starshield satellite from an NRO proliferated-architecture launch, tracked by amateur observers.', 'links': {}}
+    elif nro_hw:
         prog = {'Jumpseat 3 Rk': 'Jumpseat', 'USA 89 r': 'Satellite Data System', 'USA 144 Deb': 'Misty', 'USA 225 r': 'RPP (NROL-66)', 'Mentor 10 Rk': 'Orion 12 (NROL-70)',
                 'USA 521 r': 'NROL-174', 'USA 582 r': 'NROL-105 era Vulcan', 'NOSS 2-3 (D)': 'NOSS (Parcae)'}.get(name, 'NRO launch hardware')
         if name == 'NOSS 2-3 (D)': kind = 'payload'
