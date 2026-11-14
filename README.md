@@ -1,7 +1,6 @@
 # NRO Orbit Watch
 
 Live and historical 3D/2D view of NRO reconnaissance satellites, propagated from amateur-tracked orbital elements.
-Published copy: https://claude.ai/artifact/YBtYExpuJAvvPHMZmZzW6e
 
 ## Run locally
 
@@ -27,7 +26,7 @@ Pop-ups own one third of the screen (the side third on wide screens, the bottom 
 and the globe is centred in the other two thirds, with the camera backed out far enough to keep the highest orbits
 in frame. At fast time rates positions follow a smooth 150x clock (the calendar still runs at the chosen rate) so
 satellites glide instead of jumping. Move the mouse for Back, Next, Hide-this-slide and Full-screen buttons; hidden slides are
-remembered in the browser (Alt+click Hide restores them). Esc or the Exit button returns. When the page is embedded in another page (the claude.ai artifact pane), a
+remembered in the browser (Alt+click Hide restores them). Esc or the Exit button returns. When the page is embedded in another page (a hosted preview frame), a
 "Full window" button in the header and the Lobby button open it in a window of its own, where full screen works.
 
 Keyboard: Space pause, H live, 1/2 globe/map, F full screen, L lobby, N or arrow keys next/previous segment, T table, R reset, Esc close.
