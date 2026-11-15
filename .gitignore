@@ -11,3 +11,6 @@ data/egm96_15.tif
 .pyi-build/
 dist-exe/
 release/
+
+# wrangler local cache
+.wrangler/
