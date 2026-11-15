@@ -1,3 +1,17 @@
+# ----------------------------------------------------------------------------------------------------------------------
+# Roster-5 Satellite Live Viewer
+# geoid.py - EGM96 geoid undulation grid for the "gravity is lumpy" explainer
+#
+# Author:        Chad Burge
+# Created:       2026-11-14 (first version); this file last reworked 2026-11-15
+# Repository:    github.com/chadburge/nro-orbit-watch (private) - working copy C:\Users\chadd\dev\nro-orbit-watch
+# Project:       a live and historical 3D/2D viewer of U.S. reconnaissance satellites built from public data, with a
+#                wall-display "lobby" show customised for Roster-5 Software (Louisville, Colorado)
+# Pipeline:      build/fetch_*.py download inputs -> build/*.py shape them -> build_data.py merges data/data.json ->
+#                build_page.py embeds it in build/template.html -> site/index.html (local) and dist/ (hosted copy)
+# Ownership:     Copyright (c) 2026 Chad Burge. All rights reserved. This code and its data pipeline are my own work;
+#                any use, copying or redistribution requires my written permission (see LICENSE).
+# ----------------------------------------------------------------------------------------------------------------------
 """EGM96 geoid undulation grid for the gravity slide -> data/geoid.json (2-degree grid, metres above the WGS84 ellipsoid).
 
 Source: the NGA EGM96 15-minute geoid as distributed with PROJ (us_nga_egm96_15.tif, public domain). The file is downloaded

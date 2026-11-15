@@ -1,3 +1,17 @@
+# ----------------------------------------------------------------------------------------------------------------------
+# Roster-5 Satellite Live Viewer
+# content.py - curated show content: program histories, launch-site notes, fact cards and concept explainers
+#
+# Author:        Chad Burge
+# Created:       2026-11-14 (first version); this file last reworked 2026-11-15
+# Repository:    github.com/chadburge/nro-orbit-watch (private) - working copy C:\Users\chadd\dev\nro-orbit-watch
+# Project:       a live and historical 3D/2D viewer of U.S. reconnaissance satellites built from public data, with a
+#                wall-display "lobby" show customised for Roster-5 Software (Louisville, Colorado)
+# Pipeline:      build/fetch_*.py download inputs -> build/*.py shape them -> build_data.py merges data/data.json ->
+#                build_page.py embeds it in build/template.html -> site/index.html (local) and dist/ (hosted copy)
+# Ownership:     Copyright (c) 2026 Chad Burge. All rights reserved. This code and its data pipeline are my own work;
+#                any use, copying or redistribution requires my written permission (see LICENSE).
+# ----------------------------------------------------------------------------------------------------------------------
 """Curated show content for the lobby mode: program histories, launch-site notes and fact cards. Merged into data.json by build_data.py."""
 import json, os, sys
 d = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')

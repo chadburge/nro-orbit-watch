@@ -1,76 +1,65 @@
-# NRO Orbit Watch
+# Roster-5 Satellite Live Viewer
 
-Live and historical 3D/2D view of NRO reconnaissance satellites, propagated from amateur-tracked orbital elements.
+A live and historical view of U.S. reconnaissance satellites, built entirely from public data, with a cinematic
+wall-display mode made for the lobby at Roster-5 Software in Louisville, Colorado.
 
-## Run locally
+Chad Burge, 2026. All rights reserved; see [LICENSE](LICENSE).
+
+## What it does
+
+- **Explorer.** A 3D globe and a 2D map of every acknowledged National Reconnaissance Office satellite since 1959,
+  plus allied reconnaissance, other U.S. military assets and the GPS constellation. Positions come from
+  amateur-observed element sets (bright icons); objects nobody has published elements for ride representative orbits
+  (hollow icons). Filter and colour by decade, role, owner, nation, orbit class, launch site and altitude; show
+  footprints, cones, orbit paths and trails; scrub history; play a timelapse of every launch; point at the ground to see
+  who can see it; look straight down from any satellite with streamed imagery.
+- **Lobby show.** A random, no-repeat sequence of about 300 slides: live overviews with an icon key, satellite
+  spotlights with real mission photos and patches, program histories, fact cards, launch sites, what is overhead at
+  HQ, recent and upcoming launches with ascent paths, decades, fleet statistics, animated infographics, concept
+  explainers (orbits, periapsis, inclination, the oblate Earth, the lumpy geoid, transfers, GPS), tonight's visible
+  passes, weather from orbit with the local forecast, screened headlines, company and visitor slides, the cinematic
+  timelapse, and a satellite's-eye view with a sensor HUD. Panels take one third of the screen and the globe the rest,
+  on any aspect ratio. Optional synthesised ambience with transition cues.
+- **Self-maintaining.** The server refreshes the data every night and the page reloads itself when a new build appears.
+
+## Quick start
 
 ```
 python run.py
 ```
 
-Opens http://localhost:8787 in the browser. Everything the page needs is served from `site/`
-(three.js and satellite.js are vendored, Earth imagery is local), so it works without internet
-apart from the Google Fonts, which fall back to system fonts when offline.
+Opens http://localhost:8787. Add `#lobby` to the address for the show. Everything the page needs is served from
+`site/`; the only external dependency is Google Fonts, which falls back to system fonts offline.
 
-## Lobby mode
+More in [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and
+[docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
 
-Press **Lobby** (or open `http://localhost:8787/#lobby`) for the full-screen wall-monitor show: an intro card,
-then randomly scheduled segments with a long no-repeat memory: live overviews, satellite spotlights, program files
-with declassified imagery, fact cards, launch-site tours, what is overhead at Roster-5 HQ, recent and upcoming
-launches (live from Launch Library 2 when reachable, otherwise the snapshot in `data/launches.json`), decade
-retrospectives, fleet statistics, the cinematic timelapse, and full-screen slides: Roster-5 welcome and visitor
-information, the Colorado aerospace neighborhood, Louisville history, where the data comes from, tonight's visible
-passes over HQ (computed in the background from the amateur elements) and company posts from `data/social.json`.
+## Keeping the data fresh
 
-Pop-ups own one third of the screen (the side third on wide screens, the bottom third on narrow or square ones)
-and the globe is centred in the other two thirds, with the camera backed out far enough to keep the highest orbits
-in frame. At fast time rates positions follow a smooth 150x clock (the calendar still runs at the chosen rate) so
-satellites glide instead of jumping. Move the mouse for Back, Next, Hide-this-slide and Full-screen buttons; hidden slides are
-remembered in the browser (Alt+click Hide restores them). Esc or the Exit button returns. When the page is embedded in another page (a hosted preview frame), a
-"Full window" button in the header and the Lobby button open it in a window of its own, where full screen works.
+| command | what it does |
+|---|---|
+| `python run.py` | serve; refresh first if the data is older than a day; refresh again every night at 03:30 |
+| `python run.py --refresh-data` | one daily refresh (elements, catalog, launches, weather, headlines, posts) and exit |
+| `python run.py --refresh` | everything, including the slow Wikimedia image passes, then serve |
+| `python run.py --build` | rebuild `site/index.html` from the current `data/data.json` |
 
-Keyboard: Space pause, H live, 1/2 globe/map, F full screen, L lobby, N or arrow keys next/previous segment, T table, R reset, Esc close.
-
-Company posts: LinkedIn and the other networks block automated reading, so paste posts into `data/social_raw.json`
-(id, source, date, title, text, link, and optionally image: a file name you have put in `site/img/`) and run
-`python build/fetch_social.py`. Company slides and posts play over a Roster-5-styled backdrop instead of the globe; a post
-with an image uses a blurred copy of it as the backdrop. It screens every post (profanity,
-politics, money and personnel matters, contact details, length) and only approved items reach the show.
-
-## Newer pieces
-
-- Hyper-real globe (NASA Blue Marble with clouds, relief, specular oceans, limb haze) and a 2D map that uses the same image.
-- Satellite view: select a satellite and press the button in its dossier to look straight down from it; online, Esri
-  World Imagery tiles are streamed for the footprint and prefetched along the ground track.
-- Lobby additions: explainer cards with diagrams and live globe demos (including the exaggerated EGM96 geoid, the oblate
-  Earth and the GPS constellation on its own layer), animated infographics, a weather slide (GOES-19, NWS forecast and
-  hourly chart, alerts, Front Range webcams), a screened headlines slide, an icon key, a slide progress bar, launch
-  trajectories on the launch slides, and branded backdrops for company slides.
-- Data scripts: `fetch_weather.py`, `fetch_news.py` (clustered and screened), `geoid.py` (EGM96 grid), GPS elements in
-  `fetch_inputs.py`.
-
-## Refresh the data
-
-```
-python run.py --refresh
-```
-
-Downloads the latest classified-objects element file (Mike McCants), the CelesTrak catalog and the
-Wikipedia NRO launch list, rebuilds `data/data.json` and `site/index.html`, then serves.
+On Windows a scheduled task named "Satellite Live Viewer data refresh" runs `--refresh-data` daily at 03:30.
+Results go to `data/refresh.log`.
 
 ## Layout
 
-- `build/template.html` - the page (CSS, markup, JavaScript) with a `/*__DATA__*/` placeholder
-- `build/*.py` - pipeline: fetch_inputs -> fetch_launches -> fetch_images -> parse_nrol -> fetch_mission_images -> fetch_social -> land -> borders -> content -> build_data -> build_page
-- `build/content.py` - curated program histories, launch-site notes and fact cards for the show
-- `data/images.json` + `site/img/` - free-license images from Wikimedia Commons (credited on screen): program photos, official NROL mission patches, launch photos per mission, satellite-class and period launch-vehicle photos, tagged so each satellite gets the most specific picture available
-- `data/hist.json` - hand-curated pre-1996 NRO payloads (KH-11, Lacrosse, Canyon, Rhyolite, Vortex, Magnum, Jumpseat, Trumpet, Mercury, SDS, NOSS)
-- `data/data.json` - merged dataset embedded in the page
-- `site/` - what gets served locally; `dist/nro-orbit-watch.html` - the artifact build (CDN scripts)
+```
+run.py                 server, scheduler, entry point
+build/template.html    the whole page: CSS, markup, JavaScript, with a /*__DATA__*/ placeholder
+build/*.py             pipeline (see docs/ARCHITECTURE.md)
+data/                  inputs and the merged data.json; curated hist.json; snapshots (launches, weather, news, social)
+site/                  what gets served: index.html, Earth imagery, img/ (credited Commons images), vendor/ libraries
+dist/                  the hosted build (CDN libraries instead of vendored ones)
+docs/                  architecture, data sources, getting started
+```
 
-## Sources
+## Sources, in one line
 
-Everything comes from publicly available sources; nothing classified or proprietary is used.
-Elements: Mike McCants classfd.tle. Identities and launch dates: CelesTrak SATCAT. Missions: Wikipedia
-"List of NRO launches", Gunter's Space Page. Coastlines: Natural Earth via world-atlas. Earth imagery:
-NASA Blue Marble and city lights (via Wikimedia Commons and the three.js examples). Rendering: three.js r128, satellite.js 5.0.
+Mike McCants' classified-objects elements, CelesTrak, Wikipedia's list of NRO launches, Gunter's Space Page, Natural
+Earth, NASA Blue Marble, Wikimedia Commons, Launch Library 2, NOAA and the National Weather Service, EGM96, Esri World
+Imagery. Rendering: three.js and satellite.js. Nothing classified or proprietary is used anywhere.

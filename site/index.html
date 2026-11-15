@@ -3,6 +3,27 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:dark}html,body{margin:0}img{max-width:100%}</style>
+<!--
+  Roster-5 Satellite Live Viewer - page template
+  Author: Chad Burge. Created 2026-11-14. Repository: github.com/chadburge/nro-orbit-watch (private).
+  Copyright (c) 2026 Chad Burge. All rights reserved; use requires my permission (see LICENSE).
+
+  How this file works: it is a complete single-page application (CSS, markup and JavaScript) with one placeholder,
+  the data placeholder comment, where build_page.py embeds the merged dataset. Nothing is fetched to start: elements, catalog, imagery
+  index, show content and snapshots all arrive inside the page so it runs offline and inside a sandboxed frame.
+  Live sources (launch feed, weather, imagery tiles) are tried at runtime and silently fall back to the snapshots.
+
+  Map of the script, in order:
+    data & constants      -> objects (OBJ), facets, layers, sites, HQ marker
+    propagation           -> SGP4 near the element epoch, Keplerian+J2 far from it, representative orbits otherwise
+    3D scene              -> three.js globe, textures and styles, icon atlas, paths, footprints, cones
+    2D map                -> canvas equirectangular map with the same layers
+    explorer UI           -> filters, legend, dossier, table, timeline, hover coverage
+    cinematic timelapse   -> gold reveal of every launch since 1959 with gravity-turn ascent beams
+    lobby show            -> segment engine, layout around the globe, slides, infographics, explainers, weather,
+                             headlines, satellite point of view, ambience, controls
+    resize & main loop    -> per-frame fit check, smooth fast-time clock, render, overlays
+-->
 <meta charset="utf-8">
 <title>Roster-5 Satellite Live Viewer</title>
 <link rel="icon" type="image/png" href="img/roster5-logo.png">
@@ -192,6 +213,7 @@ body.lobby #r5link { display: block; }
 body.lobby.showcursor #lobbyCtl { opacity: 1; pointer-events: auto; }
 #lobbyCtl[hidden] { display: none; }
 #lobbyCtl .hint { color: var(--muted); font-size: 12px; padding: 0 6px; }
+#lobbyCtl select { background: #111a2c; color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: 600 12px var(--display); letter-spacing: 0.04em; }
 #intro { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; text-align: center; background: radial-gradient(ellipse at 50% 60%, rgba(12,20,38,0.96), rgba(3,6,13,0.98)); opacity: 0; transition: opacity 1.2s ease; pointer-events: none; }
 #intro.in { opacity: 1; }
 #intro[hidden] { display: none; }
@@ -331,6 +353,11 @@ body.cine footer .stats { display: none; }
         <option value="realistic">Realistic</option>
         <option value="cartoon">Cartoon</option>
         <option value="flat">Flat 3D</option>
+        <option value="night">Night lights</option>
+        <option value="blueprint">Blueprint</option>
+        <option value="neon">Neon</option>
+        <option value="mono">Monochrome</option>
+        <option value="paper">Chart paper</option>
       </select>
       <button class="btn" id="railBtn" aria-pressed="true">Filters</button>
       <button class="btn" id="tableBtn">Table <span class="count" id="tableCount">0</span></button>
@@ -464,7 +491,7 @@ body.cine footer .stats { display: none; }
     <button class="btn" id="cineExit" hidden>Exit timelapse</button>
     <button class="btn" id="lobbyExit" hidden>Exit lobby mode</button>
     <a id="r5link" href="https://www.roster5.com" target="_blank" rel="noopener" title="roster5.com" aria-label="Roster-5 Software website"></a>
-    <div id="lobbyCtl" hidden><button class="btn" id="lcPrev" title="Previous slide (←)">◀ Back</button><button class="btn" id="lcNext" title="Next slide (→ or N)">Next ▶</button><button class="btn" id="lcHide" title="Never show this slide again (Alt+click restores all hidden slides)">Hide this slide</button><button class="btn" id="lcFull" title="Toggle full screen (F)">⛶ Full screen</button><span class="hint" id="lcInfo"></span></div>
+    <div id="lobbyCtl" hidden><button class="btn" id="lcPrev" title="Previous slide (←)">◀ Back</button><button class="btn" id="lcNext" title="Next slide (→ or N)">Next ▶</button><button class="btn" id="lcHide" title="Never show this slide again (Alt+click restores all hidden slides)">Hide this slide</button><button class="btn" id="lcFull" title="Toggle full screen (F)">⛶ Full screen</button><button class="btn" id="lcSound" title="Background sound (M)">🔇 Sound</button><select id="lcPreset" class="ctl" title="Ambience" style="display:none"></select><span class="hint" id="lcInfo"></span></div>
     <div id="intro" hidden><div><div class="k">Live reconnaissance tracking</div><h1>SATELLITE LIVE VIEWER</h1><div class="sub">Every acknowledged National Reconnaissance Office satellite, propagated from amateur-observed orbits</div><div class="for">Roster-5 Software · Louisville, Colorado</div><div class="note">All satellite data on this display comes from publicly available sources</div></div></div>
     <div id="loading"><div style="text-align:center"><div class="k">Roster-5 <span>Satellite</span> Live Viewer</div><div class="s" id="loadMsg">loading Earth imagery and propagating orbits</div><div class="bar"><i></i></div></div></div>
     <div id="show" hidden>
@@ -807,6 +834,18 @@ function makeTexture(style) {
     x.drawImage(lc, 0, 0);
     // polar ice over ocean
     x.fillStyle = 'rgba(235,242,248,0.9)'; x.fillRect(0, Y(-70), Wt, Ht - Y(-70)); x.fillStyle = 'rgba(220,232,244,0.55)'; x.fillRect(0, 0, Wt, Y(82));
+  } else if (style === 'mono') {
+    const og = x.createLinearGradient(0, 0, 0, Ht); og.addColorStop(0, '#2a2f3a'); og.addColorStop(0.5, '#3a4150'); og.addColorStop(1, '#2a2f3a'); x.fillStyle = og; x.fillRect(0, 0, Wt, Ht);
+    landPath(x, X, Y); x.fillStyle = '#8b94a7'; x.fill('evenodd'); x.strokeStyle = '#1b1f28'; x.lineWidth = 1.5; x.stroke();
+  } else if (style === 'paper') {
+    x.fillStyle = '#e6d8bd'; x.fillRect(0, 0, Wt, Ht); x.globalAlpha = 0.08; for (let i = 0; i < 6000; i++) { x.fillStyle = i % 2 ? '#5a4a32' : '#fff'; x.fillRect(Math.random() * Wt, Math.random() * Ht, 2, 2); } x.globalAlpha = 1;
+    x.strokeStyle = 'rgba(90,74,50,0.25)'; x.lineWidth = 1; for (let lat = -60; lat <= 60; lat += 30) { x.beginPath(); x.moveTo(0, Y(lat)); x.lineTo(Wt, Y(lat)); x.stroke(); } for (let lon = -180; lon < 180; lon += 30) { x.beginPath(); x.moveTo(X(lon), 0); x.lineTo(X(lon), Ht); x.stroke(); }
+    landPath(x, X, Y); x.fillStyle = '#c9b48a'; x.fill('evenodd'); x.strokeStyle = '#5a4a32'; x.lineWidth = 1.6; x.stroke();
+  } else if (style === 'blueprint') {
+    x.fillStyle = '#0b2a6a'; x.fillRect(0, 0, Wt, Ht); x.strokeStyle = 'rgba(255,255,255,0.18)'; x.lineWidth = 1; for (let lat = -80; lat <= 80; lat += 10) { x.beginPath(); x.moveTo(0, Y(lat)); x.lineTo(Wt, Y(lat)); x.stroke(); } for (let lon = -180; lon < 180; lon += 10) { x.beginPath(); x.moveTo(X(lon), 0); x.lineTo(X(lon), Ht); x.stroke(); }
+    landPath(x, X, Y); x.fillStyle = 'rgba(255,255,255,0.06)'; x.fill('evenodd'); x.strokeStyle = '#eaf2ff'; x.lineWidth = 2; x.stroke();
+  } else if (style === 'neon') {
+    x.fillStyle = '#020407'; x.fillRect(0, 0, Wt, Ht); landPath(x, X, Y); x.shadowColor = '#4fd1c5'; x.shadowBlur = 18; x.strokeStyle = '#4fd1c5'; x.lineWidth = 3; x.stroke(); x.shadowBlur = 0; x.strokeStyle = '#d9fff9'; x.lineWidth = 1; x.stroke();
   } else if (style === 'cartoon') {
     x.fillStyle = '#3f93e3'; x.fillRect(0, 0, Wt, Ht);
     x.fillStyle = 'rgba(255,255,255,0.08)'; for (let i = 0; i < 40; i++) { x.beginPath(); x.ellipse(Math.random() * Wt, Math.random() * Ht, 60 + Math.random() * 120, 10 + Math.random() * 14, 0, 0, 7); x.fill(); }
@@ -855,13 +894,15 @@ setTimeout(hideLoading, 7000);
 })();
 function applyStyle() {
   const st = S.style;
-  if (st !== 'flat' && st !== 'hyper' && !textures[st]) textures[st] = makeTexture(st); if (!textures.realistic) textures.realistic = makeTexture('realistic');
+  if (st !== 'flat' && st !== 'hyper' && st !== 'night' && !textures[st]) textures[st] = makeTexture(st); if (st === 'night' && !textures.neon) textures.neon = makeTexture('neon'); if (!textures.realistic) textures.realistic = makeTexture('realistic');
   if (earth.material !== earthShader) earth.material.dispose();
   clouds.visible = atmo2.visible = false;
   if (st === 'hyper') { earth.material = hyperReady && imgLoaded === 3 ? hyperShader : (imgLoaded === 3 ? earthShader : new THREE.MeshPhongMaterial({ map: textures.realistic, specular: new THREE.Color(0x101a2c), shininess: 6 })); ambient.intensity = 0.12; sun.intensity = 1.5; atmo.visible = true; atmo2.visible = true; clouds.visible = hyperReady && !(geoidMesh && geoidMesh.visible); outline.visible = false; coast.visible = false; grat.visible = false; stars.material.size = 1.6; renderer.setClearColor(0x03060d); }
   else if (st === 'realistic') { earth.material = imgLoaded === 3 ? earthShader : new THREE.MeshPhongMaterial({ map: textures.realistic, specular: new THREE.Color(0x101a2c), shininess: 6 }); ambient.intensity = 0.16; sun.intensity = 1.35; atmo.visible = true; outline.visible = false; coast.visible = false; grat.visible = false; stars.material.size = 1.6; renderer.setClearColor(0x03060d); }
   else if (st === 'cartoon') { earth.material = new THREE.MeshBasicMaterial({ map: textures.cartoon }); atmo.visible = false; outline.visible = true; coast.visible = false; grat.visible = false; stars.material.size = 3; renderer.setClearColor(0x0b1a33); }
-  else { earth.material = new THREE.MeshBasicMaterial({ color: 0x0a1222 }); atmo.visible = false; outline.visible = false; coast.visible = true; grat.visible = true; stars.material.size = 1.2; renderer.setClearColor(0x03060d); }
+  else if (st === 'night') { earth.material = new THREE.MeshBasicMaterial({ map: earthUniforms.nightTex.value || textures.neon }); atmo.visible = true; outline.visible = false; coast.visible = true; coast.material.opacity = 0.25; grat.visible = false; stars.material.size = 1.4; renderer.setClearColor(0x000000); }
+  else if (st === 'blueprint' || st === 'neon' || st === 'mono' || st === 'paper') { earth.material = new THREE.MeshBasicMaterial({ map: textures[st] }); atmo.visible = st === 'blueprint'; outline.visible = st === 'paper'; coast.visible = false; grat.visible = false; stars.material.size = st === 'neon' ? 1.8 : 1.2; renderer.setClearColor(st === 'paper' ? 0x1c1814 : st === 'blueprint' ? 0x061636 : 0x000000); }
+  else { earth.material = new THREE.MeshBasicMaterial({ color: 0x0a1222 }); atmo.visible = false; outline.visible = false; coast.visible = true; coast.material.opacity = 0.75; grat.visible = true; stars.material.size = 1.2; renderer.setClearColor(0x03060d); }
   for (const k of ['solid', 'hollow']) { if (!sprites[k][st]) sprites[k][st] = spriteTex(k, st); }
   satMat.map = glowTex; repMat.map = glowTex; satMat.blending = repMat.blending = THREE.AdditiveBlending; satMat.needsUpdate = repMat.needsUpdate = true;
   satPts.material = S.cine ? satMat : iconMat; repPts.material = S.cine ? repMat : iconMat; iconBase = S.lobby ? Math.max(26, lobbyUnit() * 1.8) : (st === 'cartoon' ? 30 : 24) * S.marker; iconMat.uniforms.size.value = iconBase; iconMat.uniforms.dpr.value = dpr;
@@ -934,7 +975,9 @@ function groundAt(x, y) {
 }
 function setGround(g) { const had = !!S.ground; S.ground = g; if (g || had) applyGround(); }
 
-/* ---------- paths (budgeted) ---------- */
+/* ---------- paths (budgeted) ----------
+   Orbit paths are expensive (hundreds of satellites x up to 400 points). They are built in a queue a few milliseconds per
+   frame into staging buffers and swapped in only when complete, which is why they never flicker. */
 let pathsDirty = true, pathQueue = [], pathT = 0, pathCount = 0, lastPathBuild = 0;
 const stagePos = new Float32Array(PATH_FLOATS), stageCol = new Float32Array(PATH_FLOATS); let stagePath = new Map(), stageFloats = 0;
 function schedulePaths() { pathQueue = (S.paths === 'none' && !S.orbitSel) ? [] : (S.paths === 'none' ? [S.selected].filter(o => o && shown.includes(o)) : shown.slice()); pathCount = 0; stageFloats = 0; pathT = TP; pathsDirty = false; lastPathBuild = performance.now(); stagePath = new Map(); if (!pathQueue.length) { pathGeo.setDrawRange(0, 0); for (const o of OBJ) o.path = null; } }
@@ -960,7 +1003,10 @@ function workPaths(budgetMs) {
     for (const o of OBJ) o.path = stagePath.get(o) || null; }
 }
 
-/* ---------- camera ---------- */
+/* ---------- camera ----------
+   The camera orbits the origin (theta, phi, dist). The view offset trick (setViewOffset) shifts the globe sideways or up
+   without rotating it; the lobby uses it so pop-ups never cover the Earth. Icon size follows zoom so the swarm thins out
+   when the camera backs away. */
 function updateCamera() {
   const railW = (!$('#rail').hidden && W > 900) ? $('#rail').offsetWidth + 24 : 0, dosW = (!$('#dossier').hidden && W > 900) ? $('#dossier').offsetWidth + 24 : 0;
   const shift = (railW - dosW) / 2 + (S.lobby ? lobbyShift.cur : 0), sy = S.lobby ? lobbyShift.cy : 0; if (shift || sy) camera.setViewOffset(W, H, -shift, sy, W, H); else camera.clearViewOffset();
@@ -981,21 +1027,24 @@ function mapGeom() { const s = Math.min(W / 360, H / 180) * map2d.zoom; return {
 function proj2(lat, lon, G) { return [G.ox + (lon + 180) * G.s, G.oy + (90 - lat) * G.s]; }
 function drawMap() {
   const G = mapGeom(), st0 = S.style, st = st0 === 'hyper' ? 'realistic' : st0, mapPic = st0 === 'hyper' && hyperImgOk ? hyperImg : mapImg; mctx.setTransform(dpr, 0, 0, dpr, 0, 0); mctx.clearRect(0, 0, W, H);
-  mctx.fillStyle = st === 'cartoon' ? '#0b1a33' : '#03060d'; mctx.fillRect(0, 0, W, H);
+  const MS = { mono: ['#2f3542', '#8b94a7', '#1b1f28', 1.2], paper: ['#e6d8bd', '#c9b48a', '#5a4a32', 1.4], blueprint: ['#0b2a6a', 'rgba(255,255,255,0.06)', '#eaf2ff', 1.6], neon: ['#020407', null, '#4fd1c5', 2.2], night: ['#000000', null, 'rgba(79,209,197,0.35)', 0.8] }[st];
+  mctx.fillStyle = st === 'cartoon' ? '#0b1a33' : st === 'paper' ? '#1c1814' : st === 'blueprint' ? '#061636' : '#03060d'; mctx.fillRect(0, 0, W, H);
   const [x0, y0] = proj2(90, -180, G), [x1, y1] = proj2(-90, 180, G);
   mctx.save(); mctx.beginPath(); mctx.rect(x0, y0, x1 - x0, y1 - y0); mctx.clip();
   if (st === 'realistic' && mapImgOk) { mctx.imageSmoothingEnabled = true; mctx.drawImage(mapPic, x0, y0, x1 - x0, y1 - y0); }
   else if (st === 'realistic') { const og = mctx.createLinearGradient(0, y0, 0, y1); og.addColorStop(0, '#0d2a4d'); og.addColorStop(0.5, '#124a7f'); og.addColorStop(1, '#0d2a4d'); mctx.fillStyle = og; mctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
   else if (st === 'cartoon') { mctx.fillStyle = '#3f93e3'; mctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
+  else if (MS) { mctx.fillStyle = MS[0]; mctx.fillRect(x0, y0, x1 - x0, y1 - y0); if (st === 'night' && nightImgOk) { mctx.drawImage(nightImg, x0, y0, x1 - x0, y1 - y0); } if (st === 'blueprint' || st === 'paper') { mctx.strokeStyle = st === 'paper' ? 'rgba(90,74,50,0.25)' : 'rgba(255,255,255,0.18)'; mctx.lineWidth = 1; mctx.beginPath(); for (let lat = -80; lat <= 80; lat += 10) { const a = proj2(lat, -180, G), b = proj2(lat, 180, G); mctx.moveTo(a[0], a[1]); mctx.lineTo(b[0], b[1]); } for (let lon = -180; lon <= 180; lon += 10) { const a = proj2(90, lon, G), b = proj2(-90, lon, G); mctx.moveTo(a[0], a[1]); mctx.lineTo(b[0], b[1]); } mctx.stroke(); } }
   else { mctx.fillStyle = '#0a1222'; mctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
   mctx.beginPath(); for (const ring of LAND) { let p = proj2(ring[1], ring[0], G); mctx.moveTo(p[0], p[1]); for (let i = 2; i < ring.length; i += 2) { p = proj2(ring[i + 1], ring[i], G); mctx.lineTo(p[0], p[1]); } mctx.closePath(); }
   if (st === 'realistic' && mapImgOk) { mctx.strokeStyle = 'rgba(255,255,255,0.12)'; mctx.lineWidth = 0.6; mctx.stroke(); }
   else if (st === 'realistic') { mctx.fillStyle = '#5a7d44'; mctx.fill('evenodd'); mctx.strokeStyle = 'rgba(10,30,40,0.5)'; mctx.lineWidth = 0.8; mctx.stroke(); }
   else if (st === 'cartoon') { mctx.fillStyle = '#8fd36b'; mctx.fill('evenodd'); mctx.lineJoin = 'round'; mctx.strokeStyle = '#17304a'; mctx.lineWidth = 2.5; mctx.stroke(); }
+  else if (MS) { if (MS[1]) { mctx.fillStyle = MS[1]; mctx.fill('evenodd'); } if (st === 'neon') { mctx.save(); mctx.shadowColor = '#4fd1c5'; mctx.shadowBlur = 14; mctx.strokeStyle = MS[2]; mctx.lineWidth = MS[3]; mctx.stroke(); mctx.restore(); mctx.strokeStyle = '#d9fff9'; mctx.lineWidth = 0.8; mctx.stroke(); } else { mctx.strokeStyle = MS[2]; mctx.lineWidth = MS[3]; mctx.stroke(); } }
   else { mctx.strokeStyle = 'rgba(79,209,197,0.8)'; mctx.lineWidth = 1; mctx.stroke(); }
-  if (S.borders) { mctx.strokeStyle = st === 'cartoon' ? 'rgba(23,48,74,0.9)' : st === 'flat' ? 'rgba(143,184,216,0.5)' : 'rgba(255,233,176,0.45)'; mctx.lineWidth = st === 'cartoon' ? 1.2 : 0.8; mctx.beginPath();
+  if (S.borders) { mctx.strokeStyle = st === 'cartoon' ? 'rgba(23,48,74,0.9)' : st === 'flat' ? 'rgba(143,184,216,0.5)' : st === 'paper' ? 'rgba(90,74,50,0.6)' : st === 'blueprint' ? 'rgba(255,255,255,0.35)' : st === 'mono' ? 'rgba(20,24,32,0.7)' : 'rgba(255,233,176,0.45)'; mctx.lineWidth = st === 'cartoon' ? 1.2 : 0.8; mctx.beginPath();
     for (const arc of BORDERS) { let p = proj2(arc[1], arc[0], G); mctx.moveTo(p[0], p[1]); for (let i = 2; i < arc.length; i += 2) { p = proj2(arc[i + 1], arc[i], G); mctx.lineTo(p[0], p[1]); } } mctx.stroke(); }
-  if (S.cities) { const close = map2d.zoom > 1.6; mctx.font = (close ? '11px' : '10px') + ' "IBM Plex Sans", sans-serif'; CITIES.forEach((c, i) => { if (!close && i % 2 !== 0) return; const p = proj2(c[1], c[2], G); mctx.fillStyle = st === 'cartoon' ? '#17304a' : '#fff6dc'; mctx.beginPath(); mctx.arc(p[0], p[1], 2, 0, 7); mctx.fill(); mctx.fillStyle = st === 'cartoon' ? '#102030' : 'rgba(255,246,220,0.85)'; mctx.fillText(c[0], p[0] + 4, p[1] - 3); }); }
+  if (S.cities) { const close = map2d.zoom > 1.6; mctx.font = (close ? '11px' : '10px') + ' "IBM Plex Sans", sans-serif'; CITIES.forEach((c, i) => { if (!close && i % 2 !== 0) return; const p = proj2(c[1], c[2], G); mctx.fillStyle = st === 'cartoon' || st === 'paper' ? '#17304a' : '#fff6dc'; mctx.beginPath(); mctx.arc(p[0], p[1], 2, 0, 7); mctx.fill(); mctx.fillStyle = st === 'cartoon' ? '#102030' : 'rgba(255,246,220,0.85)'; mctx.fillText(c[0], p[0] + 4, p[1] - 3); }); }
   // graticule
   mctx.strokeStyle = st === 'cartoon' ? 'rgba(23,48,74,0.25)' : 'rgba(144,160,189,0.14)'; mctx.lineWidth = 1; mctx.beginPath();
   for (let lon = -180; lon <= 180; lon += 30) { const a = proj2(90, lon, G), b = proj2(-90, lon, G); mctx.moveTo(a[0], a[1]); mctx.lineTo(b[0], b[1]); }
@@ -1116,7 +1165,12 @@ function exitCine() {
 }
 $('#cineExit').onclick = exitCine;
 
-/* ---------- lobby screensaver ---------- */
+/* ---------- lobby screensaver ----------
+   The show is a list of SEGMENTS: [type, weight, builder]. A builder returns {key, dur, setup, tick} or null when it has
+   nothing to show. nextSegment() picks by weight, skips anything in COOLDOWN or in the 140-key no-repeat memory, resets
+   the scene, runs setup, then the layout code places the panel in one third of the screen and slides the globe into the
+   other two thirds. I keep setup functions small and declarative (what to filter, where to fly, what card to show) so a new
+   segment is a few lines. Everything that touches the globe goes through S (the shared state) and applyFilters(). */
 function easeCam(dt) { if (!camTarget.active) return; const k = 1 - Math.pow(0.08, dt); let dth = camTarget.theta - cam.theta; dth = Math.atan2(Math.sin(dth), Math.cos(dth)); cam.theta += dth * k; cam.phi += (camTarget.phi - cam.phi) * k; cam.dist += (camTarget.dist - cam.dist) * k; if (Math.abs(dth) < 0.002 && Math.abs(camTarget.dist - cam.dist) < 0.005) camTarget.active = false; }
 let blockedInit = []; try { blockedInit = JSON.parse(localStorage.getItem('now.lobbyHidden') || '[]'); } catch (e) {}
 const lobby = { seg: null, started: 0, dur: 0, caption: null, saved: null, cursorT: 0, recent: [], base: null, count: 0, lastTimelapse: 0, lastKey: {}, panel: null, dimCur: 0, dimTgt: 0, art: 0, artTgt: 0, traj: null, only: null, hist: [], pos: -1, blocked: new Set(blockedInit) };
@@ -1168,7 +1222,7 @@ function bars(pairs, color) { const max = Math.max(...pairs.map(p => p[1]), 1); 
 const isMil = (l) => /USSF|NROL|NRO|SDA|GPS|Yaogan|Kosmos|Cosmos|WGS|SBIRS|GSSAP|Silent|military|reconnaissance|Shiyan|Shijian|IGS|CSO|SARah|Ofek|Ofeq|Glonass|Tianlian/i.test((l.name || '') + ' ' + (l.desc || '') + ' ' + (l.type || ''));
 
 const SEGMENTS = [
-  ['overview', 3, () => { const facets = ['function', 'orbit', 'decade', 'family', 'altBand']; const f = pickFresh(facets, x => 'ov:' + x); remember('ov:' + f); return { key: 'ov:' + f, dur: 22000, legend: true, setup() { const lk = pickLook([['3d', 'realistic'], ['3d', 'realistic'], ['2d', 'realistic'], ['3d', 'flat'], ['2d', 'cartoon']]); setLook(lk[0], lk[1]); S.colorBy = f; S.spin = true; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(cam.theta + 0.7, 0.3, 3.3); applyFilters();
+  ['overview', 3, () => { const facets = ['function', 'orbit', 'decade', 'family', 'altBand']; const f = pickFresh(facets, x => 'ov:' + x); remember('ov:' + f); return { key: 'ov:' + f, dur: 22000, legend: true, setup() { const lk = pickLook([['3d', 'realistic'], ['3d', 'realistic'], ['2d', 'realistic'], ['3d', 'flat'], ['2d', 'cartoon'], ['3d', 'neon'], ['2d', 'blueprint'], ['3d', 'night'], ['3d', 'mono']]); setLook(lk[0], lk[1]); S.colorBy = f; S.spin = true; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(cam.theta + 0.7, 0.3, 3.3); applyFilters();
       const cnt = new Map(); for (const o of shown) for (const v of vals(o, f)) cnt.set(v, (cnt.get(v) || 0) + 1); const rows = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7);
       showCard(`<div class="show-eyebrow">What is up there · by ${esc(FACETS[f].label.toLowerCase())}</div><h2>${inOrbitCount} satellites in orbit right now</h2>` + bars(rows, v => facetValues[f].colors[v]) + `<p class="show-credit">Solid markers use amateur-observed orbits; hollow markers sit on representative orbits.</p>`);
       lobby.caption = { h: 'Live reconnaissance picture', s: () => `${new Date(T).toISOString().replace('T', ' ').slice(0, 16)} UTC · colored by ${FACETS[f].label.toLowerCase()}` }; } }; }],
@@ -1178,7 +1232,7 @@ const SEGMENTS = [
         lobby.caption = { h: o.name, s: () => `${o.function} · ${o.orbit} · tracked by amateur observers, elements from ${o.epoch}` }; }, tick() { const el = document.getElementById('cardAlt'); if (el && o.pos) el.textContent = `${fmtN(Math.round(o.pos.alt))} km · ${o.pos.lat.toFixed(1)}°, ${o.pos.lon.toFixed(1)}° · ${speedKmS(o).toFixed(2)} km/s`; } }; }],
   ['program', 5, () => { const fams = Object.keys(CONTENT.programs).filter(f => OBJ.some(o => o.family === f)); const fam = pickFresh(fams, x => 'prog:' + x); if (!fam) return null; remember('prog:' + fam); const pr = CONTENT.programs[fam]; const members = OBJ.filter(o => o.family === fam);
       const prog = members.find(o => o.kind === 'program'); const alive = members.filter(o => inOrbitAt(o, Date.now()) && o.pos);
-      return { key: 'prog:' + fam, dur: 32000, setup() { S.hidden.family = new Set(facetValues.family.keys.filter(k => k !== fam)); S.layers.program = true; S.layers.rep = true; applyFilters();
+      return { key: 'prog:' + fam, dur: 32000, setup() { setLook(...pickLook([['3d', 'realistic'], ['3d', 'realistic'], ['3d', 'realistic'], ['3d', 'paper'], ['3d', 'blueprint']])); S.hidden.family = new Set(facetValues.family.keys.filter(k => k !== fam)); S.layers.program = true; S.layers.rep = true; applyFilters();
         if (!alive.length) { const t0 = Math.min(...members.map(o => o.t0).filter(isFinite)), t1 = prog ? ms(prog.endDate) : Math.max(...members.map(o => isFinite(o.t1) ? o.t1 : o.t0 + 3e10)); setT(t0 + (t1 - t0) * 0.6); rate = 3600; }
         S.paths = 'full'; S.spin = true; pathsDirty = true; flyTo(cam.theta + 0.5, 0.35, 3.2);
         const n = prog ? prog.launches : launchesOf(o => o.family === fam).length || members.length;
@@ -1206,10 +1260,10 @@ const SEGMENTS = [
       return { key: 'ally:' + o.id, R: radiusFor(o.apoKm || 800) * 1.04, dur: 24000, setup() { S.layers.allied = true; S.layers.usother = true; S.hidden.nation = new Set(facetValues.nation.keys.filter(k => k !== o.nation)); S.colorBy = 'nation'; applyFilters(); S.selected = o; S.follow = true; S.orbitSel = true; S.fpMode = 'selected'; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(o.pos ? o.pos.lon * DEG : cam.theta, o.pos ? o.pos.lat * DEG : cam.phi, 2.5);
         const pic = pickImageFor(o); showCard(`<div class="show-eyebrow">${o.layer === 'allied' ? 'Allied reconnaissance · ' + esc(o.nation) : 'Other U.S. military assets'}</div><h2>${esc(o.name)}</h2>${pic ? imgEntry(pic, 'calc(16 * var(--u))') : '<div class="model">' + modelSVG(o.model, colorOf(o)) + '</div>'}<dl><dt>Program</dt><dd>${esc(o.program)}</dd><dt>Operator</dt><dd>${esc(o.owner)}</dd><dt>Role</dt><dd>${esc(o.function)}</dd><dt>Orbit</dt><dd>${esc(o.orbit)} · ${fmtN(o.perigee)} × ${fmtN(o.apogee)} km · ${o.inc}°</dd><dt>Launched</dt><dd>${esc(o.date || '')} · ${esc(o.siteName)}</dd></dl>`); lobby.caption = { h: `${o.nation}: ${o.program}`, s: () => `${shown.length} ${o.nation} objects tracked · ${o.function}` }; } }; }],
   ['decade', 3, () => { const decs = ['1960s', '1970s', '1980s', '1990s', '2000s', '2010s', '2020s']; const d = pickFresh(decs, x => 'dec:' + x); remember('dec:' + d); const y0 = +d.slice(0, 4); const members = OBJ.filter(o => o.layer === 'nro' && o.decades.includes(d)); const fams = new Map(); for (const o of members) fams.set(o.family, (fams.get(o.family) || 0) + (o.kind === 'program' ? o.launches : 1)); const rows = [...fams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7); const pr = rows.map(r => CONTENT.programs[r[0]]).find(x => x && x.images.length);
-      return { key: 'dec:' + d, dur: 30000, legend: true, setup() { setLook(...pickLook([['3d', 'realistic'], ['3d', 'realistic'], ['3d', 'flat']])); S.hidden.decade = new Set(facetValues.decade.keys.filter(k => k !== d)); S.layers.program = true; applyFilters(); setT(Math.min(Date.now(), Date.UTC(y0 + 9, 11, 1))); rate = 86400; S.paths = 'full'; S.spin = true; pathsDirty = true; flyTo(cam.theta + 0.5, 0.3, 3.3); S.colorBy = 'family';
+      return { key: 'dec:' + d, dur: 30000, legend: true, setup() { setLook(...pickLook([['3d', 'realistic'], ['3d', 'realistic'], ['3d', 'flat'], ['3d', 'night'], ['2d', 'mono']])); S.hidden.decade = new Set(facetValues.decade.keys.filter(k => k !== d)); S.layers.program = true; applyFilters(); setT(Math.min(Date.now(), Date.UTC(y0 + 9, 11, 1))); rate = 86400; S.paths = 'full'; S.spin = true; pathsDirty = true; flyTo(cam.theta + 0.5, 0.3, 3.3); S.colorBy = 'family';
         showSlide(`<div class="show-eyebrow">Decade</div><h1>The ${d}</h1><div class="years">${members.length} NRO objects launched${d === '2020s' ? ', most of them Starshield' : ''}</div>` + bars(rows, v => facetValues.family.colors[v]) + (pr ? firstImg(pr.images, 'calc(18 * var(--u))') : '')); lobby.caption = { h: `The ${d}`, s: () => `showing ${new Date(T).toISOString().slice(0, 10)} · one day per second` }; } }; }],
   ['numbers', 3, () => { const variants = [['function', 'Roles of the fleet'], ['siteName', 'Where they launch from'], ['orbit', 'Where they fly'], ['family', 'Program families'], ['altBand', 'How high they fly']]; const v = pickFresh(variants, x => 'num:' + x[0]); remember('num:' + v[0]); const pay = nroPayloads(); const cnt = new Map(); for (const o of pay) for (const x of vals(o, v[0])) cnt.set(x, (cnt.get(x) || 0) + 1); const rows = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
-      return { key: 'num:' + v[0], dur: 22000, legend: true, setup() { setLook(...pickLook([['2d', 'flat'], ['3d', 'realistic'], ['2d', 'realistic']])); S.colorBy = v[0]; S.spin = true; applyFilters(); flyTo(cam.theta + 0.6, 0.3, 3.4); showSlide(`<div class="show-eyebrow">By the numbers</div><h1>${esc(v[1])}</h1><div class="years">${pay.length} NRO payloads on record, 1968 to today</div>` + bars(rows, x => facetValues[v[0]].colors[x])); lobby.caption = { h: v[1], s: () => `${pay.filter(o => inOrbitAt(o, Date.now())).length} of them are in orbit now` }; } }; }],
+      return { key: 'num:' + v[0], dur: 22000, legend: true, setup() { setLook(...pickLook([['2d', 'flat'], ['3d', 'realistic'], ['2d', 'realistic'], ['2d', 'blueprint'], ['2d', 'paper'], ['3d', 'neon']])); S.colorBy = v[0]; S.spin = true; applyFilters(); flyTo(cam.theta + 0.6, 0.3, 3.4); showSlide(`<div class="show-eyebrow">By the numbers</div><h1>${esc(v[1])}</h1><div class="years">${pay.length} NRO payloads on record, 1968 to today</div>` + bars(rows, x => facetValues[v[0]].colors[x])); lobby.caption = { h: v[1], s: () => `${pay.filter(o => inOrbitAt(o, Date.now())).length} of them are in orbit now` }; } }; }],
   ['timelapse', 1, () => { if (performance.now() - lobby.lastTimelapse < 8 * 60000) return null; lobby.lastTimelapse = performance.now(); return { key: 'timelapse', dur: 95000, setup() { enterCine(); rate = 2.4 * 31557600; flyTo(cam.theta, 0.3, 4.2); lobby.caption = null; }, tick() { if (T >= Date.now() - 86400000 * 30) nextSegment(); } }; }],
   ['r5', 4, () => { const variants = R5_SLIDES.filter(x => !x.when || x.when()); const sl = pickFresh(variants, x => 'r5:' + x.key); if (!sl) return null; remember('r5:' + sl.key);
       return { key: 'r5:' + sl.key, dur: sl.dur || 26000, R: 1.35, setup() { S.spin = true; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(cam.theta + 0.4, 0.3, 3.6); lobby.dimTgt = 0.5; if (sl.art !== false) lobby.artTgt = 1; setShowBg(sl.bg || null); showFull(sl.html()); lobby.caption = null; }, tick: sl.tick }; }],
@@ -1281,6 +1335,29 @@ const INFOGRAPHICS = [
     html: () => { const items = [['Airliner', 0.25, '#9aa6bd'], ['Rifle bullet', 0.9, '#9aa6bd'], ['Moon in its orbit', 1.0, '#c084fc'], ['Geostationary satellite', 3.1, '#60a5fa'], ['Reconnaissance satellite (LEO)', 7.7, '#f2b24a']]; let b = '';
       items.forEach(([lab, v, col], i) => { const y = 70 + i * 100; b += `<text x="20" y="${y - 22}" fill="#e8edf7" font-size="18" font-family="IBM Plex Sans">${lab}</text><text x="980" y="${y - 22}" text-anchor="end" fill="${col}" font-size="18" font-family="IBM Plex Mono">${v.toFixed(2)} km/s</text><line x1="20" y1="${y}" x2="980" y2="${y}" stroke="rgba(255,255,255,0.15)"/><circle cy="${y}" r="9" fill="${col}" filter="url(#glow2)"><animate attributeName="cx" from="20" to="980" dur="${(7.7 / v * 4).toFixed(1)}s" repeatCount="indefinite"/></circle>`; });
       return `<svg viewBox="0 0 1000 560"><defs><filter id="glow2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>${b}</svg>`; } },
+  { key: 'altitude', eyebrow: 'how high is high', title: 'The altitude ladder', note: 'Logarithmic scale; markers rise to their places. Reconnaissance imagers fly lowest for resolution, listeners fly highest for coverage.',
+    html: () => { const items = [['ISS', 420, '#9fb3c8'], ['Imaging satellites', 300, '#f2b24a'], ['Radar satellites', 1050, '#f2b24a'], ['NOSS ocean surveillance', 1100, '#f2b24a'], ['GPS', 20200, '#4fd1c5'], ['GEO · SIGINT dishes', 35786, '#60a5fa'], ['Molniya apogee', 39700, '#c084fc'], ['Moon', 384400, '#e8edf7']]; const Y = (km) => 540 - (Math.log10(km) - 2) * 150; let b = `<line x1="140" y1="30" x2="140" y2="560" stroke="rgba(255,255,255,0.25)"/>`; for (const k of [100, 1000, 10000, 100000]) b += `<line x1="130" y1="${Y(k)}" x2="150" y2="${Y(k)}" stroke="#9aa6bd"/><text x="120" y="${Y(k) + 5}" text-anchor="end" fill="#9aa6bd" font-size="14" font-family="IBM Plex Mono">${k.toLocaleString()} km</text>`;
+      let lastY = -99, lane = 0; items.sort((a, b) => a[1] - b[1]).forEach(([lab, km, col], i) => { const y = Y(km); lane = (y - lastY < 26) ? (lane + 1) % 3 : 0; lastY = y; const tx = 170 + lane * 300; b += `<g><circle cx="140" r="8" fill="${col}"><animate attributeName="cy" from="560" to="${y}" dur="1.6s" begin="${(i * 0.25).toFixed(2)}s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/></circle>${lane ? `<line x1="150" y1="${y}" x2="${tx - 8}" y2="${y}" stroke="${col}" stroke-dasharray="3 4" opacity="0.6"/>` : ''}<text x="${tx}" fill="#e8edf7" font-size="18" font-family="IBM Plex Sans"><animate attributeName="y" from="565" to="${y + 6}" dur="1.6s" begin="${(i * 0.25).toFixed(2)}s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/>${lab} · ${km.toLocaleString()} km</text></g>`; });
+      return `<svg viewBox="0 0 1000 600">${b}</svg>`; } },
+  { key: 'footprint', eyebrow: 'what a satellite can see', title: 'Horizon circles from four altitudes', note: 'The circle each satellite could in principle see, to scale against Earth. Imagers use a tiny patch of theirs; listeners use all of it.',
+    html: () => { const alts = [[400, '#f2b24a', 'LEO 400 km'], [1100, '#f2c230', 'NOSS 1,100 km'], [20200, '#4fd1c5', 'GPS 20,200 km'], [35786, '#60a5fa', 'GEO 35,786 km']]; const RE = 6371, Rpx = 250; let b = `<circle cx="500" cy="300" r="${Rpx}" fill="#123a7a" stroke="#4f8cff"/>`;
+      alts.forEach(([h, col, lab], i) => { const ang = Math.acos(RE / (RE + h)); const chord = Rpx * Math.sin(ang), dy = Rpx * Math.cos(ang); const d = 2 * RE * ang; b += `<ellipse cx="500" cy="${300 - dy}" rx="0" ry="${chord * 0.28}" fill="rgba(255,255,255,0.05)" stroke="${col}" stroke-width="2.5"><animate attributeName="rx" from="0" to="${chord}" dur="1.4s" begin="${(0.3 + i * 0.5).toFixed(1)}s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/></ellipse><text x="780" y="${120 + i * 40}" fill="${col}" font-size="18" font-family="IBM Plex Sans">${lab} · ${Math.round(d).toLocaleString()} km across</text>`; });
+      return `<svg viewBox="0 0 1000 600">${b}</svg>`; } },
+  { key: 'launchmap', eyebrow: 'where the fleet comes from', title: 'NRO launches by site', note: 'Every acknowledged NRO mission on record, placed on its pad. Pulses mark the active sites.',
+    html: () => { const X = (lon) => (lon + 180) / 360 * 1000, Y = (lat) => (90 - lat) / 180 * 500; let land = ''; for (const ring of LAND) { let d = ''; for (let i = 0; i < ring.length; i += 2) d += (i ? 'L' : 'M') + X(ring[i]).toFixed(1) + ' ' + Y(ring[i + 1]).toFixed(1); land += d + 'Z'; }
+      const counts = {}; for (const o of launchesOf(() => true)) counts[o.siteName] = (counts[o.siteName] || 0) + 1; for (const o of OBJ) if (o.kind === 'program' && o.siteName) counts[o.siteName] = (counts[o.siteName] || 0) + (o.launches || 0);
+      let dots = ''; Object.entries(counts).sort((a, b) => b[1] - a[1]).forEach(([name, c], i) => { const p = SITES[name]; if (!p) return; const x = X(p[1]), y = Y(p[0]); const ly = y + (i % 2 ? 22 : -10), lx = x + (i % 3 === 2 ? -10 : 10), la = i % 3 === 2 ? 'end' : 'start'; dots += `<circle cx="${x}" cy="${y}" r="5" fill="#f2b24a"/><circle cx="${x}" cy="${y}" r="5" fill="none" stroke="#f2b24a" stroke-width="2"><animate attributeName="r" from="5" to="${12 + Math.min(30, c / 4)}" dur="2.4s" begin="${(i * 0.4).toFixed(1)}s" repeatCount="indefinite"/><animate attributeName="opacity" from="0.9" to="0" dur="2.4s" begin="${(i * 0.4).toFixed(1)}s" repeatCount="indefinite"/></circle><text x="${lx}" y="${ly}" text-anchor="${la}" fill="#fff3d6" font-size="15" font-family="IBM Plex Sans">${esc(name)} · ${c}</text>`; });
+      return `<svg viewBox="0 0 1000 500"><rect width="1000" height="500" fill="#0a1222"/><path d="${land}" fill="#1e2738" stroke="#3a4a66" stroke-width="0.8" fill-rule="evenodd"/>${dots}</svg>`; } },
+  { key: 'eras', eyebrow: 'program eras', title: 'Sixty-five years of programs', note: 'When each acknowledged or widely reported program flew; bars grow in order of first launch.',
+    html: () => { const rows = Object.entries(CONTENT.programs).map(([name, p]) => { const m = /(\d{4})\s*to\s*(\d{4}|present)/.exec(p.years || ''); return m ? [name, +m[1], m[2] === 'present' ? 2027 : +m[2]] : null; }).filter(Boolean).sort((a, b) => a[1] - b[1]).slice(0, 14); const X = (y) => 150 + (y - 1958) / (2028 - 1958) * 820; let b = ''; for (let y = 1960; y <= 2020; y += 10) b += `<line x1="${X(y)}" y1="20" x2="${X(y)}" y2="${40 + rows.length * 36}" stroke="rgba(255,255,255,0.12)"/><text x="${X(y)}" y="14" text-anchor="middle" fill="#9aa6bd" font-size="13" font-family="IBM Plex Mono">${y}</text>`;
+      rows.forEach(([name, a, z], i) => { const y = 36 + i * 36; const col = facetValues.family.colors[name] || '#f2b24a'; b += `<text x="140" y="${y + 14}" text-anchor="end" fill="#e8edf7" font-size="15" font-family="IBM Plex Sans">${esc(name)}</text><rect x="${X(a)}" y="${y}" height="20" rx="4" fill="${col}" opacity="0.9" width="0"><animate attributeName="width" from="0" to="${X(z) - X(a)}" dur="1.2s" begin="${(0.2 + i * 0.12).toFixed(2)}s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/></rect>`; });
+      return `<svg viewBox="0 0 1000 ${60 + rows.length * 36}">${b}</svg>`; } },
+  { key: 'anatomy', eyebrow: 'anatomy of an imaging satellite', title: 'What is on board', note: 'A representative electro-optical reconnaissance satellite; the real designs are classified, but the parts list is well understood.',
+    html: () => { const calls = [['Telescope aperture', 'Hubble-class mirror, 2.4 m or more', 500, 110, 760, 60], ['Solar arrays', 'Power for sensors, cooling and downlink', 230, 300, 60, 420], ['Downlink antenna', 'Relays imagery through Quasar satellites in minutes', 770, 300, 840, 420], ['Star trackers and gyros', 'Pointing good to a fraction of an arcsecond', 420, 210, 120, 120], ['Propulsion', 'Orbit raising, avoidance manoeuvres, final disposal', 500, 420, 760, 520], ['Thermal control', 'Keeps optics at one steady temperature', 580, 200, 880, 180]];
+      let b = `<g transform="translate(212 60) scale(9)">${modelSVG('optical', '#f2f4f8')}</g>`; calls.forEach(([t, d, x1, y1, x2, y2], i) => { const anchor = x2 > 500 ? 'start' : 'end'; b += `<g opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="${(0.6 + i * 0.55).toFixed(2)}s" fill="freeze"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#4fd1c5" stroke-width="1.5"/><circle cx="${x1}" cy="${y1}" r="4" fill="#4fd1c5"/><text x="${x2 + (anchor === 'start' ? 8 : -8)}" y="${y2 - 4}" text-anchor="${anchor}" fill="#fff3d6" font-size="18" font-family="Barlow Condensed" font-weight="600">${t}</text><text x="${x2 + (anchor === 'start' ? 8 : -8)}" y="${y2 + 16}" text-anchor="${anchor}" fill="#9fb3c8" font-size="14" font-family="IBM Plex Sans">${d}</text></g>`; });
+      return `<svg viewBox="0 0 1000 600">${b}</svg>`; } },
+  { key: 'kepler', eyebrow: "Kepler's second law, live", title: 'Fast at perigee, slow at apogee', note: 'Three orbits with the dots moving at their true relative speeds: a 95-minute circular orbit, a 12-hour Molniya ellipse that lingers over the north, and a 24-hour geostationary circle.',
+    html: () => { const kp = '0;0.04;0.12;0.5;0.88;0.96;1', kt = '0;0.02;0.06;0.5;0.94;0.98;1'; return `<svg viewBox="0 0 1000 600"><circle cx="500" cy="330" r="34" fill="#1d4ed8"/><circle id="k1" cx="500" cy="330" r="60" fill="none" stroke="#f2b24a" stroke-width="1.5" opacity="0.7"/><path id="k2" d="M500 420 A 300 170 0 1 1 500.1 420" fill="none" stroke="#c084fc" stroke-width="1.5" opacity="0.7" transform="rotate(0 500 330)"/><circle id="k3" cx="500" cy="330" r="250" fill="none" stroke="#60a5fa" stroke-width="1.5" opacity="0.5"/><circle r="7" fill="#f2b24a"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#k1"/></animateMotion></circle><circle r="7" fill="#c084fc"><animateMotion dur="14s" repeatCount="indefinite" keyPoints="${kp}" keyTimes="${kt}" calcMode="linear"><mpath href="#k2"/></animateMotion></circle><circle r="7" fill="#60a5fa"><animateMotion dur="28s" repeatCount="indefinite"><mpath href="#k3"/></animateMotion></circle><text x="560" y="300" fill="#f2b24a" font-size="16" font-family="IBM Plex Sans">LEO · 95 min · 7.6 km/s</text><text x="760" y="80" fill="#c084fc" font-size="16" font-family="IBM Plex Sans">Molniya · 12 h · 10 km/s at perigee, 1.5 km/s at apogee</text><text x="560" y="590" fill="#60a5fa" font-size="16" font-family="IBM Plex Sans">GEO · 24 h · 3.1 km/s</text></svg>`; } },
   { key: 'decades', eyebrow: 'six decades of launches', title: 'NRO launches by decade', note: 'Announced NROL missions plus the declassified film-return programs and pre-1996 payloads on record.',
     html: () => { const decs = ['1960s', '1970s', '1980s', '1990s', '2000s', '2010s', '2020s']; const cnt = decs.map(d => { let n = 0; const seen = new Set(); for (const o of OBJ) { if (o.layer !== 'nro' || !o.decades || !o.decades.includes(d)) continue; if (o.kind === 'program') n += o.launches || 0; else if (o.kind === 'payload') { const k = o.nrol || o.name; if (!seen.has(k)) { seen.add(k); n++; } } } return n; }); const max = Math.max(...cnt);
       return '<div class="bars-anim">' + decs.map((d, i) => `<div class="ba"><i style="height:${Math.round(cnt[i] / max * 100)}%;animation-delay:${i * 120}ms"></i><b>${cnt[i]}</b><span>${d}</span></div>`).join('') + '</div>'; } },
@@ -1465,9 +1542,11 @@ function runSegment(seg) {
   seg.baseDist = camTarget.active ? camTarget.dist : cam.dist; if (seg.R == null) seg.R = maxShownR();
   applyStyle(); updatePositions(); pathsDirty = true; tickerDirty = true; updateCtl();
   if (seg.legend) buildKey(); SHOWEL.key.classList.toggle('in', !!seg.legend);
+  cue(lobby.panel === 'full' ? 'full' : 'seg');
   if (S.paths === 'trail' && shown.length < 10) { S.trailH = 24; pathsDirty = true; }   // few satellites: show up to a whole orbit each for context
 }
 function nextSegment() {
+  if (buildNew && S.lobby && !pov.o) { location.reload(); return; }
   resetScene();
   if (lobby.pos < lobby.hist.length - 1) { lobby.pos++; runSegment(lobby.hist[lobby.pos]); return; }
   const seg = buildSegment(); lobby.hist.push(seg); if (lobby.hist.length > 40) lobby.hist.shift(); lobby.pos = lobby.hist.length - 1; runSegment(seg);
@@ -1481,6 +1560,46 @@ function updateCtl() { const el = $('#lcInfo'); if (!el || !lobby.seg) return; e
 $('#lcPrev').onclick = prevSegment; $('#lcNext').onclick = nextSegment; $('#lcHide').onclick = (e) => hideSegment(e.altKey);
 async function toggleFull() { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch (e) { if (!popOut(location.hash)) toast('Full screen is blocked in this frame. Press F11, or open the page in its own window.'); } }
 $('#lcFull').onclick = toggleFull; document.addEventListener('fullscreenchange', () => { $('#lcFull').textContent = document.fullscreenElement ? '⛶ Exit full screen' : '⛶ Full screen'; });
+/* ---------- ambience: a small generative music engine (no files, no licences) plus transition cues ---------- */
+const AMB = { ctx: null, master: null, verb: null, on: false, preset: 'uplink', timer: null, nodes: [], step: 0, chordIx: 0, armed: false };
+const PRESETS = {
+  ionosphere: { name: 'Ionosphere · slow pads', bpm: 60, chords: [[50, 57, 60, 64, 69], [46, 53, 57, 60, 65], [53, 60, 64, 67, 72], [48, 55, 59, 62, 67]], wave: 'sine', pad: 0.22, noise: 0.012, arp: null, ping: 0.08, cutoff: 900 },
+  uplink: { name: 'Uplink · soft pulse', bpm: 100, chords: [[45, 52, 57, 60, 64], [41, 48, 55, 60, 64], [43, 50, 55, 59, 62], [48, 55, 60, 64, 67]], wave: 'triangle', pad: 0.14, noise: 0.006, arp: { pattern: [0, 2, 4, 2, 1, 4, 3, 2], div: 4, oct: 1, gain: 0.07, decay: 0.35 }, ping: 0.03, cutoff: 1400 },
+  groundstation: { name: 'Ground station · warm drone', bpm: 70, chords: [[38, 45, 50, 57, 62], [36, 43, 50, 55, 62], [41, 48, 53, 60, 64]], wave: 'sine', pad: 0.24, noise: 0.01, arp: null, ping: 0.12, cutoff: 700 },
+  telemetry: { name: 'Telemetry · ticks and blips', bpm: 90, chords: [[43, 50, 55, 62, 67]], wave: 'sine', pad: 0.08, noise: 0.004, arp: { pattern: [0, 4, -1, 2, -1, 4, 0, -1], div: 4, oct: 2, gain: 0.05, decay: 0.12 }, tick: true, ping: 0.05, cutoff: 2000 },
+  horizon: { name: 'Horizon · bright and upbeat', bpm: 72, chords: [[48, 55, 59, 62, 67], [53, 60, 64, 67, 71], [45, 52, 55, 59, 64], [50, 57, 60, 65, 69]], wave: 'triangle', pad: 0.16, noise: 0.006, arp: { pattern: [0, 1, 2, 3, 4, 3, 2, 1], div: 2, oct: 1, gain: 0.06, decay: 0.5 }, ping: 0.06, cutoff: 1800 },
+  clockwork: { name: 'Clockwork · marimba plucks', bpm: 84, chords: [[45, 52, 57, 60, 64], [43, 50, 55, 62, 67], [48, 55, 60, 64, 67]], wave: 'sine', pad: 0.06, noise: 0.004, arp: { pattern: [0, 2, 4, 1, 3, 4, 2, 0, 1, 3, 4, 2], div: 3, oct: 1, gain: 0.09, decay: 0.22 }, ping: 0.0, cutoff: 2200 },
+  deepfield: { name: 'Deep field · sub drone and bells', bpm: 50, chords: [[33, 45, 52, 59], [31, 43, 50, 57], [36, 48, 55, 62]], wave: 'sine', pad: 0.2, noise: 0.008, arp: null, ping: 0.18, cutoff: 600 },
+};
+const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+function ambCtx() { if (AMB.ctx) return AMB.ctx; const C = new (window.AudioContext || window.webkitAudioContext)(); AMB.ctx = C; AMB.master = C.createGain(); AMB.master.gain.value = 0; const comp = C.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 6; AMB.master.connect(comp); comp.connect(C.destination);
+  AMB.verb = C.createConvolver(); const len = C.sampleRate * 2.8, ir = C.createBuffer(2, len, C.sampleRate); for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); } AMB.verb.buffer = ir; const vg = C.createGain(); vg.gain.value = 0.55; AMB.verb.connect(vg); vg.connect(AMB.master); return C; }
+function ambStop() { if (AMB.timer) { clearInterval(AMB.timer); AMB.timer = null; } for (const nd of AMB.nodes) { try { nd.stop && nd.stop(); nd.disconnect(); } catch (e) {} } AMB.nodes = []; }
+function ambStart() {
+  const C = ambCtx(); if (C.state === 'suspended') C.resume(); ambStop(); const P = PRESETS[AMB.preset] || PRESETS.uplink; const t0 = C.currentTime; AMB.master.gain.cancelScheduledValues(t0); AMB.master.gain.setTargetAtTime(0.11, t0, 1.2);
+  const lp = C.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = P.cutoff; lp.Q.value = 0.5; lp.connect(AMB.master); lp.connect(AMB.verb); AMB.nodes.push(lp);
+  // pad: one voice per chord note, slowly detuned, crossfaded between chords
+  AMB.padVoices = P.chords[0].map((m, i) => { const o = C.createOscillator(); o.type = P.wave; o.frequency.value = mtof(m); const o2 = C.createOscillator(); o2.type = P.wave; o2.frequency.value = mtof(m) * 1.004; const g = C.createGain(); g.gain.value = 0; o.connect(g); o2.connect(g); g.connect(lp); const lfo = C.createOscillator(); lfo.frequency.value = 0.05 + i * 0.013; const lg = C.createGain(); lg.gain.value = P.pad * 0.35; lfo.connect(lg); lg.connect(g.gain); o.start(); o2.start(); lfo.start(); AMB.nodes.push(o, o2, lfo); g.gain.setTargetAtTime(P.pad / P.chords[0].length, t0, 2.5); return { o, o2, g }; });
+  if (P.noise > 0) { const nb = C.createBuffer(1, C.sampleRate * 4, C.sampleRate); const d = nb.getChannelData(0); let b0 = 0; for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; b0 = 0.985 * b0 + 0.015 * w; d[i] = b0 * 6; } const ns = C.createBufferSource(); ns.buffer = nb; ns.loop = true; const nf = C.createBiquadFilter(); nf.type = 'lowpass'; nf.frequency.value = 500; const ng = C.createGain(); ng.gain.value = P.noise; ns.connect(nf); nf.connect(ng); ng.connect(AMB.master); ns.start(); AMB.nodes.push(ns); }
+  AMB.step = 0; AMB.chordIx = 0; const stepLen = 60 / P.bpm / (P.arp ? P.arp.div : 2); let next = C.currentTime + 0.1;
+  AMB.timer = setInterval(() => { const C2 = AMB.ctx; while (next < C2.currentTime + 0.3) { const chord = P.chords[AMB.chordIx % P.chords.length];
+      if (P.arp) { const deg = P.arp.pattern[AMB.step % P.arp.pattern.length]; if (deg >= 0) { const m = chord[deg % chord.length] + 12 * P.arp.oct; pluck(C2, mtof(m), next, P.arp.gain, P.arp.decay, lp); } }
+      if (P.tick && AMB.step % 2 === 0) tick(C2, next, 0.025);
+      if (P.ping > 0 && Math.random() < P.ping / 8) pluck(C2, mtof(chord[Math.floor(Math.random() * chord.length)] + 24), next, 0.04, 1.8, AMB.verb, 'sine');
+      AMB.step++; const stepsPerChord = Math.round(16 / stepLen / 4) * 4; if (AMB.step % Math.max(8, stepsPerChord) === 0) { AMB.chordIx++; const nc = P.chords[AMB.chordIx % P.chords.length]; AMB.padVoices.forEach((v, i) => { const m = nc[i % nc.length]; v.o.frequency.setTargetAtTime(mtof(m), next, 0.8); v.o2.frequency.setTargetAtTime(mtof(m) * 1.004, next, 0.8); }); }
+      next += stepLen; } }, 120);
+}
+function pluck(C, f, t, g, decay, dest, type = 'triangle') { const o = C.createOscillator(); o.type = type; o.frequency.value = f; const e = C.createGain(); e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(g, t + 0.01); e.gain.exponentialRampToValueAtTime(0.0005, t + decay); o.connect(e); e.connect(dest); o.start(t); o.stop(t + decay + 0.05); }
+function tick(C, t, g) { const nb = C.createBuffer(1, C.sampleRate * 0.03, C.sampleRate); const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length); const src = C.createBufferSource(); src.buffer = nb; const f = C.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3200; f.Q.value = 2; const e = C.createGain(); e.gain.value = g; src.connect(f); f.connect(e); e.connect(AMB.master); src.start(t); }
+// cues: a soft filtered sweep with a two-note chime on segment changes; a lower swell when a full-screen slide opens
+function cue(kind) { if (!AMB.on || !AMB.ctx) return; const C = AMB.ctx, t = C.currentTime + 0.02;
+  const nb = C.createBuffer(1, C.sampleRate * 0.5, C.sampleRate); const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1); const src = C.createBufferSource(); src.buffer = nb; const f = C.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(kind === 'full' ? 300 : 600, t); f.frequency.exponentialRampToValueAtTime(kind === 'full' ? 1800 : 4000, t + 0.4); const e = C.createGain(); e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.035, t + 0.08); e.gain.exponentialRampToValueAtTime(0.0005, t + 0.5); src.connect(f); f.connect(e); e.connect(AMB.verb); e.connect(AMB.master); src.start(t); src.stop(t + 0.55);
+  const base = kind === 'full' ? 64 : 76; pluck(C, mtof(base), t + 0.05, 0.05, 1.4, AMB.verb, 'sine'); pluck(C, mtof(base + 7), t + 0.22, 0.04, 1.6, AMB.verb, 'sine'); }
+function soundSet(on) { AMB.on = on; try { localStorage.setItem('now.sound', JSON.stringify({ on, preset: AMB.preset })); } catch (e) {} const b = $('#lcSound'); b.textContent = on ? '🔊 Sound' : '🔇 Sound'; b.setAttribute('aria-pressed', String(on)); $('#lcPreset').style.display = on ? '' : 'none'; if (on) ambStart(); else if (AMB.ctx) { AMB.master.gain.setTargetAtTime(0, AMB.ctx.currentTime, 0.6); setTimeout(() => { if (!AMB.on) ambStop(); }, 2500); } }
+(function initSound() { const sel = $('#lcPreset'); for (const k in PRESETS) { const o = document.createElement('option'); o.value = k; o.textContent = PRESETS[k].name; sel.appendChild(o); } let saved = null; try { saved = JSON.parse(localStorage.getItem('now.sound') || 'null'); } catch (e) {} if (saved && saved.preset && PRESETS[saved.preset]) AMB.preset = saved.preset; sel.value = AMB.preset; AMB.armed = !!(saved && saved.on);
+  sel.onchange = () => { AMB.preset = sel.value; try { localStorage.setItem('now.sound', JSON.stringify({ on: AMB.on, preset: AMB.preset })); } catch (e) {} if (AMB.on) ambStart(); };
+  $('#lcSound').onclick = () => soundSet(!AMB.on);
+  const arm = () => { if (AMB.armed && S.lobby && !AMB.on) { AMB.armed = false; soundSet(true); } }; document.addEventListener('pointerdown', arm); document.addEventListener('keydown', arm); })();
 /* lobby camera: keep the globe clear of the panels and far enough out to show the highest orbits in the frame */
 const lobbyUnit = () => Math.max(10, Math.min(W / 100, H / 56));
 const lobbyDock = () => (W < 900 || W / H < 1.15) ? 'bottom' : 'side';
@@ -1571,6 +1690,9 @@ function drawLobby(now) {
   octx.globalAlpha = 0.8; octx.textAlign = 'left'; octx.fillStyle = '#aab4c8'; octx.font = `400 ${Math.round(0.85 * v)}px "IBM Plex Sans", sans-serif`; octx.fillText('All satellite data on this display comes from publicly available sources: amateur observations, CelesTrak, Wikipedia, Launch Library 2, NOAA and the National Weather Service.', m, H - 3.45 * v); octx.globalAlpha = 1;
   octx.textBaseline = 'middle';
 }
+let buildStamp = null, buildNew = false;
+function watchBuild() { fetch('build.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (!j) return; if (buildStamp === null) buildStamp = j.built; else if (j.built !== buildStamp) { buildNew = true; if (!S.lobby) toast('Fresh data was built at ' + j.built.replace('T', ' ') + '. Press R to reload... or it will load with the next lobby segment.'); } }).catch(() => {}); }
+setTimeout(watchBuild, 4000); setInterval(watchBuild, 10 * 60000);
 function enterLobby() {
   if (S.lobby) return; if (S.cine) exitCine();
   lobby.saved = { paths: S.paths, labels: S.labels, fpMode: S.fpMode, spin: S.spin, sites: S.sites, view: S.view, style: S.style, dist: cam.dist, phi: cam.phi, theta: cam.theta, hq: S.hq, rail: $('#rail').hidden, colorBy: S.colorBy, trailH: S.trailH, layers: { ...S.layers }, hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set(S.hidden[k])])), altMin: S.altMin, altMax: S.altMax };
@@ -1578,13 +1700,14 @@ function enterLobby() {
   S.lobby = true; document.body.classList.add('lobby'); $('#lobbyExit').hidden = false; $('#rail').hidden = true; SHOWEL.root.hidden = false; setView('3d'); S.style = 'realistic'; applyStyle();
   try { const r = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (r && r.catch) r.catch(() => {}); } catch (e) {}
   lobby.lastTimelapse = performance.now() - 6 * 60000; lobby.hist = []; lobby.pos = -1; lobbyShift.cur = lobbyShift.tgt = lobbyShift.cy = lobbyShift.cyT = 0; lobby.dimCur = lobby.dimTgt = 0; $('#lobbyCtl').hidden = false; SHOWEL.ticker.dataset.x = ''; buildTicker(); startPassJob(); resize(); S.spin = true; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; applyStyle(); updatePositions();
+  if (AMB.armed) toast('Sound was on last time: click or press any key to resume it.');
   const intro = $('#intro'); intro.hidden = false; requestAnimationFrame(() => intro.classList.add('in')); setTimeout(() => { intro.classList.remove('in'); setTimeout(() => { intro.hidden = true; }, 1300); if (S.lobby) nextSegment(); }, 5200);
   try { fetch('https://api.weather.gov/gridpoints/BOU/60,72/forecast/hourly', { headers: { Accept: 'application/geo+json' } }).then(r => r.json()).then(j => { const ps = j && j.properties && j.properties.periods; if (ps) liveHourly = ps.slice(0, 24).map(p => ({ t: p.startTime.slice(0, 16), temp: p.temperature, pop: (p.probabilityOfPrecipitation || {}).value || 0, wind: p.windSpeed, short: p.shortForecast })); }).catch(() => {}); } catch (e) {}
   try { fetch('https://api.weather.gov/gridpoints/BOU/60,72/forecast', { headers: { Accept: 'application/geo+json' } }).then(r => r.json()).then(j => { const ps = j && j.properties && j.properties.periods; if (ps) { pov.netOk = true; liveWx = Object.assign({}, WEATHER || {}, { forecast: { updated: j.properties.updateTime, periods: ps.slice(0, 6).map(p => ({ name: p.name, temp: p.temperature, unit: p.temperatureUnit, short: p.shortForecast, wind: p.windSpeed, dir: p.windDirection })) } }); } }).catch(() => { if (pov.netOk === null) pov.netOk = false; }); } catch (e) {}
   try { const ctl = new AbortController(); setTimeout(() => ctl.abort(), 9000); fetch('https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=30&mode=detailed', { signal: ctl.signal }).then(r => r.json()).then(j => { if (j && j.results) { tickerDirty = true; liveUpcoming = j.results.map(l => { const mi = l.mission || {}, pad = l.pad || {}, loc = pad.location || {}, rk = ((l.rocket || {}).configuration) || {}; return { name: l.name, net: l.net, status: (l.status || {}).abbrev, provider: (l.launch_service_provider || {}).name, rocket: rk.full_name || rk.name, location: loc.name, type: mi.type, desc: (mi.description || '').slice(0, 300), nro: /NRO/.test(l.name || '') || /reconnaissance/i.test(mi.description || '') }; }); } }).catch(() => {}); } catch (e) {}
 }
 function exitLobby() {
-  if (!S.lobby) return; if (S.cine) exitCine(); povStop(); S.lobby = false; document.body.classList.remove('lobby', 'showcursor'); $('#lobbyExit').hidden = true; $('#lobbyCtl').hidden = true; lobbyShift.cur = lobbyShift.tgt = lobbyShift.cy = lobbyShift.cyT = 0; document.body.classList.remove('dock-bottom'); passes.gen = null; SHOWEL.root.hidden = true; hideShow(); camTarget.active = false; S.groundLock = null; setGround(null); S.selected = null; S.follow = false; S.orbitSel = false; renderDossier(); lobby.seg = null;
+  if (!S.lobby) return; if (S.cine) exitCine(); povStop(); if (AMB.on) { AMB.armed = true; AMB.on = false; ambStop(); if (AMB.ctx) AMB.master.gain.value = 0; } S.lobby = false; document.body.classList.remove('lobby', 'showcursor'); $('#lobbyExit').hidden = true; $('#lobbyCtl').hidden = true; lobbyShift.cur = lobbyShift.tgt = lobbyShift.cy = lobbyShift.cyT = 0; document.body.classList.remove('dock-bottom'); passes.gen = null; SHOWEL.root.hidden = true; hideShow(); camTarget.active = false; S.groundLock = null; setGround(null); S.selected = null; S.follow = false; S.orbitSel = false; renderDossier(); lobby.seg = null;
   const v = lobby.saved; Object.assign(S, { paths: v.paths, labels: v.labels, fpMode: v.fpMode, spin: v.spin, sites: v.sites, hq: v.hq, colorBy: v.colorBy, trailH: v.trailH, layers: v.layers, altMin: v.altMin, altMax: v.altMax }); for (const k in FACETS) S.hidden[k] = v.hidden[k]; S.style = v.style; cam.dist = v.dist; cam.phi = v.phi; cam.theta = v.theta; $('#rail').hidden = v.rail; setView(v.view);
   ['#pathSeg', '#labelSeg', '#fpSeg'].forEach((id, i) => { const key = ['paths', 'labels', 'fpMode'][i]; $(id).querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S[key]))); });
   $('#spinBtn').setAttribute('aria-pressed', String(S.spin)); $('#hqMark').checked = S.hq; $('#colorBy').value = S.colorBy; rate = 1; paused = false; setT(Date.now()); buildLayers(); applyFilters(); applyStyle(); updatePositions(); pathsDirty = true; resize();
@@ -1780,7 +1903,7 @@ document.addEventListener('keydown', e => {
   else if (k === 'l') { S.lobby ? exitLobby() : enterLobby(); }
   else if (k === 'f') toggleFull();
   else if (k === '1') setView('3d'); else if (k === '2') setView('2d');
-  else if (k === 't') $('#tableBtn').click(); else if ((k === 'n' || k === 'arrowright') && S.lobby) nextSegment(); else if ((k === 'p' || k === 'arrowleft') && S.lobby) prevSegment();
+  else if (k === 't') $('#tableBtn').click(); else if ((k === 'n' || k === 'arrowright') && S.lobby) nextSegment(); else if ((k === 'p' || k === 'arrowleft') && S.lobby) prevSegment(); else if (k === 'm' && S.lobby) soundSet(!AMB.on);
   else if (k === 'r') $('#resetView').click(); else if (k === 'h') $('#liveBtn').click();
 });
 
@@ -1810,6 +1933,8 @@ $('#aboutBody').innerHTML = `
 <p>The Lobby button opens a full-screen, hands-off show for a wall monitor or a desktop screensaver, laid out around the globe so it works on any aspect ratio: live overviews, satellite spotlights, program histories with declassified imagery, fact cards, launch-site tours, what is overhead at Roster-5 HQ, recent and upcoming launches worldwide with NRO missions highlighted, decade retrospectives, fleet statistics and the occasional 1959-to-today timelapse. Segments are picked at random with a long no-repeat memory, and a ticker carries the launch feed. Open the page with <code>#lobby</code> on the end of the address to start straight into it. Move the mouse for the exit button, or press Esc.</p>
 <h3>Weather, headlines and explainers</h3>
 <p>The lobby's weather slide shows the latest GOES-19 full-disk image from NOAA, the National Weather Service forecast and hourly chart for Louisville, active alerts, severe-weather warnings nationwide and a few public webcams along the Front Range; it falls back to the snapshot taken at build time when the page is offline. The headlines slide shows only stories that many outlets are covering on aviation, launches, severe weather or national emergencies, screened automatically against political or controversial topics, and only within 48 hours of publication. Explainer cards cover orbits, periapsis and apoapsis, inclination, sun-synchronous orbits, the oblate Earth, the lumpy geoid (EGM96, exaggerated on the globe), transfers and circularization, GPS and more, each with a diagram and a live demonstration on the globe.</p>
+<h3>Sound</h3>
+<p>Lobby mode can play a quiet generated ambience: seven presets (slow pads, a soft pulse, a warm drone, telemetry ticks, a brighter upbeat bed, marimba plucks, a deep-field drone) synthesised in the browser, so there is nothing to license and nothing repeats exactly. Soft cues mark slide changes. Toggle it with the Sound button in the control bar or the M key; the choice is remembered, and because browsers require a click before audio starts, a saved setting resumes on the first click or key press.</p>
 <h3>Keyboard</h3>
 <p>Space pauses time, H jumps back to live, 1 and 2 switch globe and map, F toggles full screen, L toggles lobby mode (move the mouse for Back, Next and Hide-this-slide buttons; N or the arrow keys step through segments; hidden slides are remembered on this device, Alt+click Hide restores them), T opens the table, R resets the view, Esc closes anything open.</p>
 <h3>Reading the view</h3>
