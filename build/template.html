@@ -23,7 +23,7 @@
 <title>Roster-5 Satellite Live Viewer</title>
 <link rel="icon" type="image/png" href="img/roster5-logo.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2712%27 fill=%27%231a3a6e%27 stroke=%27%23f2b24a%27 stroke-width=%272%27/%3E%3Ccircle cx=%2724%27 cy=%279%27 r=%273%27 fill=%27%23f2b24a%27/%3E%3C/svg%3E">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Montserrat:wght@900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: one-screen tracking console. Globe or map fills the stage; a filter rail on the left, a dossier card on the right, a time deck along the bottom. */
 :root {
@@ -203,6 +203,9 @@ body.lobby.showcursor #overlay { cursor: default; }
 body.lobby.showcursor #lobbyExit { opacity: 1; pointer-events: auto; }
 #lobbyExit[hidden] { display: none; }
 #r5link { display: none; position: absolute; z-index: 8; cursor: pointer; }
+#splash { display: none; position: fixed; inset: 0; z-index: 60; background: #000; opacity: 1; transition: opacity 0.7s; }
+#splash video { width: 100%; height: 100%; object-fit: contain; }
+body.lobby #splash.on { display: block; }
 body.lobby #r5link { display: block; }
 #lobbyCtl { position: absolute; left: 50%; bottom: calc(3.4 * var(--u)); transform: translateX(-50%); z-index: 9; display: flex; gap: 8px; align-items: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; background: rgba(6,10,18,0.85); border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; }
 body.lobby.showcursor #lobbyCtl { opacity: 1; pointer-events: auto; }
@@ -483,6 +486,7 @@ body.cine footer .stats { display: none; }
     </div>
     <button class="btn" id="cineExit" hidden>Exit timelapse</button>
     <button class="btn" id="lobbyExit" hidden>Exit lobby mode</button>
+    <div id="splash"><video muted playsinline preload="auto"><source src="media/intro.mp4" type="video/mp4"><source src="media/intro.webm" type="video/webm"></video></div>
     <a id="r5link" href="https://www.roster5.com" target="_blank" rel="noopener" title="roster5.com" aria-label="Roster-5 Software website"></a>
     <div id="lobbyCtl" hidden><button class="btn" id="lcPrev" title="Previous slide (←)">◀ Back</button><button class="btn" id="lcNext" title="Next slide (→ or N)">Next ▶</button><button class="btn" id="lcHide" title="Never show this slide again (Alt+click restores all hidden slides)">Hide this slide</button><button class="btn" id="lcFull" title="Toggle full screen (F)">⛶ Full screen</button><button class="btn" id="lcSound" title="Background sound (M)">🔇 Sound</button><select id="lcPreset" class="ctl" title="Ambience" style="display:none"></select><span class="hint" id="lcInfo"></span></div>
     <div id="intro" hidden><div><div class="k">Live reconnaissance tracking</div><h1>SATELLITE LIVE VIEWER</h1><div class="sub">Every acknowledged National Reconnaissance Office satellite, propagated from amateur-observed orbits</div><div class="for">Roster-5 Software · Louisville, Colorado</div><div class="note">All satellite data on this display comes from publicly available sources</div></div></div>
@@ -691,8 +695,12 @@ function refilter() {
     if (alive && f) { inOrbitCount++; shown.push(o); }
   }
   $('#sInOrbit').textContent = inOrbitCount; $('#sShown').textContent = shown.length; $('#sLaunched').textContent = launchedCount; $('#tableCount').textContent = shown.length;
-  pathsDirty = true;
+  // rebuild paths only when the set of satellites changed; flagging every pass restarted the build each frame and in the
+  // timelapse it could never finish once there were more satellites than fit in one frame's budget
+  let sig = shown.length; for (const o of shown) sig = (sig * 31 + o.id) % 2147483647;
+  if (sig !== shownSig) { shownSig = sig; pathsDirty = true; }
 }
+let shownSig = -1, pathReuse = false;
 function colorOf(o) { if (S.cine) return CINE_GOLD; const v = vals(o, S.colorBy)[0]; return facetValues[S.colorBy].colors[v] || '#94a3b8'; }
 const CINE_GOLD = '#ffd66b';
 function hexToRgb(h) { const n = parseInt(h.slice(1), 16); return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]; }
@@ -973,7 +981,7 @@ function setGround(g) { const had = !!S.ground; S.ground = g; if (g || had) appl
    frame into staging buffers and swapped in only when complete, which is why they never flicker. */
 let pathsDirty = true, pathQueue = [], pathT = 0, pathCount = 0, lastPathBuild = 0;
 const stagePos = new Float32Array(PATH_FLOATS), stageCol = new Float32Array(PATH_FLOATS); let stagePath = new Map(), stageFloats = 0;
-function schedulePaths() { pathQueue = (S.paths === 'none' && !S.orbitSel) ? [] : (S.paths === 'none' ? [S.selected].filter(o => o && shown.includes(o)) : shown.slice()); pathCount = 0; stageFloats = 0; pathT = TP; pathsDirty = false; lastPathBuild = performance.now(); stagePath = new Map(); if (!pathQueue.length) { pathGeo.setDrawRange(0, 0); for (const o of OBJ) o.path = null; } }
+function schedulePaths() { pathReuse = S.cine; pathQueue = (S.paths === 'none' && !S.orbitSel) ? [] : (S.paths === 'none' ? [S.selected].filter(o => o && shown.includes(o)) : shown.slice()); pathCount = 0; stageFloats = 0; pathT = TP; pathsDirty = false; lastPathBuild = performance.now(); stagePath = new Map(); if (!pathQueue.length) { pathGeo.setDrawRange(0, 0); for (const o of OBJ) o.path = null; } }
 function workPaths(budgetMs) {
   const start = performance.now(); const pos = stagePos, col = stageCol;
   while (pathQueue.length && performance.now() - start < budgetMs) {
@@ -981,8 +989,10 @@ function workPaths(budgetMs) {
     let span, steps, t0;
     if (mode === 'full') { span = period; steps = PATH_PTS; t0 = pathT - period / 2; }
     else { span = S.lobby ? Math.min(S.trailH * 3600000, period * 0.97) : S.trailH * 3600000; steps = Math.min(MAXP, Math.max(32, Math.ceil(span / (period / 48)))); t0 = pathT - span; }
-    const pts = []; for (let i = 0; i <= steps; i++) { const g = posAt(o, t0 + span * i / steps); pts.push([g.lat, g.lon, g.alt]); }
-    stagePath.set(o, pts); const c = o.rgb || hexToRgb(colorOf(o));
+    // in the timelapse each satellite keeps the one ring computed when it first appeared (orbit shapes barely change at that scale)
+    let pts = pathReuse && o.path && o.pathMode === 'full' && o.path.length === steps + 1 ? o.path : null;
+    if (!pts) { pts = []; for (let i = 0; i <= steps; i++) { const g = posAt(o, t0 + span * i / steps); pts.push([g.lat, g.lon, g.alt]); } }
+    o.pathMode = mode; stagePath.set(o, pts); const c = o.rgb || hexToRgb(colorOf(o));
     if (stageFloats + steps * 6 <= PATH_FLOATS) { let k = stageFloats;
       for (let i = 0; i < steps; i++) { const a = xyz(pts[i][0], pts[i][1], radiusFor(pts[i][2])), b = xyz(pts[i + 1][0], pts[i + 1][1], radiusFor(pts[i + 1][2]));
         const fade = mode === 'full' ? 1 : 0.25 + 0.75 * i / steps; // trails brighten toward the present
@@ -1257,7 +1267,7 @@ const SEGMENTS = [
         showSlide(`<div class="show-eyebrow">Decade</div><h1>The ${d}</h1><div class="years">${members.length} NRO objects launched${d === '2020s' ? ', most of them Starshield' : ''}</div>` + bars(rows, v => facetValues.family.colors[v]) + (pr ? firstImg(pr.images, 'calc(18 * var(--u))') : '')); lobby.caption = { h: `The ${d}`, s: () => `showing ${new Date(T).toISOString().slice(0, 10)} · one day per second` }; } }; }],
   ['numbers', 3, () => { const variants = [['function', 'Roles of the fleet'], ['siteName', 'Where they launch from'], ['orbit', 'Where they fly'], ['family', 'Program families'], ['altBand', 'How high they fly']]; const v = pickFresh(variants, x => 'num:' + x[0]); remember('num:' + v[0]); const pay = nroPayloads(); const cnt = new Map(); for (const o of pay) for (const x of vals(o, v[0])) cnt.set(x, (cnt.get(x) || 0) + 1); const rows = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
       return { key: 'num:' + v[0], dur: 22000, legend: true, setup() { setLook(...pickLook([['2d', 'flat'], ['3d', 'realistic'], ['2d', 'realistic'], ['2d', 'blueprint'], ['2d', 'paper'], ['3d', 'neon']])); S.colorBy = v[0]; S.spin = true; applyFilters(); flyTo(cam.theta + 0.6, 0.3, 3.4); showSlide(`<div class="show-eyebrow">By the numbers</div><h1>${esc(v[1])}</h1><div class="years">${pay.length} NRO payloads on record, 1968 to today</div>` + bars(rows, x => facetValues[v[0]].colors[x])); lobby.caption = { h: v[1], s: () => `${pay.filter(o => inOrbitAt(o, Date.now())).length} of them are in orbit now` }; } }; }],
-  ['timelapse', 1, () => { if (performance.now() - lobby.lastTimelapse < 8 * 60000) return null; lobby.lastTimelapse = performance.now(); return { key: 'timelapse', dur: 95000, setup() { enterCine(); rate = 2.4 * 31557600; flyTo(cam.theta, 0.3, 4.2); lobby.caption = null; }, tick() { if (T >= Date.now() - 86400000 * 30) nextSegment(); } }; }],
+  ['timelapse', 1, () => { if (performance.now() - lobby.lastTimelapse < 8 * 60000) return null; lobby.lastTimelapse = performance.now(); return { key: 'timelapse', dur: 95000, setup() { enterCine(); rate = 2.4 * 31557600; flyTo(cam.theta, 0.3, 4.2); lobby.caption = null; this.hold = 0; }, tick() { if (T >= Date.now() - 86400000 * 30) { if (!this.hold) { this.hold = performance.now(); rate = 60; setT(Date.now()); } else if (performance.now() - this.hold > 7000) nextSegment(); } } }; }],
   ['r5', 4, () => { const variants = R5_SLIDES.filter(x => !x.when || x.when()); const sl = pickFresh(variants, x => 'r5:' + x.key); if (!sl) return null; remember('r5:' + sl.key);
       return { key: 'r5:' + sl.key, dur: sl.dur || 26000, R: 1.35, setup() { S.spin = true; S.paths = 'trail'; S.trailH = 0.12; pathsDirty = true; flyTo(cam.theta + 0.4, 0.3, 3.6); lobby.dimTgt = 0.5; if (sl.art !== false) lobby.artTgt = 1; setShowBg(sl.bg || null); showFull(sl.html()); lobby.caption = null; }, tick: sl.tick }; }],
   ['social', 3, () => { const posts = SOCIAL.filter(p => p.approved && screenPost(p)); if (!posts.length) return null; const p = pickFresh(posts, x => 'soc:' + x.id); remember('soc:' + p.id);
@@ -1671,7 +1681,7 @@ function drawLobby(now) {
   octx.fillStyle = '#e8edf7'; octx.font = `700 ${Math.round(2.4 * v)}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SATELLITE LIVE VIEWER', ax, m + 2.0 * v);
   octx.fillStyle = '#f2b24a'; octx.fillRect(ax, m + 2.9 * v, 3.2 * v, 0.22 * v);
   octx.fillStyle = '#b4bfd4'; octx.font = `500 ${Math.round(1.05 * v)}px "IBM Plex Mono", monospace`; octx.fillText(new Date(T).toISOString().replace('T', ' ').slice(0, 19) + ' UTC' + (isLive() ? '' : '  ·  historical archive'), ax, m + 4.4 * v);
-  const rx = W - m, ls = (narrow ? 4.2 : 7.5) * v; if (hqLogo.complete && hqLogo.naturalWidth) octx.drawImage(hqLogo, rx - ls, m - 0.5 * v, ls, ls);
+  const rx = W - m, ls = (narrow ? 4.2 : 7.5) * v; drawMarkAnim(octx, rx - ls / 2, m - 0.5 * v + ls / 2, ls * 0.47, performance.now() / 1000);
   octx.textAlign = 'right'; octx.fillStyle = '#4fd1c5'; octx.font = `700 ${Math.round((narrow ? 1.6 : 2.4) * v)}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SOFTWARE', rx - ls - 1.2 * v, m + 2.0 * v);
   octx.fillStyle = '#b4bfd4'; octx.font = `500 ${Math.round((narrow ? 0.95 : 1.2) * v)}px "IBM Plex Sans", sans-serif`; octx.fillText('Louisville, CO', rx - ls - 1.2 * v, m + 4.4 * v); octx.textAlign = 'left';
   const lk = $('#r5link'); const tw = (narrow ? 13 : 21) * v; lk.style.left = (rx - ls - 1.2 * v - tw) + 'px'; lk.style.top = (m - 0.5 * v) + 'px'; lk.style.width = (ls + 1.2 * v + tw) + 'px'; lk.style.height = ls + 'px';
@@ -1686,8 +1696,42 @@ function drawLobby(now) {
 let buildStamp = null, buildNew = false;
 function watchBuild() { fetch('build.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (!j) return; if (buildStamp === null) buildStamp = j.built; else if (j.built !== buildStamp) { buildNew = true; if (!S.lobby) toast('Fresh data was built at ' + j.built.replace('T', ' ') + '. Press R to reload... or it will load with the next lobby segment.'); } }).catch(() => {}); }
 setTimeout(watchBuild, 4000); setInterval(watchBuild, 10 * 60000);
+/* ---------- the company mark, drawn from geometry ----------
+   The lobby header carries the R5 mark as a live drawing rather than a bitmap so it stays crisp at any size and DPI:
+   a two-tone hexagon ring with extruded depth, the teal chevron cut into the top corner and the gold one into the bottom
+   corner (both measured from the original artwork), light bordered letters, a slow ten-second float and one light sweep
+   per cycle. The same geometry is used for the logo animations. */
+const MARK = { teal: '#008a75', slate: '#383f52', gold: '#f2c230', gold2: '#cfa41a', dur: 10 };
+const hexPts6 = (cx, cy, r) => Array.from({ length: 6 }, (_, k) => [cx + r * Math.cos(-Math.PI / 2 + k * Math.PI / 3), cy + r * Math.sin(-Math.PI / 2 + k * Math.PI / 3)]);
+function hexPath6(c, cx, cy, r) { const p = hexPts6(cx, cy, r); c.beginPath(); p.forEach((q, i) => i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1])); c.closePath(); }
+function markLetters(c, cx, cy, R, fill, stroke) { c.font = `900 ${R * 1.1}px Montserrat, "Segoe UI", sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round'; const y = cy - R * 0.02; for (const [ch, x] of [['R', cx - R * 0.31], ['5', cx + R * 0.36]]) { if (stroke) { c.lineWidth = R * 0.07; c.strokeStyle = stroke; c.strokeText(ch, x, y); } c.fillStyle = fill; c.fillText(ch, x, y); } }
+function drawMark(c, cx, cy, R, t) {
+  const w = R * 0.19, ri = R - w, depth = R * 0.055, step = Math.max(1, R * 0.006);
+  c.save(); c.lineJoin = 'round'; c.lineCap = 'round'; c.textAlign = 'left'; c.shadowBlur = 0; c.globalAlpha = 1;
+  for (let d = depth; d > 0; d -= step) { c.save(); c.translate(d * 0.5, d * 0.85); c.lineWidth = w; c.strokeStyle = d > depth * 0.5 ? '#0d1119' : '#161c2b'; hexPath6(c, cx, cy, R - w / 2); c.stroke(); c.restore(); }
+  const g = c.createLinearGradient(cx - R, cy - R, cx + R, cy + R); g.addColorStop(0, MARK.teal); g.addColorStop(0.45, MARK.teal); g.addColorStop(0.62, MARK.slate); g.addColorStop(1, MARK.slate);
+  c.lineWidth = w; c.strokeStyle = g; hexPath6(c, cx, cy, R - w / 2); c.stroke();
+  c.lineWidth = Math.max(1, R * 0.012); c.strokeStyle = 'rgba(255,255,255,0.28)'; hexPath6(c, cx, cy, R - c.lineWidth * 0.6); c.stroke(); c.strokeStyle = 'rgba(0,0,0,0.35)'; hexPath6(c, cx, cy, ri + c.lineWidth * 0.6); c.stroke();
+  const p = hexPts6(cx, cy, ri), L = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
+  const poly = (pts) => { c.beginPath(); pts.forEach((q, i) => i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1])); c.closePath(); };
+  c.save(); hexPath6(c, cx, cy, ri + 1); c.clip();
+  const tl = [p[0], L(p[0], p[5], 0.42), L(p[0], p[1], 0.85)], gd = [p[3], L(p[3], p[4], 0.85), L(p[3], p[2], 0.42)];
+  let gg = c.createLinearGradient(tl[0][0], tl[0][1], tl[1][0], tl[1][1]); gg.addColorStop(0, MARK.teal); gg.addColorStop(1, MARK.slate); c.fillStyle = gg; poly(tl); c.fill();
+  gg = c.createLinearGradient(gd[0][0], gd[0][1], gd[1][0], gd[1][1]); gg.addColorStop(0, MARK.gold); gg.addColorStop(1, MARK.gold2); c.fillStyle = gg; poly(gd); c.fill(); c.restore();
+  c.save(); c.shadowColor = 'rgba(0,0,0,0.45)'; c.shadowBlur = R * 0.08; c.shadowOffsetY = R * 0.03; markLetters(c, cx, cy, R, 'rgba(0,0,0,0.01)', null); c.restore();
+  for (let d = depth; d > 0; d -= step) { c.save(); c.translate(d * 0.5, d * 0.85); markLetters(c, cx, cy, R, d > depth * 0.5 ? '#1a1f2e' : '#2a3042', '#1a1f2e'); c.restore(); }
+  const lg = c.createLinearGradient(cx, cy - R * 0.5, cx, cy + R * 0.5); lg.addColorStop(0, '#ffffff'); lg.addColorStop(0.55, '#eef1f6'); lg.addColorStop(1, '#c9d0dc'); markLetters(c, cx, cy, R, lg, MARK.slate);
+  const ph = (t / MARK.dur) % 1, gl = (ph - 0.62) / 0.09;
+  if (gl > 0 && gl < 1) { c.save(); hexPath6(c, cx, cy, R); c.clip(); c.globalCompositeOperation = 'lighter'; const x = cx - 1.5 * R + gl * 3 * R; const sg = c.createLinearGradient(x - R * 0.25, 0, x + R * 0.25, 0); sg.addColorStop(0, 'rgba(255,255,255,0)'); sg.addColorStop(0.5, 'rgba(255,255,255,0.5)'); sg.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = sg; c.translate(cx, cy); c.rotate(-0.5); c.translate(-cx, -cy); c.fillRect(x - R * 0.25, cy - 2 * R, R * 0.5, 4 * R); c.restore(); }
+  c.restore(); }
+function drawMarkAnim(c, cx, cy, R, t) { drawMark(c, cx, cy + Math.sin(t / MARK.dur * Math.PI * 2) * R * 0.02, R, t); }
+/* lobby splash: the studio reveal plays once, full screen, every time the show opens; a click skips it */
+function playSplash() { const sp = $('#splash'), vd = sp.querySelector('video'); sp.classList.add('on'); sp.style.opacity = '1'; let done = false;
+  const end = () => { if (done) return; done = true; sp.style.opacity = '0'; setTimeout(() => sp.classList.remove('on'), 750); };
+  vd.onended = end; vd.onerror = end; sp.onclick = end; try { vd.currentTime = 0; } catch (e) {} const pr = vd.play(); if (pr && pr.catch) pr.catch(end); setTimeout(end, 9000); }
+
 function enterLobby() {
-  if (S.lobby) return; if (S.cine) exitCine();
+  if (S.lobby) return; if (S.cine) exitCine(); playSplash();
   lobby.saved = { paths: S.paths, labels: S.labels, fpMode: S.fpMode, spin: S.spin, sites: S.sites, view: S.view, style: S.style, dist: cam.dist, phi: cam.phi, theta: cam.theta, hq: S.hq, rail: $('#rail').hidden, colorBy: S.colorBy, trailH: S.trailH, layers: { ...S.layers }, hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set(S.hidden[k])])), altMin: S.altMin, altMax: S.altMax };
   lobby.base = { layers: { ...S.layers, nro: true }, hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set()])), altMin: 150, altMax: 45000 };
   S.lobby = true; document.body.classList.add('lobby'); $('#lobbyExit').hidden = false; $('#rail').hidden = true; SHOWEL.root.hidden = false; setView('3d'); S.style = 'realistic'; applyStyle();
@@ -1700,13 +1744,13 @@ function enterLobby() {
   try { const ctl = new AbortController(); setTimeout(() => ctl.abort(), 9000); fetch('https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=30&mode=detailed', { signal: ctl.signal }).then(r => r.json()).then(j => { if (j && j.results) { tickerDirty = true; liveUpcoming = j.results.map(l => { const mi = l.mission || {}, pad = l.pad || {}, loc = pad.location || {}, rk = ((l.rocket || {}).configuration) || {}; return { name: l.name, net: l.net, status: (l.status || {}).abbrev, provider: (l.launch_service_provider || {}).name, rocket: rk.full_name || rk.name, location: loc.name, type: mi.type, desc: (mi.description || '').slice(0, 300), nro: /NRO/.test(l.name || '') || /reconnaissance/i.test(mi.description || '') }; }); } }).catch(() => {}); } catch (e) {}
 }
 function exitLobby() {
-  if (!S.lobby) return; if (S.cine) exitCine(); povStop(); if (AMB.on) { AMB.armed = true; AMB.on = false; ambStop(); if (AMB.ctx) AMB.master.gain.value = 0; } S.lobby = false; document.body.classList.remove('lobby', 'showcursor'); $('#lobbyExit').hidden = true; $('#lobbyCtl').hidden = true; lobbyShift.cur = lobbyShift.tgt = lobbyShift.cy = lobbyShift.cyT = 0; document.body.classList.remove('dock-bottom'); passes.gen = null; SHOWEL.root.hidden = true; hideShow(); camTarget.active = false; S.groundLock = null; setGround(null); S.selected = null; S.follow = false; S.orbitSel = false; renderDossier(); lobby.seg = null;
+  if (!S.lobby) return; if (S.cine) exitCine(); povStop(); $('#splash').classList.remove('on'); $('#splash').querySelector('video').pause(); if (AMB.on) { AMB.armed = true; AMB.on = false; ambStop(); if (AMB.ctx) AMB.master.gain.value = 0; } S.lobby = false; document.body.classList.remove('lobby', 'showcursor'); $('#lobbyExit').hidden = true; $('#lobbyCtl').hidden = true; lobbyShift.cur = lobbyShift.tgt = lobbyShift.cy = lobbyShift.cyT = 0; document.body.classList.remove('dock-bottom'); passes.gen = null; SHOWEL.root.hidden = true; hideShow(); camTarget.active = false; S.groundLock = null; setGround(null); S.selected = null; S.follow = false; S.orbitSel = false; renderDossier(); lobby.seg = null;
   const v = lobby.saved; Object.assign(S, { paths: v.paths, labels: v.labels, fpMode: v.fpMode, spin: v.spin, sites: v.sites, hq: v.hq, colorBy: v.colorBy, trailH: v.trailH, layers: v.layers, altMin: v.altMin, altMax: v.altMax }); for (const k in FACETS) S.hidden[k] = v.hidden[k]; S.style = v.style; cam.dist = v.dist; cam.phi = v.phi; cam.theta = v.theta; $('#rail').hidden = v.rail; setView(v.view);
   ['#pathSeg', '#labelSeg', '#fpSeg'].forEach((id, i) => { const key = ['paths', 'labels', 'fpMode'][i]; $(id).querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S[key]))); });
   $('#spinBtn').setAttribute('aria-pressed', String(S.spin)); $('#hqMark').checked = S.hq; $('#colorBy').value = S.colorBy; rate = 1; paused = false; setT(Date.now()); buildLayers(); applyFilters(); applyStyle(); updatePositions(); pathsDirty = true; resize();
   if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
 }
-window.__nextSegment = nextSegment; window.__dbg = () => ({ seg: lobby.seg && { key: lobby.seg.key, R: lobby.seg.R, base: lobby.seg.baseDist }, cam: { ...cam }, tgt: { ...camTarget }, shift: { ...lobbyShift }, free: lobbyFree(), panel: lobby.panel, fit: lobby.seg ? lobbyFit(lobby.seg.baseDist, lobby.seg.R) : null, maxR: maxShownR(), shown: shown.length }); window.__segType = () => lobby.seg && lobby.seg.type + ':' + lobby.seg.key;
+window.__nextSegment = nextSegment; window.__cineAt = (y) => { lobby.lastTimelapse = -1e9; for (let i = 0; i < 400 && !(lobby.seg && lobby.seg.key === 'timelapse'); i++) nextSegment(); setT(Date.UTC(y, 6, 1)); paused = true; return window.__cineInfo(); }; window.__pause = (p) => { paused = p; }; window.__cineInfo = () => ({ T: new Date(T).toISOString().slice(0, 10), shown: shown.length, inOrbit: inOrbitCount, launched: launchedCount, withPath: shown.filter(o => o.path).length, pathCount, queue: pathQueue.length, drawn: pathGeo.drawRange.count, paths: S.paths, cine: S.cine, only: !!lobby.only, rate }); window.__dbg = () => ({ seg: lobby.seg && { key: lobby.seg.key, R: lobby.seg.R, base: lobby.seg.baseDist }, cam: { ...cam }, tgt: { ...camTarget }, shift: { ...lobbyShift }, free: lobbyFree(), panel: lobby.panel, fit: lobby.seg ? lobbyFit(lobby.seg.baseDist, lobby.seg.R) : null, maxR: maxShownR(), shown: shown.length }); window.__segType = () => lobby.seg && lobby.seg.type + ':' + lobby.seg.key;
 const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 function popOut(hash) { if (!framed) return false; try { const w = window.open(location.href.split('#')[0] + (hash || ''), '_blank'); if (w) { toast('Opened in its own window; press F there for full screen.'); return true; } } catch (e) {} return false; }
 $('#lobbyBtn').onclick = () => { if (!popOut('#lobby')) enterLobby(); };
@@ -1956,7 +2000,7 @@ function loop(now) {
   const timeJump = rate >= 3600;
   if (now - lastPos > (timeJump ? (S.lobby || S.cine ? 0 : 40) : 250) || frame === 0) { lastPos = now; const tU = performance.now(); refilter(); checkLaunches(); updatePositions(); updMs = updMs * 0.9 + (performance.now() - tU) * 0.1; if (S.selected) updateLive(); }
   if (now - lastClock > 200) { lastClock = now; updateClock(); if (frame % 10 === 0) buildLegendCountsOnly(); }
-  if (pathsDirty || (pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && now - lastPathBuild > (S.paths === 'trail' ? 1200 : 2500) && Math.abs(TP - pathT) > (S.paths === 'trail' ? Math.max(3000, S.trailH * 3600000 / 400) : 300000))) schedulePaths();
+  if (pathsDirty || (!S.cine && pathQueue.length === 0 && (S.paths !== 'none' || S.orbitSel) && now - lastPathBuild > (S.paths === 'trail' ? 1200 : 2500) && Math.abs(TP - pathT) > (S.paths === 'trail' ? Math.max(3000, S.trailH * 3600000 / 400) : 300000))) schedulePaths();
   if (pathQueue.length) workPaths(7);
   if (S.follow && S.selected && S.selected.pos) { if (S.lobby) { camTarget.active = true; camTarget.theta = S.selected.pos.lon * DEG; camTarget.phi = S.selected.pos.lat * DEG; } else centerOn(S.selected); }
   if (S.spin && !drag && S.view === '3d') cam.theta += dt * (S.cine ? 0.08 : 0.12);
