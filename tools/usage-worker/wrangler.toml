@@ -1,0 +1,9 @@
+name = "r5-viewer-usage"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+REPO = "chadburge/viewer-usage"
+FILE = "usage/log.txt"
+
+# GITHUB_TOKEN is a secret, never in this file:  wrangler secret put GITHUB_TOKEN

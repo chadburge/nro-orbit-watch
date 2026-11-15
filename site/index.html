@@ -1734,6 +1734,15 @@ function drawLobby(now) {
 }
 let buildStamp = null, buildNew = false;
 const CAPTURE = /capture/.test(location.hash);   // #lobby,capture: used by tools/capture_lobby.py to record the show frame by frame
+/* ---------- usage ping ----------
+   When USAGE_URL is set, a short ping goes to the usage relay (tools/usage-worker) when the page opens, when the lobby
+   show starts, and once an hour while it runs: time, mode, where the page was served from, build, screen size, browser,
+   and a random install id this browser keeps. The relay adds the caller's address and appends a line to a private log
+   on GitHub so the author can see whether the viewer is being used. Empty USAGE_URL switches it off; the recorder never pings. */
+const USAGE_URL = '';
+const usageId = (() => { try { let id = localStorage.getItem('now.id'); if (!id) { id = Math.random().toString(36).slice(2, 10); localStorage.setItem('now.id', id); } return id; } catch (e) { return 'na'; } })();
+function usage(mode) { if (!USAGE_URL || CAPTURE) return; try { const body = JSON.stringify({ mode, host: location.host || 'file', build: buildStamp || '', id: usageId, screen: `${screen.width}x${screen.height}`, ua: navigator.userAgent }); let sent = false; try { sent = navigator.sendBeacon && navigator.sendBeacon(USAGE_URL, new Blob([body], { type: 'text/plain' })); } catch (e) {} if (!sent) fetch(USAGE_URL, { method: 'POST', body, mode: 'no-cors', keepalive: true }).catch(() => {}); } catch (e) {} }
+setTimeout(() => usage('open'), 6000); setInterval(() => usage(S.lobby ? 'lobby-hour' : 'explorer-hour'), 3600000);
 function watchBuild() { fetch('build.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (!j) return; if (buildStamp === null) buildStamp = j.built; else if (j.built !== buildStamp) { buildNew = true; if (!S.lobby) toast('Fresh data was built at ' + j.built.replace('T', ' ') + '. Press R to reload... or it will load with the next lobby segment.'); } }).catch(() => {}); }
 if (!CAPTURE) { setTimeout(watchBuild, 4000); setInterval(watchBuild, 10 * 60000); }
 /* ---------- the company mark, drawn from geometry ----------
@@ -1771,7 +1780,7 @@ function playSplash() { if (CAPTURE || /nosplash/.test(location.hash)) return; c
   vd.onended = end; vd.onerror = end; sp.onclick = end; try { vd.currentTime = 0; } catch (e) {} const pr = vd.play(); if (pr && pr.catch) pr.catch(end); setTimeout(end, 9000); }
 
 function enterLobby() {
-  if (S.lobby) return; if (S.cine) exitCine(); playSplash();
+  if (S.lobby) return; if (S.cine) exitCine(); playSplash(); usage('lobby');
   lobby.saved = { paths: S.paths, labels: S.labels, fpMode: S.fpMode, spin: S.spin, sites: S.sites, view: S.view, style: S.style, dist: cam.dist, phi: cam.phi, theta: cam.theta, hq: S.hq, rail: $('#rail').hidden, colorBy: S.colorBy, trailH: S.trailH, layers: { ...S.layers }, hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set(S.hidden[k])])), altMin: S.altMin, altMax: S.altMax };
   lobby.base = { layers: { ...S.layers, nro: true }, hidden: Object.fromEntries(Object.keys(FACETS).map(k => [k, new Set()])), altMin: 150, altMax: 45000 };
   S.lobby = true; document.body.classList.add('lobby'); $('#lobbyExit').hidden = false; $('#rail').hidden = true; SHOWEL.root.hidden = false; setView('3d'); S.style = 'realistic'; applyStyle();
@@ -2000,6 +2009,8 @@ $('#aboutBody').innerHTML = `
 <p>Everything here comes from publicly available sources; nothing classified or proprietary is used. Elements: ${D.meta.tleSource}. Identities and launch dates: ${D.meta.catalog}. Mission list: ${D.meta.launches}, Gunter's Space Page. Coastlines: Natural Earth via world-atlas. Built ${D.meta.built}. Rendered with three.js and satellite.js.</p>
 <h3>Cinematic timelapse</h3>
 <p>The Timelapse button switches to a presentation view: gold glowing satellites with their orbit rings, a year counter, a growing graph of how many are in orbit, and an ascent path from each launch pad that lifts off vertically and pitches over downrange to the satellite it put up (the direction follows where the satellite is on its orbit at that moment, since the real insertion point is not public). Filters still apply, so you can run the film for one program or one launch site. Esc or Exit returns to the normal view at the same date.</p>
+<h3>Usage ping</h3>
+<p>When a usage address is configured, the viewer sends a short ping when it starts and once an hour while it runs: the time, whether the explorer or the lobby show is running, where the page was served from, the build date, screen size and browser, plus a random id this browser keeps so repeat visits can be told from new ones. The relay that receives it records the caller's network address. Nothing else is collected and no cookies are set.</p>
 <h3>Reference layers</h3>
 <p>The Roster-5 HQ marker in Lafayette carries the company's logo; click it to lock the coverage view on that spot. Country borders and about ninety major cities can be switched on in Display for orientation. More city labels appear as you zoom in.</p>
 <h3>Hover coverage</h3>

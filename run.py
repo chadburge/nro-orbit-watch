@@ -35,6 +35,15 @@ SITE = os.path.join(ROOT, 'site')
 DATA = os.path.join(ROOT, 'data')
 PORT = int(os.environ.get('PORT', '8787'))
 REFRESH_HOUR, REFRESH_MINUTE = 3, 30
+USAGE_URL = ''   # usage relay (tools/usage-worker): when set, each start of the server sends a one-line ping; empty = off
+
+def usage_ping():
+    if not USAGE_URL: return
+    try:
+        import urllib.request, platform
+        body = json.dumps({'mode': 'server', 'host': 'app' if FROZEN else 'run.py', 'build': json.load(open(os.path.join(SITE, 'build.json'))).get('built', '') if os.path.exists(os.path.join(SITE, 'build.json')) else '', 'id': 'srv', 'screen': '', 'ua': platform.platform()}).encode()
+        urllib.request.urlopen(urllib.request.Request(USAGE_URL, body, {'Content-Type': 'text/plain'}), timeout=10).read()
+    except Exception: pass
 LOG = os.path.join(DATA, 'refresh.log')
 
 def run(script, *args):
@@ -99,7 +108,7 @@ class Quiet(SimpleHTTPRequestHandler):
 server = ThreadingHTTPServer(('127.0.0.1', PORT), Quiet)
 url = f'http://localhost:{PORT}/'
 print(f'Roster-5 Satellite Live Viewer at {url}  (nightly data refresh at {REFRESH_HOUR:02d}:{REFRESH_MINUTE:02d}; Ctrl+C to stop)')
-threading.Thread(target=daily_loop, daemon=True).start()
+threading.Thread(target=daily_loop, daemon=True).start(); threading.Thread(target=usage_ping, daemon=True).start()
 threading.Timer(0.6, lambda: webbrowser.open(url)).start()
 try:
     server.serve_forever()
