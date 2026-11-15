@@ -1115,7 +1115,7 @@ const pulses = [], beams = []; let lastPulseT = T; let cineSeries = null;
 function checkLaunches() { if (!S.sites || reduced) { lastPulseT = T; return; } if (T > lastPulseT && T - lastPulseT < 400 * 86400000) { for (const o of OBJ) { if (o.t0 > lastPulseT && o.t0 <= T && S.layers[o.lyr] && SITES[o.siteName] && (rate >= 86400)) { if (!pulses.some(p => p.site === o.siteName && performance.now() - p.t < 300)) pulses.push({ lat: SITES[o.siteName][0], lon: SITES[o.siteName][1], t: performance.now(), site: o.siteName }); if (S.cine && matchesFilters(o) && !beams.some(b => b.o === o)) beams.push({ o, site: o.siteName, lat: SITES[o.siteName][0], lon: SITES[o.siteName][1], t: performance.now() }); } } } lastPulseT = T; }
 
 /* ---------- cinematic timelapse ---------- */
-function buildCineSeries() { const pts = []; for (let t = TMIN; t <= TMAX; t += 30 * 86400000) { let n = 0, l = 0; for (const o of OBJ) { if (!matchesFilters(o) || !isFinite(o.t0) || o.t0 > t || o.status === 'Canceled') continue; l++; if (inOrbitAt(o, t)) n++; } pts.push([t, n, l]); } cineSeries = pts; }
+function buildCineSeries() { const pts = []; for (let t = TMIN; t <= Date.now(); t += 30 * 86400000) { let n = 0, l = 0; for (const o of OBJ) { if (!matchesFilters(o) || !isFinite(o.t0) || o.t0 > t || o.status === 'Canceled') continue; l++; if (inOrbitAt(o, t)) n++; } pts.push([t, n, l]); } cineSeries = pts; }
 function padScreen(lat, lon) { if (S.view === '3d') { const v = xyz(lat, lon, 1.004); tmpV.copy(v).project(camera); const dx = camera.position.x - v.x, dy = camera.position.y - v.y, dz = camera.position.z - v.z; if (v.x * dx + v.y * dy + v.z * dz < 0) return null; return [(tmpV.x + 1) / 2 * W, (1 - tmpV.y) / 2 * H]; } const q = proj2(lat, lon, mapGeom()); return [q[0], q[1]]; }
 function drawCine() {
   const now = performance.now(); const d = new Date(T);
@@ -1146,9 +1146,9 @@ function drawCine() {
   if (cineSeries) { const gx = 36, gy = 40, gw = Math.min(360, W * 0.36), gh = 110; const maxN = Math.max(10, ...cineSeries.map(q => q[1]));
     octx.strokeStyle = 'rgba(144,160,189,0.35)'; octx.lineWidth = 1; octx.beginPath(); octx.moveTo(gx, gy); octx.lineTo(gx, gy + gh); octx.lineTo(gx + gw, gy + gh); octx.stroke();
     octx.textAlign = 'left'; octx.fillStyle = '#90a0bd'; octx.font = '500 11px "IBM Plex Mono", monospace'; octx.fillText('satellites in orbit', gx + 6, gy + 12); octx.fillText(String(maxN), gx + 4, gy - 4);
-    octx.textAlign = 'right'; octx.fillText('1959', gx + 12, gy + gh + 14); octx.fillText('2027', gx + gw, gy + gh + 14);
+    octx.textAlign = 'right'; octx.fillText('1959', gx + 12, gy + gh + 14); octx.fillText(String(new Date().getUTCFullYear()), gx + gw, gy + gh + 14);
     octx.strokeStyle = CINE_GOLD; octx.lineWidth = 2; octx.shadowColor = 'rgba(255,214,107,0.6)'; octx.shadowBlur = 8; octx.beginPath(); let last = null;
-    for (const q of cineSeries) { if (q[0] > T) break; const x = gx + (q[0] - TMIN) / (TMAX - TMIN) * gw, y = gy + gh - q[1] / maxN * gh; if (last) octx.lineTo(x, y); else octx.moveTo(x, y); last = [x, y]; }
+    for (const q of cineSeries) { if (q[0] > T) break; const x = gx + (q[0] - TMIN) / (Date.now() - TMIN) * gw, y = gy + gh - q[1] / maxN * gh; if (last) octx.lineTo(x, y); else octx.moveTo(x, y); last = [x, y]; }
     octx.stroke(); octx.shadowBlur = 0; if (last) { octx.fillStyle = '#fff3cc'; octx.beginPath(); octx.arc(last[0], last[1], 3.5, 0, 7); octx.fill(); octx.fillStyle = CINE_GOLD; octx.textAlign = 'left'; octx.font = '600 13px "Barlow Condensed", sans-serif'; octx.fillText(String(inOrbitCount), last[0] + 7, last[1] + 4); } }
   octx.textAlign = 'left'; octx.textBaseline = 'middle';
 }
@@ -1681,10 +1681,13 @@ function drawLobby(now) {
   octx.fillStyle = '#e8edf7'; octx.font = `700 ${Math.round(2.4 * v)}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SATELLITE LIVE VIEWER', ax, m + 2.0 * v);
   octx.fillStyle = '#f2b24a'; octx.fillRect(ax, m + 2.9 * v, 3.2 * v, 0.22 * v);
   octx.fillStyle = '#b4bfd4'; octx.font = `500 ${Math.round(1.05 * v)}px "IBM Plex Mono", monospace`; octx.fillText(new Date(T).toISOString().replace('T', ' ').slice(0, 19) + ' UTC' + (isLive() ? '' : '  ·  historical archive'), ax, m + 4.4 * v);
-  const rx = W - m, ls = (narrow ? 4.2 : 7.5) * v; drawMarkAnim(octx, rx - ls / 2, m - 0.5 * v + ls / 2, ls * 0.47, performance.now() / 1000);
+  const rx = W - m, ls = (narrow ? 4.2 : 7.5) * v;
+  octx.font = `700 ${Math.round((narrow ? 1.6 : 2.4) * v)}px "Barlow Condensed", sans-serif`; const b1 = m + 2.0 * v + octx.measureText('ROSTER-5 SOFTWARE').actualBoundingBoxDescent;
+  octx.font = `500 ${Math.round((narrow ? 0.95 : 1.2) * v)}px "IBM Plex Sans", sans-serif`; const t2 = m + 4.4 * v - octx.measureText('Louisville, CO').actualBoundingBoxAscent;
+  const my = (b1 + t2) / 2; drawMarkAnim(octx, rx - ls / 2, my, ls * 0.47, performance.now() / 1000);
   octx.textAlign = 'right'; octx.fillStyle = '#4fd1c5'; octx.font = `700 ${Math.round((narrow ? 1.6 : 2.4) * v)}px "Barlow Condensed", sans-serif`; octx.fillText('ROSTER-5 SOFTWARE', rx - ls - 1.2 * v, m + 2.0 * v);
   octx.fillStyle = '#b4bfd4'; octx.font = `500 ${Math.round((narrow ? 0.95 : 1.2) * v)}px "IBM Plex Sans", sans-serif`; octx.fillText('Louisville, CO', rx - ls - 1.2 * v, m + 4.4 * v); octx.textAlign = 'left';
-  const lk = $('#r5link'); const tw = (narrow ? 13 : 21) * v; lk.style.left = (rx - ls - 1.2 * v - tw) + 'px'; lk.style.top = (m - 0.5 * v) + 'px'; lk.style.width = (ls + 1.2 * v + tw) + 'px'; lk.style.height = ls + 'px';
+  const lk = $('#r5link'); const tw = (narrow ? 13 : 21) * v; lk.style.left = (rx - ls - 1.2 * v - tw) + 'px'; lk.style.top = (my - ls / 2) + 'px'; lk.style.width = (ls + 1.2 * v + tw) + 'px'; lk.style.height = ls + 'px';
 
   if (lobby.caption && !S.cine && !(lobbyLayout.dock === 'bottom' && lobby.panel)) { const right = SHOWEL.slide.classList.contains('in'); octx.globalAlpha = a; octx.textAlign = right ? 'right' : 'left'; const cx2 = W - m; const hy = H - m - 4.4 * v, x = right ? cx2 - 1.2 * v : ax + 1.2 * v; octx.fillStyle = '#f2b24a'; octx.fillRect(right ? cx2 - 0.3 * v : ax, hy - 2.3 * v, 0.3 * v, 4.1 * v);
     octx.fillStyle = '#fff3d6'; octx.font = `700 ${Math.round(2.5 * v)}px "Barlow Condensed", sans-serif`; octx.fillText(lobby.caption.h, x, hy);
@@ -1995,7 +1998,8 @@ let updMs = 0, frameMs = 0, lastFrameT = 0; window.__perf = () => ({ updMs, fram
 function loop(now) {
   requestAnimationFrame(loop); fitCheck(); if (lastFrameT) frameMs = frameMs * 0.9 + (now - lastFrameT) * 0.1; lastFrameT = now;
   const dt = Math.min(0.1, (now - lastReal) / 1000); lastReal = now;
-  if (!paused) { if (rate === 1) T = Math.max(TMIN, Math.min(TMAX, Date.now() + liveOffset)); else { T += dt * 1000 * rate; liveOffset = T - Date.now(); } if (T >= TMAX && rate !== 1) { T = TMAX; paused = true; $('#playBtn').textContent = '▶'; } }
+  if (!paused) { if (rate === 1) T = Math.max(TMIN, Math.min(TMAX, Date.now() + liveOffset)); else { T += dt * 1000 * rate; liveOffset = T - Date.now(); } if (T >= TMAX && rate !== 1) { T = TMAX; paused = true; $('#playBtn').textContent = '▶'; }
+    if (S.cine && rate !== 1 && T > Date.now()) { T = Date.now(); liveOffset = 0; if (!S.lobby) { paused = true; $('#playBtn').textContent = '▶'; } } }
   if (!paused && rate >= 3600) { if (!visOn) { visOn = true; visT = T; } visT += dt * 1000 * VIS_RATE; TP = visT; } else { visOn = false; TP = T; }
   const timeJump = rate >= 3600;
   if (now - lastPos > (timeJump ? (S.lobby || S.cine ? 0 : 40) : 250) || frame === 0) { lastPos = now; const tU = performance.now(); refilter(); checkLaunches(); updatePositions(); updMs = updMs * 0.9 + (performance.now() - tU) * 0.1; if (S.selected) updateLive(); }
