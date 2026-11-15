@@ -46,6 +46,15 @@ More in [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md), [docs/ARCHITECTURE.m
 On Windows a scheduled task named "Satellite Live Viewer data refresh" runs `--refresh-data` daily at 03:30.
 Results go to `data/refresh.log`.
 
+## Sharing it without sharing the code
+
+| command | what it does |
+|---|---|
+| `python tools/capture_lobby.py` | record the lobby show frame-exactly to a 4K 60 fps HEVC video (two hours or until every slide has played); `--hours 0.05` for a short test |
+| `python tools/play_on_tv.py <video>` | play a rendered video on a DLNA television on the local network (`--find` lists them) |
+
+For a live wall display, open `#lobby` in Chrome and use its Cast menu to send the tab to a Chromecast-capable TV.
+
 ## Layout
 
 ```
@@ -55,6 +64,7 @@ build/*.py             pipeline (see docs/ARCHITECTURE.md)
 data/                  inputs and the merged data.json; curated hist.json; snapshots (launches, weather, news, social)
 site/                  what gets served: index.html, Earth imagery, img/ (credited Commons images), vendor/ libraries
 dist/                  the hosted build (CDN libraries instead of vendored ones)
+tools/                 capture_lobby.py (4K60 recording), play_on_tv.py (DLNA push)
 docs/                  architecture, data sources, getting started
 ```
 
