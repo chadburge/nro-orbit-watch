@@ -2009,7 +2009,8 @@ new ResizeObserver(resize).observe(stage); window.addEventListener('resize', res
 
 let lastPos = 0, lastClock = 0, lastPathT = 0, frame = 0;
 let updMs = 0, frameMs = 0, lastFrameT = 0; window.__perf = () => ({ updMs, frameMs });
-function loop(now) {
+function loop(ts) {
+  const now = CAPTURE ? performance.now() : ts;   // when recording, frame timestamps come from the real clock while the page runs on a stepped one; use one clock
   requestAnimationFrame(loop); fitCheck(); if (lastFrameT) frameMs = frameMs * 0.9 + (now - lastFrameT) * 0.1; lastFrameT = now;
   const dt = Math.min(0.1, (now - lastReal) / 1000); lastReal = now;
   if (!paused) { if (rate === 1) T = Math.max(TMIN, Math.min(TMAX, Date.now() + liveOffset)); else { T += dt * 1000 * rate; liveOffset = T - Date.now(); } if (T >= TMAX && rate !== 1) { T = TMAX; paused = true; $('#playBtn').textContent = '▶'; }
