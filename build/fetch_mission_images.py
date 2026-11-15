@@ -121,6 +121,7 @@ CLASS = {
     'news-tornado': ('tornado supercell NOAA photo', ['tornado'], {'kind': 'news'}),
     'news-flood': ('flooding aerial photograph river', ['flood'], {'kind': 'news'}),
     'sky-pass': ('satellite trail long exposure night sky stars', ['satellite', 'trail', 'pass'], {'kind': 'news'}),
+    'oblate-diagram': ('oblate spheroid Earth flattening equatorial bulge diagram', ['oblate', 'spheroid', 'ellipsoid', 'flattening', 'bulge'], {'kind': 'diagram'}),
 }
 if mode in ('all', 'class'):
     for key, (q, kws, tags) in CLASS.items():

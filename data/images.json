@@ -1122,5 +1122,123 @@
 "w": 1400,
 "h": 896,
 "kind": "news"
+},
+{
+"key": "veh-titan34d",
+"file": "veh-titan34d.jpg",
+"title": "First TITAN 34D Launch Vehicle at Complex 40 - 1980.jpg",
+"author": "United States Air Force",
+"license": "Public domain",
+"desc": "First TITAN 34D Launch Vehicle at Complex 40 - 1980",
+"w": 550,
+"h": 724,
+"kind": "vehicle",
+"rocket": "Titan 34",
+"era": [
+1982,
+1989
+]
+},
+{
+"key": "veh-titan3c",
+"file": "veh-titan3c.jpg",
+"title": "Titan IIIC-11 launches from Cape Canaveral (130605-F-IN001-031).jpg",
+"author": "U.S. Air Force",
+"license": "Public domain",
+"desc": "Titan IIIC-11 successfully launches 7 Initial Defense Communications Satellite Program (IDCSP) satellites and 1 experimental satellite from Cape Canaveral on 16 June 1966.",
+"w": 779,
+"h": 1000,
+"kind": "vehicle",
+"rocket": "Titan III",
+"era": [
+1965,
+1982
+]
+},
+{
+"key": "veh-atlas2",
+"file": "veh-atlas2.jpg",
+"title": "Atlas IIAS with SOHO at Cape Canaveral LC-36 (PL95C-11579).jpg",
+"author": "NASA",
+"license": "Public domain",
+"desc": "SOHO on the Atlas II-AS (AC-121), Cape Canaveral Air Station, 2 December 1995. SOHO was launched on 2 December 1995, 03:08 EST (08:08 UT).",
+"w": 800,
+"h": 1000,
+"kind": "vehicle",
+"rocket": "Atlas II",
+"era": [
+1991,
+2004
+]
+},
+{
+"key": "veh-taurus",
+"file": "veh-taurus.jpg",
+"title": "Time exposure photo of a Taurus Rocket Launch from Vandenberg AFB on March 12, 2000 , carrying a DOE research satellite.jpg",
+"author": "",
+"license": "Public domain",
+"desc": "Time exposure photo of a Taurus Rocket Launch from Vandenberg AFB on March 12, 2000, carrying a DOE research satellite.",
+"w": 839,
+"h": 1000,
+"kind": "vehicle",
+"rocket": "Taurus",
+"era": [
+1994,
+2011
+]
+},
+{
+"key": "veh-atlasf",
+"file": "veh-atlasf.jpg",
+"title": "TEAM VANDENBERG LAUNCHES ITS 2000th MISSION TODAY -- AN ATLAS V (210927-F-GJ070-1061).jpg",
+"author": "Airman First Class Tiarra Sibley",
+"license": "Public domain",
+"desc": "Team Vandenberg launched a United Launch Alliance Atlas V rocket from Space Launch Complex-3 here today, Sept. 27, at 11:12 a.m. Pacific Daylight Time. (U.S. Space Force photo by Airman First Class Tiarra Sibley)",
+"w": 420,
+"h": 1000,
+"kind": "vehicle",
+"rocket": "Atlas F",
+"era": [
+1965,
+1995
+]
+},
+{
+"key": "veh-shuttle",
+"file": "veh-shuttle.jpg",
+"title": "Space Shuttle Discovery under a full moon, 03-11-09.jpg",
+"author": "NASA/Bill Inglais",
+"license": "Public domain",
+"desc": "A nearly full Moon sets as the space shuttle Discovery sits atop Launch pad 39A at the Kennedy Space Center in Cape Canaveral, Florida, in the early morning hours of Wednesday, March 11, 2009.",
+"w": 802,
+"h": 1000,
+"kind": "vehicle",
+"rocket": "Space Shuttle",
+"era": [
+1981,
+2011
+]
+},
+{
+"key": "news-hurricane",
+"file": "news-hurricane.jpg",
+"title": "US Navy 040902-N-0000X-005 Satellite image taken from the GOES-12 satellite of Hurricane Frances at approximately 0940 EST.jpg",
+"author": "U.S. Navy photo",
+"license": "Public domain",
+"desc": "Mid-Atlantic Ocean (Sept. 2, 2004) – Satellite image taken from the GOES-12 satellite of Hurricane Frances at approximately 0940 EST. Frances, a category four hurricane on the Saffir-Simpson hurricane scale, is approximately 500 miles east-southeast of the Florida East Coast, moving at near 14 knots",
+"w": 624,
+"h": 625,
+"kind": "news"
+},
+{
+"key": "oblate-diagram",
+"file": "oblate-diagram.jpg",
+"title": "Sphere-OblateSpheroidComparison.jpg",
+"author": "Metathrope",
+"license": "CC BY-SA 4.0",
+"desc": "Diagram showing an ellipse and a sphere (labelled \"oblate spheroid\" and \"sphere\", imagining the shapes as cross-sections). Created for introductory geography students learning about Earth's approximate shape (--&gt; approximating but still missing out on rotational ellipsoids or geoids)",
+"w": 883,
+"h": 636,
+"kind": "diagram"
 }
 ]

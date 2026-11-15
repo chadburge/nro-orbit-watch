@@ -522,7 +522,7 @@
 "demo": {
 "oblate": true
 },
-"text": "Earth is not a sphere. Spinning once a day flings the equator outward: the planet is 43 km wider across the equator than pole to pole, a flattening of about 1 part in 298. The globe here is squashed far beyond reality so you can see the shape. That bulge is what makes orbit planes precess, and ignoring it would put a satellite tens of kilometres off within a day."
+"text": "Earth is not a sphere. Spinning once a day flings the equator outward: the planet is 43 km wider across the equator than pole to pole, a flattening of about 1 part in 298. The diagram compares a true sphere with the exaggerated figure; on the real globe the difference is invisible to the eye. That bulge is what makes orbit planes precess, and ignoring it would put a satellite tens of kilometres off within a day."
 },
 {
 "key": "geoid",
