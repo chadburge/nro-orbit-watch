@@ -23,10 +23,14 @@ While serving, a background thread repeats the daily refresh every night at 03:3
 and reloads itself between lobby segments. A Windows scheduled task can also run --refresh-data so the data stays current
 even when the server is not running.
 """
-import datetime, json, os, subprocess, sys, threading, time, traceback, webbrowser
+import datetime, json, os, runpy, subprocess, sys, threading, time, traceback, webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import PIL.Image   # imported here so the packaged executable carries the imaging library the refresh steps need
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+# Packaged as a Windows executable (PyInstaller), the site, data and build folders travel inside the app folder and the
+# build steps run inside the executable itself (see --step below) because there is no separate Python interpreter.
+FROZEN = getattr(sys, 'frozen', False)
+ROOT = getattr(sys, '_MEIPASS', None) if FROZEN else os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(ROOT, 'site')
 DATA = os.path.join(ROOT, 'data')
 PORT = int(os.environ.get('PORT', '8787'))
@@ -34,7 +38,11 @@ REFRESH_HOUR, REFRESH_MINUTE = 3, 30
 LOG = os.path.join(DATA, 'refresh.log')
 
 def run(script, *args):
-    subprocess.run([sys.executable, os.path.join(ROOT, 'build', script), *args], check=True, cwd=ROOT)
+    if FROZEN: subprocess.run([sys.executable, '--step', script, *args], check=True, cwd=ROOT)
+    else: subprocess.run([sys.executable, os.path.join(ROOT, 'build', script), *args], check=True, cwd=ROOT)
+
+if len(sys.argv) > 2 and sys.argv[1] == '--step':   # run one build script in this process (packaged mode)
+    path = os.path.join(ROOT, 'build', sys.argv[2]); sys.argv = [path] + sys.argv[3:]; os.chdir(ROOT); runpy.run_path(path, run_name='__main__'); sys.exit(0)
 
 DAILY = ['fetch_inputs.py', 'fetch_launches.py', 'parse_nrol.py', 'fetch_social.py', 'fetch_weather.py', 'fetch_news.py', 'content.py', 'build_data.py', 'build_page.py']
 FULL = ['fetch_inputs.py', 'fetch_launches.py', 'fetch_images.py', 'parse_nrol.py', ('fetch_mission_images.py', 'all'), 'fetch_social.py', 'fetch_weather.py', 'fetch_news.py', 'geoid.py', 'land.py', 'borders.py', 'content.py', 'build_data.py', 'build_page.py']

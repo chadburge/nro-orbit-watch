@@ -6,3 +6,8 @@ __pycache__/
 
 # large public datasets downloaded on demand
 data/egm96_15.tif
+
+# packaged executable (PyInstaller) and release archives
+.pyi-build/
+dist-exe/
+release/

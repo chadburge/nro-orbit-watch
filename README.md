@@ -46,6 +46,14 @@ More in [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md), [docs/ARCHITECTURE.m
 On Windows a scheduled task named "Satellite Live Viewer data refresh" runs `--refresh-data` daily at 03:30.
 Results go to `data/refresh.log`.
 
+## Packaged app (no Python needed)
+
+`python tools/build_exe.py` packages everything into `dist-exe/Roster-5 Satellite Live Viewer/` with PyInstaller: one `.exe` plus
+the site, data and build folders inside `_internal`. Zip that folder and anyone on Windows can double-click the executable:
+it serves the viewer on http://localhost:8787, opens the browser, refreshes the data at startup when it is stale and again
+each night at 03:30, exactly like `python run.py`. The source code for the build pipeline ships inside the package as
+plain files; the executable just supplies the interpreter.
+
 ## Sharing it without sharing the code
 
 | command | what it does |
