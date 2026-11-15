@@ -1,12 +1,35 @@
 {
- "asof": "2026-11-15T17:54:21Z",
+ "asof": "2026-11-15T19:11:20Z",
  "goes": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/GEOCOLOR/1808x1808.jpg",
  "goesFile": "img/goes-fd.jpg",
+ "earth": {
+  "goesEast": {
+   "live": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/GEOCOLOR/1808x1808.jpg",
+   "file": "img/goes-fd.jpg"
+  },
+  "goesWest": {
+   "live": "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/FD/GEOCOLOR/1808x1808.jpg",
+   "file": "img/goes-west.jpg"
+  },
+  "conus": {
+   "live": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/CONUS/GEOCOLOR/2500x1500.jpg",
+   "file": "img/goes-conus.jpg"
+  },
+  "himawari": {
+   "live": "https://www.data.jma.go.jp/mscweb/data/himawari/img/fd_/fd__trm_0000.jpg",
+   "file": "img/himawari.jpg"
+  },
+  "epic": {
+   "file": "img/epic.jpg",
+   "time": "2026-11-13 20:10 UTC",
+   "caption": "This image was taken by NASA's EPIC camera onboard the NOAA DSCOVR spacecraft"
+  }
+ },
  "forecast": {
-  "updated": "2026-11-15T06:46:23+00:00",
+  "updated": "2026-11-15T18:46:35+00:00",
   "periods": [
    {
-    "name": "Today",
+    "name": "This Afternoon",
     "temp": 57,
     "unit": "F",
     "short": "Sunny",
@@ -20,23 +43,23 @@
     "name": "Tonight",
     "temp": 35,
     "unit": "F",
-    "short": "Mostly Clear",
+    "short": "Partly Cloudy then Patchy Fog",
     "wind": "3 mph",
     "dir": "W",
-    "detail": "Mostly clear, with a low around 35. West wind around 3 mph.",
+    "detail": "Patchy fog after 3am. Partly cloudy, with a low around 35. West wind around 3 mph.",
     "day": false,
-    "icon": "https://api.weather.gov/icons/land/night/few?size=medium"
+    "icon": "https://api.weather.gov/icons/land/night/sct/fog?size=medium"
    },
    {
     "name": "Monday",
     "temp": 62,
     "unit": "F",
-    "short": "Mostly Sunny",
+    "short": "Patchy Fog then Mostly Sunny",
     "wind": "3 mph",
     "dir": "ESE",
-    "detail": "Mostly sunny. High near 62, with temperatures falling to around 56 in the afternoon. East southeast wind around 3 mph.",
+    "detail": "Patchy fog before 9am. Mostly sunny. High near 62, with temperatures falling to around 56 in the afternoon. East southeast wind around 3 mph.",
     "day": true,
-    "icon": "https://api.weather.gov/icons/land/day/sct?size=medium"
+    "icon": "https://api.weather.gov/icons/land/day/fog/sct?size=medium"
    },
    {
     "name": "Monday Night",
@@ -54,9 +77,9 @@
     "temp": 64,
     "unit": "F",
     "short": "Mostly Sunny",
-    "wind": "2 to 6 mph",
+    "wind": "5 mph",
     "dir": "ESE",
-    "detail": "Mostly sunny, with a high near 64. East southeast wind 2 to 6 mph.",
+    "detail": "Mostly sunny, with a high near 64. East southeast wind around 5 mph.",
     "day": true,
     "icon": "https://api.weather.gov/icons/land/day/sct?size=medium"
    },
@@ -65,7 +88,7 @@
     "temp": 39,
     "unit": "F",
     "short": "Mostly Clear",
-    "wind": "5 mph",
+    "wind": "7 mph",
     "dir": "W",
     "detail": "Mostly clear, with a low around 39.",
     "day": false,
@@ -75,29 +98,15 @@
  },
  "hourly": [
   {
-   "t": "2026-11-15T10:00",
-   "temp": 47,
-   "pop": 0,
-   "wind": "3 mph",
-   "short": "Sunny"
-  },
-  {
-   "t": "2026-11-15T11:00",
-   "temp": 50,
-   "pop": 0,
-   "wind": "3 mph",
-   "short": "Sunny"
-  },
-  {
    "t": "2026-11-15T12:00",
-   "temp": 54,
+   "temp": 55,
    "pop": 0,
    "wind": "5 mph",
    "short": "Sunny"
   },
   {
    "t": "2026-11-15T13:00",
-   "temp": 56,
+   "temp": 57,
    "pop": 0,
    "wind": "6 mph",
    "short": "Sunny"
@@ -113,139 +122,153 @@
    "t": "2026-11-15T15:00",
    "temp": 57,
    "pop": 0,
-   "wind": "5 mph",
+   "wind": "6 mph",
    "short": "Sunny"
   },
   {
    "t": "2026-11-15T16:00",
    "temp": 56,
    "pop": 0,
-   "wind": "3 mph",
+   "wind": "5 mph",
    "short": "Sunny"
   },
   {
    "t": "2026-11-15T17:00",
    "temp": 53,
    "pop": 0,
-   "wind": "3 mph",
+   "wind": "5 mph",
    "short": "Sunny"
   },
   {
    "t": "2026-11-15T18:00",
-   "temp": 49,
+   "temp": 50,
    "pop": 0,
-   "wind": "2 mph",
+   "wind": "3 mph",
    "short": "Mostly Clear"
   },
   {
    "t": "2026-11-15T19:00",
-   "temp": 46,
+   "temp": 45,
    "pop": 0,
-   "wind": "2 mph",
-   "short": "Partly Cloudy"
+   "wind": "3 mph",
+   "short": "Clear"
   },
   {
    "t": "2026-11-15T20:00",
-   "temp": 44,
+   "temp": 43,
    "pop": 0,
    "wind": "3 mph",
-   "short": "Partly Cloudy"
+   "short": "Mostly Clear"
   },
   {
    "t": "2026-11-15T21:00",
    "temp": 42,
    "pop": 0,
-   "wind": "3 mph",
-   "short": "Partly Cloudy"
+   "wind": "2 mph",
+   "short": "Mostly Clear"
   },
   {
    "t": "2026-11-15T22:00",
-   "temp": 41,
-   "pop": 0,
-   "wind": "2 mph",
-   "short": "Partly Cloudy"
-  },
-  {
-   "t": "2026-11-15T23:00",
    "temp": 40,
    "pop": 0,
    "wind": "2 mph",
    "short": "Mostly Clear"
   },
   {
+   "t": "2026-11-15T23:00",
+   "temp": 40,
+   "pop": 0,
+   "wind": "2 mph",
+   "short": "Partly Cloudy"
+  },
+  {
    "t": "2026-11-16T00:00",
    "temp": 39,
    "pop": 0,
    "wind": "2 mph",
-   "short": "Mostly Clear"
+   "short": "Partly Cloudy"
   },
   {
    "t": "2026-11-16T01:00",
    "temp": 38,
    "pop": 0,
    "wind": "2 mph",
-   "short": "Mostly Clear"
+   "short": "Partly Cloudy"
   },
   {
    "t": "2026-11-16T02:00",
-   "temp": 38,
+   "temp": 37,
    "pop": 0,
    "wind": "2 mph",
-   "short": "Mostly Clear"
+   "short": "Partly Cloudy"
   },
   {
    "t": "2026-11-16T03:00",
    "temp": 37,
    "pop": 0,
    "wind": "2 mph",
-   "short": "Mostly Clear"
+   "short": "Patchy Fog"
   },
   {
    "t": "2026-11-16T04:00",
    "temp": 36,
    "pop": 0,
    "wind": "2 mph",
-   "short": "Mostly Clear"
+   "short": "Patchy Fog"
   },
   {
    "t": "2026-11-16T05:00",
    "temp": 36,
    "pop": 0,
-   "wind": "1 mph",
-   "short": "Mostly Clear"
+   "wind": "2 mph",
+   "short": "Patchy Fog"
   },
   {
    "t": "2026-11-16T06:00",
-   "temp": 36,
+   "temp": 35,
    "pop": 0,
-   "wind": "1 mph",
-   "short": "Sunny"
+   "wind": "2 mph",
+   "short": "Patchy Fog"
   },
   {
    "t": "2026-11-16T07:00",
-   "temp": 36,
+   "temp": 35,
    "pop": 0,
    "wind": "2 mph",
-   "short": "Sunny"
+   "short": "Patchy Fog"
   },
   {
    "t": "2026-11-16T08:00",
    "temp": 39,
    "pop": 0,
    "wind": "3 mph",
-   "short": "Sunny"
+   "short": "Patchy Fog"
   },
   {
    "t": "2026-11-16T09:00",
-   "temp": 46,
+   "temp": 47,
    "pop": 0,
    "wind": "2 mph",
    "short": "Sunny"
+  },
+  {
+   "t": "2026-11-16T10:00",
+   "temp": 52,
+   "pop": 0,
+   "wind": "2 mph",
+   "short": "Mostly Sunny"
+  },
+  {
+   "t": "2026-11-16T11:00",
+   "temp": 57,
+   "pop": 0,
+   "wind": "2 mph",
+   "short": "Mostly Sunny"
   }
  ],
  "localAlerts": [],
  "national": {
-  "count": 28,
+  "count": 31,
   "events": [
    {
     "event": "Flood Warning",

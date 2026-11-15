@@ -36,6 +36,21 @@ try:
     im = Image.open(io.BytesIO(get(GOES, True))).convert('RGB'); im.thumbnail((1400, 1400)); os.makedirs(IMG, exist_ok=True)
     im.save(os.path.join(IMG, 'goes-fd.jpg'), quality=82, optimize=True, progressive=True); out['goesFile'] = 'img/goes-fd.jpg'; print('GOES image saved', im.size)
 except Exception as e: print('GOES image failed', e)
+# the other public eyes on the planet, for the "Earth right now" slide: GOES-West, the GOES-East regional scan, Himawari-9 and
+# NASA's DSCOVR EPIC camera at L1. Each gets a snapshot file plus the live URL the page tries first.
+def save(url, name, size=1400):
+    from PIL import Image
+    im = Image.open(io.BytesIO(get(url, True))).convert('RGB'); im.thumbnail((size, size)); im.save(os.path.join(IMG, name), quality=82, optimize=True, progressive=True); return 'img/' + name
+earth = {'goesEast': {'live': GOES, 'file': out.get('goesFile', 'img/goes-fd.jpg')}}
+for key, url, name, size in [('goesWest', 'https://cdn.star.nesdis.noaa.gov/GOES18/ABI/FD/GEOCOLOR/1808x1808.jpg', 'goes-west.jpg', 1400), ('conus', 'https://cdn.star.nesdis.noaa.gov/GOES19/ABI/CONUS/GEOCOLOR/2500x1500.jpg', 'goes-conus.jpg', 1800), ('himawari', 'https://www.data.jma.go.jp/mscweb/data/himawari/img/fd_/fd__trm_0000.jpg', 'himawari.jpg', 1400)]:
+    try: earth[key] = {'live': url, 'file': save(url, name, size)}; print(key, 'saved')
+    except Exception as e: print(key, 'failed', e)
+try:
+    ep = get('https://epic.gsfc.nasa.gov/api/natural')[-1]; d = ep['date'][:10].replace('-', '/')
+    url = 'https://epic.gsfc.nasa.gov/archive/natural/%s/jpg/%s.jpg' % (d, ep['image'])
+    earth['epic'] = {'file': save(url, 'epic.jpg', 1400), 'time': ep['date'][:16] + ' UTC', 'caption': ep.get('caption', '')}; print('epic saved', ep['date'])
+except Exception as e: print('epic failed', e)
+out['earth'] = earth
 try:
     pt = get('https://api.weather.gov/points/%.4f,%.4f' % HQ)['properties']
     fc = get(pt['forecast'])['properties']
