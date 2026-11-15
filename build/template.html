@@ -1732,7 +1732,7 @@ const CAPTURE = /capture/.test(location.hash);   // #lobby,capture: used by tool
    show starts, and once an hour while it runs: time, mode, where the page was served from, build, screen size, browser,
    and a random install id this browser keeps. The relay adds the caller's address and appends a line to a private log
    on GitHub so the author can see whether the viewer is being used. Empty USAGE_URL switches it off; the recorder never pings. */
-const USAGE_URL = '';
+const USAGE_URL = 'https://r5-viewer-usage.chadburge.workers.dev';
 const usageId = (() => { try { let id = localStorage.getItem('now.id'); if (!id) { id = Math.random().toString(36).slice(2, 10); localStorage.setItem('now.id', id); } return id; } catch (e) { return 'na'; } })();
 function usage(mode) { if (!USAGE_URL || CAPTURE) return; try { const body = JSON.stringify({ mode, host: location.host || 'file', build: buildStamp || '', id: usageId, screen: `${screen.width}x${screen.height}`, ua: navigator.userAgent }); let sent = false; try { sent = navigator.sendBeacon && navigator.sendBeacon(USAGE_URL, new Blob([body], { type: 'text/plain' })); } catch (e) {} if (!sent) fetch(USAGE_URL, { method: 'POST', body, mode: 'no-cors', keepalive: true }).catch(() => {}); } catch (e) {} }
 setTimeout(() => usage('open'), 6000); setInterval(() => usage(S.lobby ? 'lobby-hour' : 'explorer-hour'), 3600000);

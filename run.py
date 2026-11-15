@@ -35,7 +35,7 @@ SITE = os.path.join(ROOT, 'site')
 DATA = os.path.join(ROOT, 'data')
 PORT = int(os.environ.get('PORT', '8787'))
 REFRESH_HOUR, REFRESH_MINUTE = 3, 30
-USAGE_URL = ''   # usage relay (tools/usage-worker): when set, each start of the server sends a one-line ping; empty = off
+USAGE_URL = 'https://r5-viewer-usage.chadburge.workers.dev'   # usage relay (tools/usage-worker): when set, each start of the server sends a one-line ping; empty = off
 
 def usage_ping():
     if not USAGE_URL: return
