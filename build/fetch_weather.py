@@ -50,6 +50,56 @@ try:
     url = 'https://epic.gsfc.nasa.gov/archive/natural/%s/jpg/%s.jpg' % (d, ep['image'])
     earth['epic'] = {'file': save(url, 'epic.jpg', 1400), 'time': ep['date'][:16] + ' UTC', 'caption': ep.get('caption', '')}; print('epic saved', ep['date'])
 except Exception as e: print('epic failed', e)
+# the same planet at other wavelengths, for the infrared / radar / spectral variants of the slide:
+#   thermal infrared and water vapour from GOES and Himawari (live URLs plus snapshots), ground radar from the NWS,
+#   spaceborne radar (Sentinel-1 synthetic aperture radar, served by NASA's OPERA project through GIBS), satellite
+#   precipitation (GPM IMERG), VIIRS night lights, MODIS land surface temperature and short-wave infrared false colour
+#   (all NASA Worldview snapshots), and NASA EMIT hyperspectral examples from the NASA image library.
+def gibs(layer, date, bbox, w, h):
+    # Worldview snapshot service; BBOX is latitude first (south, west, north, east)
+    return get('https://wvs.earthdata.nasa.gov/api/v1/snapshot?REQUEST=GetSnapshot&LAYERS=%s&CRS=EPSG:4326&TIME=%s&WRAP=day&BBOX=%s&FORMAT=image/jpeg&WIDTH=%d&HEIGHT=%d' % (layer, date, bbox, w, h), True)
+def lit(b):
+    from PIL import Image
+    im = Image.open(io.BytesIO(b)).convert('RGB').resize((120, 60)); px = list(im.getdata()); return sum(1 for q in px if max(q) > 24) / len(px)
+def best_gibs(layer, bbox, w, h, days, name):
+    """newest day with the most coverage (swath products cover a given area only every few days)"""
+    from PIL import Image
+    best = None
+    for k in range(1, days + 1):
+        d = (datetime.date.today() - datetime.timedelta(days=k)).isoformat()
+        try: b = get_gibs = gibs(layer, d, bbox, w, h); f = lit(b)
+        except Exception as e: print('  gibs', layer[:30], d, 'failed', e); continue
+        if best is None or f > best[1] + 0.05: best = (b, f, d)
+        if f > 0.6: break
+    if not best or best[1] < 0.03: raise RuntimeError('no usable %s in the last %d days' % (layer, days))
+    im = Image.open(io.BytesIO(best[0])).convert('RGB'); im.save(os.path.join(IMG, name), quality=84, optimize=True); return {'file': 'img/' + name, 'time': best[2], 'coverage': round(best[1], 2)}
+def save_any(url, name, size=1400):
+    from PIL import Image
+    im = Image.open(io.BytesIO(get(url, True))).convert('RGB'); im.thumbnail((size, size)); im.save(os.path.join(IMG, name), quality=84, optimize=True); return 'img/' + name
+CONUS = '24,-126,50,-66'; FRONT_RANGE = '36.5,-109,42,-101.5'
+bands = {'infrared': [], 'radar': [], 'spectral': []}
+for key, url, name in [('goesEastIR', 'https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/13/1808x1808.jpg', 'goes-east-ir.jpg'), ('goesWestIR', 'https://cdn.star.nesdis.noaa.gov/GOES18/ABI/FD/13/1808x1808.jpg', 'goes-west-ir.jpg'), ('himawariIR', 'https://www.data.jma.go.jp/mscweb/data/himawari/img/fd_/fd__b13_0000.jpg', 'himawari-ir.jpg'), ('goesWV', 'https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/08/1808x1808.jpg', 'goes-wv.jpg')]:
+    try: bands['infrared'].append({'key': key, 'live': url, 'file': save_any(url, name)}); print(key, 'saved')
+    except Exception as e: print(key, 'failed', e)
+try: bands['radar'].append(dict(key='sar', **best_gibs('OPERA_L2_Radiometric_Terrain_Corrected_SAR_Sentinel-1', FRONT_RANGE, 1200, 880, 8, 'sar-front-range.jpg'))); print('sar saved')
+except Exception as e: print('sar failed', e)
+for key, url, name in [('nwsRadar', 'https://radar.weather.gov/ridge/standard/CONUS_0.gif', 'radar-conus.jpg'), ('kftg', 'https://radar.weather.gov/ridge/standard/KFTG_0.gif', 'radar-denver.jpg')]:
+    try: bands['radar'].append({'key': key, 'live': url, 'file': save_any(url, name)}); print(key, 'saved')
+    except Exception as e: print(key, 'failed', e)
+try: bands['radar'].append(dict(key='imerg', **best_gibs('IMERG_Precipitation_Rate', CONUS, 1200, 520, 3, 'imerg-conus.jpg'))); print('imerg saved')
+except Exception as e: print('imerg failed', e)
+for key, layer, days, name in [('dnb', 'VIIRS_NOAA20_DayNightBand_At_Sensor_Radiance', 3, 'viirs-night-conus.jpg'), ('lst', 'MODIS_Terra_Land_Surface_Temp_Day', 3, 'modis-lst-conus.jpg'), ('swir', 'MODIS_Terra_CorrectedReflectance_Bands721', 2, 'modis-swir-conus.jpg')]:
+    try: bands['spectral'].append(dict(key=key, **best_gibs(layer, CONUS, 1200, 520, days, name))); print(key, 'saved')
+    except Exception as e: print(key, 'failed', e)
+for key, pid, name in [('emit', 'PIA25427', 'emit-cube.jpg'), ('emit2', 'PIA26417', 'emit-amazon.jpg')]:
+    path = os.path.join(IMG, name)
+    try:
+        if not os.path.exists(path):
+            files = [f['href'] for f in get('https://images-api.nasa.gov/asset/' + pid)['collection']['items']]
+            save_any(next((u for u in files if u.endswith('~large.jpg')), next((u for u in files if u.endswith('~orig.jpg')), files[0])), name, 1600)
+        bands['spectral'].append({'key': key, 'file': 'img/' + name, 'id': pid}); print(key, 'ready')
+    except Exception as e: print(key, 'failed', e)
+earth['bands'] = bands
 out['earth'] = earth
 try:
     pt = get('https://api.weather.gov/points/%.4f,%.4f' % HQ)['properties']

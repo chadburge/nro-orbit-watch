@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-15T19:11:20Z",
+ "asof": "2026-11-15T22:17:33Z",
  "goes": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/GEOCOLOR/1808x1808.jpg",
  "goesFile": "img/goes-fd.jpg",
  "earth": {
@@ -23,6 +23,84 @@
    "file": "img/epic.jpg",
    "time": "2026-11-13 20:10 UTC",
    "caption": "This image was taken by NASA's EPIC camera onboard the NOAA DSCOVR spacecraft"
+  },
+  "bands": {
+   "infrared": [
+    {
+     "key": "goesEastIR",
+     "live": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/13/1808x1808.jpg",
+     "file": "img/goes-east-ir.jpg"
+    },
+    {
+     "key": "goesWestIR",
+     "live": "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/FD/13/1808x1808.jpg",
+     "file": "img/goes-west-ir.jpg"
+    },
+    {
+     "key": "himawariIR",
+     "live": "https://www.data.jma.go.jp/mscweb/data/himawari/img/fd_/fd__b13_0000.jpg",
+     "file": "img/himawari-ir.jpg"
+    },
+    {
+     "key": "goesWV",
+     "live": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/08/1808x1808.jpg",
+     "file": "img/goes-wv.jpg"
+    }
+   ],
+   "radar": [
+    {
+     "key": "sar",
+     "file": "img/sar-front-range.jpg",
+     "time": "2026-11-13",
+     "coverage": 0.42
+    },
+    {
+     "key": "nwsRadar",
+     "live": "https://radar.weather.gov/ridge/standard/CONUS_0.gif",
+     "file": "img/radar-conus.jpg"
+    },
+    {
+     "key": "kftg",
+     "live": "https://radar.weather.gov/ridge/standard/KFTG_0.gif",
+     "file": "img/radar-denver.jpg"
+    },
+    {
+     "key": "imerg",
+     "file": "img/imerg-conus.jpg",
+     "time": "2026-11-14",
+     "coverage": 0.24
+    }
+   ],
+   "spectral": [
+    {
+     "key": "dnb",
+     "file": "img/viirs-night-conus.jpg",
+     "time": "2026-11-13",
+     "coverage": 0.46
+    },
+    {
+     "key": "lst",
+     "file": "img/modis-lst-conus.jpg",
+     "time": "2026-11-14",
+     "coverage": 0.5
+    },
+    {
+     "key": "swir",
+     "file": "img/modis-swir-conus.jpg",
+     "time": "2026-11-14",
+     "coverage": 0.96
+    },
+    {
+     "key": "emit",
+     "file": "img/emit-cube.jpg",
+     "id": "PIA25427"
+    },
+    {
+     "key": "emit2",
+     "file": "img/emit-amazon.jpg",
+     "id": "PIA26417"
+    }
+   ]
   }
  },
  "forecast": {
@@ -97,27 +175,6 @@
   ]
  },
  "hourly": [
-  {
-   "t": "2026-11-15T12:00",
-   "temp": 55,
-   "pop": 0,
-   "wind": "5 mph",
-   "short": "Sunny"
-  },
-  {
-   "t": "2026-11-15T13:00",
-   "temp": 57,
-   "pop": 0,
-   "wind": "6 mph",
-   "short": "Sunny"
-  },
-  {
-   "t": "2026-11-15T14:00",
-   "temp": 57,
-   "pop": 0,
-   "wind": "6 mph",
-   "short": "Sunny"
-  },
   {
    "t": "2026-11-15T15:00",
    "temp": 57,
@@ -264,11 +321,32 @@
    "pop": 0,
    "wind": "2 mph",
    "short": "Mostly Sunny"
+  },
+  {
+   "t": "2026-11-16T12:00",
+   "temp": 59,
+   "pop": 0,
+   "wind": "2 mph",
+   "short": "Mostly Sunny"
+  },
+  {
+   "t": "2026-11-16T13:00",
+   "temp": 61,
+   "pop": 0,
+   "wind": "2 mph",
+   "short": "Mostly Sunny"
+  },
+  {
+   "t": "2026-11-16T14:00",
+   "temp": 62,
+   "pop": 0,
+   "wind": "3 mph",
+   "short": "Mostly Sunny"
   }
  ],
  "localAlerts": [],
  "national": {
-  "count": 31,
+  "count": 43,
   "events": [
    {
     "event": "Flood Warning",
@@ -283,17 +361,11 @@
     ]
    },
    {
-    "event": "Blizzard Warning",
-    "count": 1,
-    "areas": [
-     "Central Beaufort Sea Coast"
-    ]
-   },
-   {
     "event": "High Wind Warning",
-    "count": 1,
+    "count": 2,
     "areas": [
-     "Atka and Adak"
+     "Atka and Adak",
+     "Pribilof Islands"
     ]
    }
   ]
