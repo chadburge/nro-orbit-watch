@@ -66,9 +66,12 @@ async def main():
         line = f'{datetime.datetime.now():%H:%M:%S} ' + ' '.join(str(x) for x in m); print(line, flush=True); log.write(line + '\n'); log.flush()
 
     port = free_port(); srv = ThreadingHTTPServer(('127.0.0.1', port), Quiet); threading.Thread(target=srv.serve_forever, daemon=True).start()
+    # record as a fragmented MP4 so the file is playable at any moment and survives an interruption; remuxed to a plain
+    # fast-start MP4 (the form YouTube and most players prefer) once the capture ends
+    rec = a.out[:-4] + ' (recording).mp4'
     ff = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', str(a.fps), '-c:v', 'mjpeg', '-i', '-',
                            '-c:v', 'hevc_nvenc', '-preset', 'p5', '-tune', 'hq', '-rc', 'vbr', '-cq', str(a.cq), '-b:v', '0', '-maxrate', '60M', '-bufsize', '120M',
-                           '-pix_fmt', 'yuv420p', '-tag:v', 'hvc1', '-movflags', '+faststart', a.out], stdin=subprocess.PIPE)
+                           '-pix_fmt', 'yuv420p', '-tag:v', 'hvc1', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-frag_duration', '2000000', rec], stdin=subprocess.PIPE)
     frames = 0
     if a.intro_frames:
         files = sorted(glob.glob(os.path.join(a.intro_frames, '*.jpg')))
@@ -105,6 +108,8 @@ async def main():
                 if st and n > 3600 * a.fps and st['sinceNew'] >= 15: say('every slide has played; stopping'); break
         await b.close()
     ff.stdin.close(); ff.wait(); srv.shutdown()
-    say('done:', frames, 'frames,', f'{frames / a.fps / 60:.1f} min,', os.path.getsize(a.out) / 1e9, 'GB')
+    say('remuxing to a fast-start MP4')
+    if subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', rec, '-c', 'copy', '-movflags', '+faststart', a.out]).returncode == 0: os.remove(rec)
+    say('done:', frames, 'frames,', f'{frames / a.fps / 60:.1f} min,', os.path.getsize(a.out) / 1e9, 'GB ->', a.out)
 
 asyncio.run(main())
